@@ -12,8 +12,8 @@ Window {
 
     Grid {
         id: grid
-        columns: 6
-        rows: 6
+        columns: gameLogic.cols()
+        rows: gameLogic.rows()
         anchors.centerIn: parent
         spacing: 4
 
