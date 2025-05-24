@@ -12,6 +12,7 @@ qt_standard_project_setup(REQUIRES 6.8)
 
 qt_add_executable(appLinkGame
     main.cpp
+    "./image/icon.rc"   # 添加图标资源
 )
 
 qt_add_qml_module(appLinkGame

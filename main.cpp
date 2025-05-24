@@ -1,12 +1,14 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext> // 用于将 C++ 的对象暴露给 QML
+#include <QIcon> // 添加 QIcon 头文件
 
 #include "gamelogic.h" // 游戏逻辑类
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+    app.setWindowIcon(QIcon(":/image/icon.png")); // 设置窗口图标
 
     QQmlApplicationEngine engine;
 
