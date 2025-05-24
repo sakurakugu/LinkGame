@@ -73,10 +73,11 @@ CMakeLists.txt.user*
 *.dll
 *.exe
 
-# Directories with generated files
+# 包含生成文件的目录
 .moc/
 .obj/
 .pch/
 .rcc/
 .uic/
+.vscode/
 /build*/
