@@ -35,18 +35,18 @@ Thumbs.db
 /.qmake.cache
 /.qmake.stash
 
-# qtcreator generated files
+# qtcreator 生成的文件
 *.pro.user*
 *.qbs.user*
 CMakeLists.txt.user*
 
-# xemacs temporary files
+# xemacs 临时文件
 *.flc
 
-# Vim temporary files
+# Vim 临时文件
 .*.swp
 
-# Visual Studio generated files
+# Visual Studio 生成的文件
 *.ib_pdb_index
 *.idb
 *.ilk
@@ -61,7 +61,7 @@ CMakeLists.txt.user*
 *.vcxproj
 *vcxproj.*
 
-# MinGW generated files
+# MinGW 生成的文件
 *.Debug
 *.Release
 
@@ -81,3 +81,6 @@ CMakeLists.txt.user*
 .uic/
 .vscode/
 /build*/
+
+# CMake 生成的文件
+.qmlls.ini
