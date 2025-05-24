@@ -28,10 +28,17 @@ int GameLogic::getCell(int row, int col) const {
 
 bool GameLogic::canLink(int r1, int c1, int r2, int c2) {
     if (grid[r1][c1] == grid[r2][c2] && !(r1 == r2 && c1 == c2)) {
-        // 假设可以连接就清除
-        grid[r1][c1] = 0;
-        grid[r2][c2] = 0;
         return true;
     }
     return false;
+}
+
+void GameLogic::removeLink(int r1, int c1, int r2, int c2) {
+    if (grid[r1][c1] != 0 && grid[r2][c2] != 0) {
+        // 清除两个方块
+        grid[r1][c1] = 0;
+        grid[r2][c2] = 0;
+        // 发送信号，通知UI更新
+        emit cellsChanged();
+    }
 }
