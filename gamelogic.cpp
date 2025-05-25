@@ -20,9 +20,18 @@ void GameLogic::createGrid() {
     for (int r = 0; r < ROWS; ++r) {
         grid[r].resize(COLS);
         for (int c = 0; c < COLS; ++c) {
-            grid[r][c] = QRandomGenerator::global()->bounded(1, 5); // 假设有4种图案
+            // 外圈格子设为0（空格子）
+            if (isOuterCell(r, c)) {
+                grid[r][c] = 0;
+            } else {
+                grid[r][c] = QRandomGenerator::global()->bounded(1, 5); // 假设有4种图案
+            }
         }
     }
+}
+
+bool GameLogic::isOuterCell(int row, int col) const {
+    return row == 0 || row == ROWS - 1 || col == 0 || col == COLS - 1;
 }
 
 /**
@@ -83,8 +92,8 @@ bool GameLogic::canLink(int r1, int c1, int r2, int c2) {
                 
                 // 检查新坐标是否有效
                 if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && !visited[nr][nc]) {
-                    // 如果是空格子，则可以继续搜索
-                    if (grid[nr][nc] == 0) {
+                    // 如果是空格子或者是外圈格子，则可以继续搜索
+                    if (grid[nr][nc] == 0 || isOuterCell(nr, nc)) {
                         visited[nr][nc] = true;
                         queue.enqueue(QPoint(nr, nc));
                     } 
@@ -160,8 +169,8 @@ QVariantList GameLogic::getLinkPath(int r1, int c1, int r2, int c2) {
             
             // 检查新坐标是否有效
             if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && !visited[nr][nc]) {
-                // 如果是空格子或者是目标点，则可以移动
-                if (grid[nr][nc] == 0 || (nr == r2 && nc == c2)) {
+                // 如果是空格子、外圈格子或者是目标点，则可以移动
+                if (grid[nr][nc] == 0 || isOuterCell(nr, nc) || (nr == r2 && nc == c2)) {
                     visited[nr][nc] = true;
                     parent[nr][nc] = current;
                     queue.enqueue(QPoint(nr, nc));

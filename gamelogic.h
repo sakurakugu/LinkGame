@@ -20,11 +20,14 @@ public:
     Q_INVOKABLE QVariantList getLinkPath(int r1, int c1, int r2, int c2); // 获取连接路径
 
 private:
-    int ROWS = 6; // 行数
-    int COLS = 8; // 列数
+    int ROWS = 8; // 行数
+    int COLS = 10; // 列数
+    int VISIBLE_ROWS = ROWS-2; // 可见行数
+    int VISIBLE_COLS = COLS-2; // 可见列数
     QVector<QVector<int>> grid; // 游戏网格
 
     void createGrid(); // 生成游戏网格
+    bool isOuterCell(int row, int col) const; // 判断是否是外圈格子
 
 signals:
     void cellsChanged(); // 当方块状态改变时发出信号
