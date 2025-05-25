@@ -60,6 +60,7 @@ Window {
                 // 每个方块
                 width: 50
                 height: 50
+                visible: !grid.isOuterCell(index) // 外圈方块不可见
                 color: grid.getCell(index) === 0 ? "lightgray" : "skyblue" // 根据游戏逻辑设置颜色
                 border.color: "black"
 
@@ -109,9 +110,8 @@ Window {
                                 showLinkTimer.start();
                             } else {
                                 // 不能连通
-                                
                                 color = "blue"; // 先将第二个方块变为蓝色
-                                
+
                                 // 设置不能连通时的定时器
                                 resetColorTimer.firstRow = selectedRow;
                                 resetColorTimer.firstCol = selectedCol;
@@ -135,6 +135,10 @@ Window {
 
         function getCell(i) {
             return gameLogic.getCell(Math.floor(i / gameLogic.cols()), i % gameLogic.cols()); // 获取方块内容
+        }
+
+        function isOuterCell(i) {
+            return gameLogic.isOuterCell(Math.floor(i / gameLogic.cols()), i % gameLogic.cols()); // 获取外圈方块
         }
     }
     Connections {
@@ -175,7 +179,7 @@ Window {
             root.resetAllColors();
         }
     }
-    
+
     Timer {
         id: pathTimer
         interval: 300 // 500毫秒
