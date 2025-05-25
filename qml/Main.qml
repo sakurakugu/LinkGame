@@ -1,5 +1,8 @@
 import QtQuick
-import QtQuick.Controls // 导入Button
+import QtQuick.Controls
+
+// 添加 pragma 声明
+pragma ComponentBehavior: Bound
 
 Window {
     id: root
@@ -9,6 +12,9 @@ Window {
     title: qsTr("连连看小游戏")
     minimumWidth: 640
     minimumHeight: 480
+
+    // 需要在这里声明 gameLogic 属性
+    // required property var gameLogic
 
     property int selectedRow: -1 // 选中的行
     property int selectedCol: -1 // 选中的列
@@ -54,15 +60,29 @@ Window {
         anchors.centerIn: parent // 水平和垂直居中
         spacing: 4 // 网格间距
 
+        function getCell(i) {
+            return gameLogic.getCell(Math.floor(i / gameLogic.cols()), 
+                   i % gameLogic.cols()); // 获取方块内容
+        }
+
+        function isOuterCell(i) {
+            return gameLogic.isOuterCell(Math.floor(i / gameLogic.cols()), 
+                   i % gameLogic.cols()); // 获取外圈方块
+        }
+
         Repeater {
-            model: gameLogic.rows() * gameLogic.cols() // 根据行数和列数生成方块
+            model: gameLogic.rows() * gameLogic.cols()
+            
             delegate: Rectangle {
+                id: cell
+                required property int index
+                
                 // 每个方块
                 width: 50
                 height: 50
-                visible: !grid.isOuterCell(index) // 外圈方块不可见
-                color: grid.getCell(index) === 0 ? "lightgray" : "skyblue" // 根据游戏逻辑设置颜色
-                border.color: "black"
+                visible: !grid.isOuterCell(cell.index) // 外圈方块不可见
+                color: grid.getCell(cell.index) === 0 ? "transparent" : "skyblue" // 根据游戏逻辑设置颜色
+                border.color: grid.getCell(cell.index) === 0 ? "transparent" : "black" // 根据方块内容设置边框颜色
 
                 // 添加颜色变化的行为
                 Behavior on color {
@@ -74,50 +94,53 @@ Window {
                 Text {
                     // 显示方块内容
                     anchors.centerIn: parent // 文本居中
-                    text: grid.getCell(index) // 获取方块内容
+                    text: grid.getCell(cell.index)
+                    color: grid.getCell(cell.index) === 0 ? "transparent" : "black" // 根据方块内容设置文字颜色
                 }
+
                 MouseArea {
                     anchors.fill: parent // 鼠标区域填充整个矩形
                     onClicked: {
-                        let r = Math.floor(index / gameLogic.cols());
-                        let c = index % gameLogic.cols();
+                        // 计算行列
+                        let r = Math.floor(cell.index / gameLogic.cols())
+                        let c = cell.index % gameLogic.cols()
 
                         // 如果当前正在显示路径，不处理点击
-                        if (showingPath)
-                            return;
+                        if (root.showingPath)
+                            return
 
                         if (gameLogic.getCell(r, c) !== 0) {
                             console.log("选中方块: " + r + ", " + c);
-                            if (selectedRow === -1 && selectedCol === -1) {
+                            if (root.selectedRow === -1 && root.selectedCol === -1) {
                                 // 如果之前没有选中任何方块，记录选中的方块
-                                selectedRow = r;
-                                selectedCol = c;
-                                color = "blue";
-                            } else if (selectedRow === r && selectedCol === c) {
+                                root.selectedRow = r
+                                root.selectedCol = c
+                                cell.color = "blue"
+                            } else if (root.selectedRow === r && root.selectedCol === c) {
                                 // 如果点击的是同一个方块，取消之前的选中
-                                selectedRow = -1;
-                                selectedCol = -1;
-                                color = "skyblue";
-                            } else if (gameLogic.canLink(selectedRow, selectedCol, r, c)) {
+                                root.selectedRow = -1
+                                root.selectedCol = -1
+                                cell.color = "skyblue"
+                            } else if (gameLogic.canLink(root.selectedRow, root.selectedCol, r, c)) {
                                 // 如果可以连接两个方块
-                                color = "blue"; // 先将第二个方块变为蓝色
+                                cell.color = "blue" // 先将第二个方块变为蓝色
 
                                 // 准备连接信息
-                                showLinkTimer.firstRow = selectedRow;
-                                showLinkTimer.firstCol = selectedCol;
-                                showLinkTimer.secondRow = r;
-                                showLinkTimer.secondCol = c;
-                                showLinkTimer.start();
+                                showLinkTimer.firstRow = root.selectedRow
+                                showLinkTimer.firstCol = root.selectedCol
+                                showLinkTimer.secondRow = r
+                                showLinkTimer.secondCol = c
+                                showLinkTimer.start()
                             } else {
                                 // 不能连通
-                                color = "blue"; // 先将第二个方块变为蓝色
+                                cell.color = "blue" // 先将第二个方块变为蓝色
 
                                 // 设置不能连通时的定时器
-                                resetColorTimer.firstRow = selectedRow;
-                                resetColorTimer.firstCol = selectedCol;
-                                resetColorTimer.secondRow = r;
-                                resetColorTimer.secondCol = c;
-                                resetColorTimer.start();
+                                resetColorTimer.firstRow = root.selectedRow
+                                resetColorTimer.firstCol = root.selectedCol
+                                resetColorTimer.secondRow = r
+                                resetColorTimer.secondCol = c
+                                resetColorTimer.start()
                             }
                         }
                     }
@@ -127,20 +150,13 @@ Window {
                 Connections {
                     target: root
                     function onResetAllColors() {
-                        color = grid.getCell(index) === 0 ? "lightgray" : "skyblue";
+                        cell.color = grid.getCell(cell.index) === 0 ? "transparent" : "skyblue";
                     }
                 }
             }
         }
-
-        function getCell(i) {
-            return gameLogic.getCell(Math.floor(i / gameLogic.cols()), i % gameLogic.cols()); // 获取方块内容
-        }
-
-        function isOuterCell(i) {
-            return gameLogic.isOuterCell(Math.floor(i / gameLogic.cols()), i % gameLogic.cols()); // 获取外圈方块
-        }
     }
+
     Connections {
         // 连接到游戏逻辑对象
         target: gameLogic
@@ -155,10 +171,11 @@ Window {
         anchors.horizontalCenter: parent.horizontalCenter // 水平居中
         anchors.bottomMargin: 10 // 底部边距
         onClicked: {
-            gameLogic.resetGame();
-            grid.forceLayout(); // 强制布局更新
+            gameLogic.resetGame()
+            grid.forceLayout() // 强制布局更新
         }
     }
+
     // 不能连通时重置颜色的定时器
     Timer {
         id: resetColorTimer
@@ -173,10 +190,10 @@ Window {
         // 定时器触发时的处理函数
         onTriggered: {
             // 重置选中状态
-            selectedRow = -1;
-            selectedCol = -1;
+            root.selectedRow = -1
+            root.selectedCol = -1
             // 重置所有颜色
-            root.resetAllColors();
+            root.resetAllColors()
         }
     }
 
@@ -193,13 +210,13 @@ Window {
         // 定时器触发时的处理函数
         onTriggered: {
             // 移除连通的方块并隐藏路径
-            gameLogic.removeLink(firstRow, firstCol, secondRow, secondCol);
+            gameLogic.removeLink(firstRow, firstCol, secondRow, secondCol)
             // 更改方块颜色
-            root.resetAllColors(); // 重置所有颜色
-            showingPath = false;
-            linkCanvas.requestPaint(); // 请求重绘画布
-            selectedRow = -1;
-            selectedCol = -1;
+            root.resetAllColors() // 重置所有颜色
+            root.showingPath = false
+            linkCanvas.requestPaint() // 请求重绘画布
+            root.selectedRow = -1
+            root.selectedCol = -1
         }
     }
 
@@ -217,29 +234,26 @@ Window {
         // 定时器触发时的处理函数
         onTriggered: {
             // 获取连接路径
-            root.linkPath = gameLogic.getLinkPath(firstRow, firstCol, secondRow, secondCol);
+            root.linkPath = gameLogic.getLinkPath(firstRow, firstCol, secondRow, secondCol)
 
             // 转换路径点坐标到Canvas坐标系统
             for (var i = 0; i < root.linkPath.length; i++) {
-                let cellSize = 50 + 4; // 单元格尺寸 + 间距
-                let x = root.linkPath[i].col * cellSize + cellSize / 2;
-                let y = root.linkPath[i].row * cellSize + cellSize / 2;
-                root.linkPath[i] = {
-                    x: x,
-                    y: y
-                };
+                let cellSize = 50 + 4 // 单元格尺寸 + 间距
+                let x = root.linkPath[i].col * cellSize + cellSize / 2
+                let y = root.linkPath[i].row * cellSize + cellSize / 2
+                root.linkPath[i] = { x: x, y: y }
             }
 
             // 显示连接路径
-            root.showingPath = true;
-            linkCanvas.requestPaint();
+            root.showingPath = true
+            linkCanvas.requestPaint()
 
             // 设置隐藏方块的定时器
-            pathTimer.firstRow = firstRow;
-            pathTimer.firstCol = firstCol;
-            pathTimer.secondRow = secondRow;
-            pathTimer.secondCol = secondCol;
-            pathTimer.start();
+            pathTimer.firstRow = firstRow
+            pathTimer.firstCol = firstCol
+            pathTimer.secondRow = secondRow
+            pathTimer.secondCol = secondCol
+            pathTimer.start()
         }
     }
 }
