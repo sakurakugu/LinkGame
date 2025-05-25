@@ -109,9 +109,15 @@ Window {
                                 showLinkTimer.start();
                             } else {
                                 // 不能连通
-                                selectedRow = -1; // 重置选中行
-                                selectedCol = -1; // 重置选中列
-                                color = "skyblue"; // 重置颜色
+                                
+                                color = "blue"; // 先将第二个方块变为蓝色
+                                
+                                // 设置不能连通时的定时器
+                                resetColorTimer.firstRow = selectedRow;
+                                resetColorTimer.firstCol = selectedCol;
+                                resetColorTimer.secondRow = r;
+                                resetColorTimer.secondCol = c;
+                                resetColorTimer.start();
                             }
                         }
                     }
@@ -149,6 +155,27 @@ Window {
             grid.forceLayout(); // 强制布局更新
         }
     }
+    // 不能连通时重置颜色的定时器
+    Timer {
+        id: resetColorTimer
+        interval: 200 // 200毫秒后重置颜色
+        running: false
+        repeat: false
+        property int firstRow: -1
+        property int firstCol: -1
+        property int secondRow: -1
+        property int secondCol: -1
+
+        // 定时器触发时的处理函数
+        onTriggered: {
+            // 重置选中状态
+            selectedRow = -1;
+            selectedCol = -1;
+            // 重置所有颜色
+            root.resetAllColors();
+        }
+    }
+    
     Timer {
         id: pathTimer
         interval: 300 // 500毫秒
