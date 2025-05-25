@@ -30,7 +30,7 @@ private:
     bool isOuterCell(int row, int col) const; // 判断是否是外圈格子
 
 signals:
-    void cellsChanged(); // 当方块状态改变时发出信号
+    Q_SIGNAL void cellsChanged(); // 当方块状态改变时发出信号
 };
 
 #endif // GAMELOGIC_H

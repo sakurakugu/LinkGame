@@ -22,6 +22,9 @@ int main(int argc, char *argv[])
         &app,
         []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);
-    engine.loadFromModule("LinkGame", "Main"); // 导入 Main.qml
+
+    // 导入 MainMenu.qml
+    engine.loadFromModule("LinkGame", "MainMenu");
+
     return app.exec();
 }

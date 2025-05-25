@@ -20,8 +20,7 @@ qt_add_qml_module(appLinkGame
     VERSION 1.0
     QML_FILES
         SOURCES gamelogic.h gamelogic.cpp
-        # QML_FILES qml/GridBoard.qml
-        QML_FILES qml/Main.qml
+        QML_FILES qml/MainMenu.qml qml/GameWindow.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

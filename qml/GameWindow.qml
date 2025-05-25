@@ -1,8 +1,6 @@
-// 作废
 import QtQuick
 import QtQuick.Controls
 
-// 添加 pragma 声明
 pragma ComponentBehavior: Bound
 
 Window {
@@ -14,7 +12,7 @@ Window {
     minimumWidth: 640
     minimumHeight: 480
 
-    // 需要在这里声明 gameLogic 属性
+    // // 需要在这里声明 gameLogic 属性
     // required property var gameLogic
 
     property int selectedRow: -1 // 选中的行
@@ -23,6 +21,12 @@ Window {
     property bool showingPath: false // 是否正在显示路径
 
     signal resetAllColors // 重置所有颜色信号
+    signal closed // 窗口关闭信号
+
+    // 当窗口关闭时发出信号
+    onClosing: {
+        closed()
+    }
 
     // 连接路径画布
     Canvas {
@@ -166,14 +170,26 @@ Window {
         }
     }
 
-    Button {
-        text: "重置游戏"
-        anchors.bottom: parent.bottom // 设置按钮在底部
-        anchors.horizontalCenter: parent.horizontalCenter // 水平居中
-        anchors.bottomMargin: 10 // 底部边距
-        onClicked: {
-            gameLogic.resetGame()
-            grid.forceLayout() // 强制布局更新
+    // 顶部工具栏
+    Row {
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.topMargin: 10
+        spacing: 20
+
+        Button {
+            text: "重置游戏"
+            onClicked: {
+                gameLogic.resetGame()
+                grid.forceLayout() // 强制布局更新
+            }
+        }
+
+        Button {
+            text: "返回主菜单"
+            onClicked: {
+                root.close()
+            }
         }
     }
 
@@ -197,7 +213,7 @@ Window {
             root.resetAllColors()
         }
     }
-
+    
     Timer {
         id: pathTimer
         interval: 300 // 500毫秒
@@ -257,4 +273,4 @@ Window {
             pathTimer.start()
         }
     }
-}
+} 
