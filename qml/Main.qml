@@ -1,8 +1,9 @@
 import QtQuick
-import QtQuick.Controls // 导入Button
+import QtQuick.Controls
+import QtQuick.Layouts
 
 Window {
-    id: root
+    id: mainWindow
     width: 640
     height: 480
     visible: true
@@ -10,205 +11,367 @@ Window {
     minimumWidth: 640
     minimumHeight: 480
 
-    property int selectedRow: -1 // 选中的行
-    property int selectedCol: -1 // 选中的列
-    property var linkPath: [] // 存储连接路径的点
-    property bool showingPath: false // 是否正在显示路径
+    // 游戏状态枚举
+    property int gameState: 0  // 0=菜单, 1=游戏中, 2=游戏结束
+    property int selectedRow: -1
+    property int selectedCol: -1
+    property int score: 0
+    property int timeLeft: 180  // 3分钟游戏时间
 
-    signal resetAllColors // 重置所有颜色信号
-
-    // 连接路径画布
-    Canvas {
-        id: linkCanvas
-        anchors.fill: grid // 填充整个网格
-        z: 1 // 确保Canvas在Grid上方
-        visible: root.showingPath
-
-        onPaint: {
-            if (root.linkPath.length < 2)
-                return; // 如果路径长度小于2，不绘制
-
-            var ctx = getContext("2d");
-            ctx.clearRect(0, 0, width, height);
-            ctx.strokeStyle = "red";
-            ctx.lineWidth = 3;
-
-            ctx.beginPath();
-            // 从第一个点开始
-            ctx.moveTo(root.linkPath[0].x, root.linkPath[0].y);
-
-            // 绘制路径上的所有点
-            for (var i = 1; i < root.linkPath.length; i++) {
-                ctx.lineTo(root.linkPath[i].x, root.linkPath[i].y);
+    // 定时器
+    Timer {
+        id: gameTimer
+        interval: 1000
+        running: gameState === 1
+        repeat: true
+        onTriggered: {
+            timeLeft--
+            if (timeLeft <= 0) {
+                gameState = 2
+                gameStatus.text = "时间到！游戏结束"
             }
-
-            ctx.stroke();
         }
     }
 
-    // 网格布局
-    Grid {
-        id: grid
-        columns: gameLogic.cols() // 获取列数
-        rows: gameLogic.rows() // 获取行数
-        anchors.centerIn: parent // 水平和垂直居中
-        spacing: 4 // 网格间距
+    // 开始菜单界面
+    Loader {
+        id: menuLoader
+        anchors.fill: parent
+        sourceComponent: menuComponent
+        active: gameState === 0
+    }
 
-        Repeater {
-            model: gameLogic.rows() * gameLogic.cols() // 根据行数和列数生成方块
-            delegate: Rectangle {
-                // 每个方块
-                width: 50
-                height: 50
-                color: grid.getCell(index) === 0 ? "lightgray" : "skyblue" // 根据游戏逻辑设置颜色
-                border.color: "black"
-
-                // 添加颜色变化的行为
-                Behavior on color {
-                    ColorAnimation {
-                        duration: 100 // 渐变持续时间 300 毫秒
+    Component {
+        id: menuComponent
+        Rectangle {
+            color: "#f0f0f0"
+            ColumnLayout {
+                anchors.centerIn: parent
+                spacing: 20
+                
+                Text {
+                    text: "连连看"
+                    font.pixelSize: 36
+                    Layout.alignment: Qt.AlignHCenter
+                }
+                
+                Button {
+                    text: "开始游戏"
+                    Layout.preferredWidth: 200
+                    onClicked: {
+                        gameState = 1
+                        gameLogic.resetGame()
+                        score = 0
+                        timeLeft = 180
                     }
                 }
-
-                Text {
-                    // 显示方块内容
-                    anchors.centerIn: parent // 文本居中
-                    text: grid.getCell(index) // 获取方块内容
+                
+                Button {
+                    text: "游戏设置"
+                    Layout.preferredWidth: 200
+                    onClicked: settingsLoader.active = true
                 }
-                MouseArea {
-                    anchors.fill: parent // 鼠标区域填充整个矩形
-                    onClicked: {
-                        let r = Math.floor(index / gameLogic.cols());
-                        let c = index % gameLogic.cols();
+                
+                Button {
+                    text: "游戏帮助"
+                    Layout.preferredWidth: 200
+                    onClicked: helpLoader.active = true
+                }
+                
+                Button {
+                    text: "退出游戏"
+                    Layout.preferredWidth: 200
+                    onClicked: Qt.quit()
+                }
+            }
+        }
+    }
 
-                        // 如果当前正在显示路径，不处理点击
-                        if (showingPath)
-                            return;
+    // 游戏主界面
+    Loader {
+        id: gameLoader
+        anchors.fill: parent
+        sourceComponent: gameComponent
+        active: gameState === 1
+    }
 
-                        if (gameLogic.getCell(r, c) !== 0) {
-                            console.log("选中方块: " + r + ", " + c);
-                            if (selectedRow === -1 && selectedCol === -1) {
-                                // 如果之前没有选中任何方块，记录选中的方块
-                                selectedRow = r;
-                                selectedCol = c;
-                                color = "blue";
-                            } else if (selectedRow === r && selectedCol === c) {
-                                // 如果点击的是同一个方块，取消之前的选中
-                                selectedRow = -1;
-                                selectedCol = -1;
-                                color = "skyblue";
-                            } else if (gameLogic.canLink(selectedRow, selectedCol, r, c)) {
-                                // 如果可以连接两个方块
-                                color = "blue"; // 先将第二个方块变为蓝色
+    Component {
+        id: gameComponent
+        Item {
+            // 顶部状态栏
+            Rectangle {
+                id: statusBar
+                width: parent.width
+                height: 50
+                color: "#e0e0e0"
+                
+                RowLayout {
+                    anchors.fill: parent
+                    spacing: 20
+                    
+                    Text {
+                        id: gameStatus
+                        text: "游戏进行中"
+                        font.pixelSize: 18
+                        Layout.leftMargin: 10
+                    }
+                    
+                    Text {
+                        text: "分数: " + score
+                        font.pixelSize: 18
+                    }
+                    
+                    Text {
+                        text: "时间: " + Math.floor(timeLeft/60) + ":" + (timeLeft%60 < 10 ? "0" : "") + timeLeft%60
+                        font.pixelSize: 18
+                    }
+                    
+                    Item { Layout.fillWidth: true }
+                    
+                    Button {
+                        text: "返回菜单"
+                        onClicked: gameState = 0
+                    }
+                    
+                    Button {
+                        text: "提示"
+                        onClicked: showHint()
+                        Layout.rightMargin: 10
+                    }
+                }
+            }
 
-                                // 准备连接信息
-                                showLinkTimer.firstRow = selectedRow;
-                                showLinkTimer.firstCol = selectedCol;
-                                showLinkTimer.secondRow = r;
-                                showLinkTimer.secondCol = c;
-                                showLinkTimer.start();
-                            } else {
-                                // 不能连通
-                                selectedRow = -1; // 重置选中行
-                                selectedCol = -1; // 重置选中列
-                                color = "skyblue"; // 重置颜色
-                            }
+            // 游戏网格
+            Grid {
+                id: grid
+                columns: gameLogic.cols()
+                rows: gameLogic.rows()
+                anchors.centerIn: parent
+                spacing: 4
+                
+                Repeater {
+                    model: 36
+                    delegate: Rectangle {
+                        width: 50
+                        height: 50
+                        color: gameLogic.getCell(Math.floor(index / 6), index % 6) === 0 ? "lightgray" : "skyblue"
+                        border.width: (selectedRow === Math.floor(index / 6)) && 
+                                     (selectedCol === index % 6) ? 3 : 1
+                        border.color: (selectedRow === Math.floor(index / 6) && 
+                                      (selectedCol === index % 6)) ? "red" : "black"
+                        
+                        Behavior on color { ColorAnimation { duration: 200 } }
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: gameLogic.getCell(Math.floor(index / 6), index % 6)
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: handleCellClick(index)
                         }
                     }
                 }
+            }
+        }
+    }
 
-                // 连接重置颜色信号
-                Connections {
-                    target: root
-                    function onResetAllColors() {
-                        color = grid.getCell(index) === 0 ? "lightgray" : "skyblue";
+    // 游戏结束界面
+    Loader {
+        id: endLoader
+        anchors.fill: parent
+        sourceComponent: endComponent
+        active: gameState === 2
+    }
+
+    Component {
+        id: endComponent
+        Rectangle {
+            color: "#f0f0f0"
+            
+            ColumnLayout {
+                anchors.centerIn: parent
+                spacing: 20
+                
+                Text {
+                    text: "游戏结束"
+                    font.pixelSize: 36
+                    Layout.alignment: Qt.AlignHCenter
+                }
+                
+                Text {
+                    text: "最终得分: " + score
+                    font.pixelSize: 24
+                    Layout.alignment: Qt.AlignHCenter
+                }
+                
+                Button {
+                    text: "再来一局"
+                    Layout.preferredWidth: 200
+                    onClicked: {
+                        gameState = 1
+                        gameLogic.resetGame()
+                        score = 0
+                        timeLeft = 180
                     }
+                }
+                
+                Button {
+                    text: "返回菜单"
+                    Layout.preferredWidth: 200
+                    onClicked: gameState = 0
                 }
             }
         }
+    }
 
-        function getCell(i) {
-            return gameLogic.getCell(Math.floor(i / gameLogic.cols()), i % gameLogic.cols()); // 获取方块内容
+    // 设置界面
+    Loader {
+        id: settingsLoader
+        anchors.fill: parent
+        sourceComponent: settingsComponent
+        active: false
+    }
+
+    Component {
+        id: settingsComponent
+        Rectangle {
+            color: "#f0f0f0"
+            
+            ColumnLayout {
+                anchors.centerIn: parent
+                spacing: 20
+                
+                Text {
+                    text: "游戏设置"
+                    font.pixelSize: 36
+                    Layout.alignment: Qt.AlignHCenter
+                }
+                
+                RowLayout {
+                    Text { text: "难度级别:" }
+                    ComboBox {
+                        model: ["简单", "中等", "困难"]
+                        currentIndex: 1
+                    }
+                }
+                
+                RowLayout {
+                    Text { text: "游戏时间:" }
+                    ComboBox {
+                        model: ["1分钟", "3分钟", "5分钟", "无限"]
+                        currentIndex: 1
+                        onActivated: {
+                            timeLeft = [60, 180, 300, 9999][index]
+                        }
+                    }
+                }
+                
+                Button {
+                    text: "保存设置"
+                    Layout.preferredWidth: 200
+                    onClicked: settingsLoader.active = false
+                }
+                
+                Button {
+                    text: "返回"
+                    Layout.preferredWidth: 200
+                    onClicked: settingsLoader.active = false
+                }
+            }
         }
     }
+
+    // 帮助界面
+    Loader {
+        id: helpLoader
+        anchors.fill: parent
+        sourceComponent: helpComponent
+        active: false
+    }
+
+    Component {
+        id: helpComponent
+        Rectangle {
+            color: "#f0f0f0"
+            
+            ColumnLayout {
+                anchors.fill: parent
+                anchors.margins: 20
+                
+                Text {
+                    text: "游戏帮助"
+                    font.pixelSize: 36
+                    Layout.alignment: Qt.AlignHCenter
+                }
+                
+                ScrollView {
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    
+                    Text {
+                        width: parent.width
+                        wrapMode: Text.WordWrap
+                        text: "连连看游戏规则:\n\n" +
+                              "1. 点击两个相同的方块\n" +
+                              "2. 如果两个方块可以用不超过三条直线连接，它们就会消失\n" +
+                              "3. 消除所有方块即可获胜\n" +
+                              "4. 游戏有时间限制，请在时间内完成\n\n" +
+                              "操作说明:\n" +
+                              "- 点击方块选择\n" +
+                              "- 再次点击取消选择\n" +
+                              "- 点击'提示'按钮获取帮助\n" +
+                              "- 游戏结束后可以查看得分"
+                        font.pixelSize: 16
+                    }
+                }
+                
+                Button {
+                    text: "返回"
+                    Layout.preferredWidth: 200
+                    Layout.alignment: Qt.AlignHCenter
+                    onClicked: helpLoader.active = false
+                }
+            }
+        }
+    }
+
+    // 游戏逻辑连接
     Connections {
-        // 连接到游戏逻辑对象
         target: gameLogic
         function onCellsChanged() {
-            grid.forceLayout(); // 当方块状态改变时强制布局更新
-        }
-    }
-
-    Button {
-        text: "重置游戏"
-        anchors.bottom: parent.bottom // 设置按钮在底部
-        anchors.horizontalCenter: parent.horizontalCenter // 水平居中
-        anchors.bottomMargin: 10 // 底部边距
-        onClicked: {
-            gameLogic.resetGame();
-            grid.forceLayout(); // 强制布局更新
-        }
-    }
-    Timer {
-        id: pathTimer
-        interval: 300 // 500毫秒
-        running: false
-        repeat: false
-        property int firstRow: -1
-        property int firstCol: -1
-        property int secondRow: -1
-        property int secondCol: -1
-
-        // 定时器触发时的处理函数
-        onTriggered: {
-            // 移除连通的方块并隐藏路径
-            gameLogic.removeLink(firstRow, firstCol, secondRow, secondCol);
-            // 更改方块颜色
-            root.resetAllColors(); // 重置所有颜色
-            showingPath = false;
-            linkCanvas.requestPaint(); // 请求重绘画布
-            selectedRow = -1;
-            selectedCol = -1;
-        }
-    }
-
-    // 显示连线的定时器，在改变第二个方块颜色后延迟一段时间再显示连线
-    Timer {
-        id: showLinkTimer
-        interval: 150 // 150毫秒
-        running: false
-        repeat: false
-        property int firstRow: -1
-        property int firstCol: -1
-        property int secondRow: -1
-        property int secondCol: -1
-
-        // 定时器触发时的处理函数
-        onTriggered: {
-            // 获取连接路径
-            root.linkPath = gameLogic.getLinkPath(firstRow, firstCol, secondRow, secondCol);
-
-            // 转换路径点坐标到Canvas坐标系统
-            for (var i = 0; i < root.linkPath.length; i++) {
-                let cellSize = 50 + 4; // 单元格尺寸 + 间距
-                let x = root.linkPath[i].col * cellSize + cellSize / 2;
-                let y = root.linkPath[i].row * cellSize + cellSize / 2;
-                root.linkPath[i] = {
-                    x: x,
-                    y: y
-                };
+            grid.forceLayout()
+            if (gameLogic.isGameOver()) {
+                gameState = 2
             }
-
-            // 显示连接路径
-            root.showingPath = true;
-            linkCanvas.requestPaint();
-
-            // 设置隐藏方块的定时器
-            pathTimer.firstRow = firstRow;
-            pathTimer.firstCol = firstCol;
-            pathTimer.secondRow = secondRow;
-            pathTimer.secondCol = secondCol;
-            pathTimer.start();
         }
+    }
+
+    // 处理方块点击
+    function handleCellClick(index) {
+        let r = Math.floor(index / gameLogic.cols())
+        let c = index % gameLogic.cols()
+
+        if (selectedRow === -1) {
+            selectedRow = r
+            selectedCol = c
+        } else {
+            if (selectedRow === r && selectedCol === c) {
+                selectedRow = -1
+                selectedCol = -1
+            } else if (gameLogic.canLink(selectedRow, selectedCol, r, c)) {
+                gameLogic.removeLink(selectedRow, selectedCol, r, c)
+                score += 10
+                selectedRow = -1
+                selectedCol = -1
+            }
+        }
+    }
+
+    // 提示功能
+    function showHint() {
+        // 这里实现提示逻辑
+        // 可以高亮显示一对可连接的方块
     }
 }
