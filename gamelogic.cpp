@@ -6,6 +6,8 @@
 #include <QPoint>
 #include <QPair>
 
+// #include <iostream>
+
 GameLogic::GameLogic(QObject *parent) : QObject{parent} {
     createGrid();
 }
@@ -26,7 +28,9 @@ void GameLogic::createGrid() {
             } else {
                 grid[r][c] = QRandomGenerator::global()->bounded(1, 5); // 假设有4种图案
             }
+            // std::cout << grid[r][c] << " ";
         }
+        // std::cout << "\n";
     }
 }
 

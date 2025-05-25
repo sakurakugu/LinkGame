@@ -15,13 +15,20 @@ qt_add_executable(appLinkGame
     "./image/icon.rc"   # 添加图标资源
 )
 
+set(MYQML_FILES
+    qml/Main.qml
+    qml/Help.qml
+    qml/Settings.qml
+    qml/GameOver.qml
+    qml/GameBoard.qml
+)
+
 qt_add_qml_module(appLinkGame
     URI LinkGame
     VERSION 1.0
     QML_FILES
         SOURCES gamelogic.h gamelogic.cpp
-        # QML_FILES qml/MainMenu.qml qml/GameWindow.qml
-        QML_FILES qml/Main.qml
+        QML_FILES ${MYQML_FILES}
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

@@ -13,6 +13,7 @@ public:
     Q_INVOKABLE int cols() const { return COLS; }
     Q_INVOKABLE int rows() const { return ROWS; }
     Q_INVOKABLE int getCell(int row, int col) const; // 获取单元格的值
+    Q_INVOKABLE bool isOuterCell(int row, int col) const; // 判断是否是外圈格子
 
     Q_INVOKABLE void resetGame(); // 重置游戏    
     Q_INVOKABLE bool canLink(int r1, int c1, int r2, int c2); // 检查两个单元格是否可以连接
@@ -27,7 +28,6 @@ private:
     QVector<QVector<int>> grid; // 游戏网格
 
     void createGrid(); // 生成游戏网格
-    bool isOuterCell(int row, int col) const; // 判断是否是外圈格子
 
 signals:
     Q_SIGNAL void cellsChanged(); // 当方块状态改变时发出信号
