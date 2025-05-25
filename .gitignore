@@ -80,6 +80,7 @@ CMakeLists.txt.user*
 .uic/
 .vscode/
 /build*/
+.cache/
 
 # CMake 生成的文件
 .qmlls.ini
