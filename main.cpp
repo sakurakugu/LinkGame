@@ -24,7 +24,8 @@ int main(int argc, char *argv[])
         Qt::QueuedConnection);
 
     // 导入 MainMenu.qml
-    engine.loadFromModule("LinkGame", "MainMenu");
+    // engine.loadFromModule("LinkGame", "MainMenu");
+    engine.loadFromModule("LinkGame", "Main");
 
     return app.exec();
 }

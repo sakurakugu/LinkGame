@@ -3,9 +3,6 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-// 添加 pragma 声明
-pragma ComponentBehavior: Bound
-
 Window {
     id: root
     width: 640
