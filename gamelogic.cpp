@@ -10,6 +10,7 @@ GameLogic::GameLogic(QObject *parent) : QObject{parent} {
     createGrid();
 }
 
+
 /**
  * @brief 生成游戏网格
  * @details 生成一个ROWS x COLS的网格，并随机填充1到4之间的数字
