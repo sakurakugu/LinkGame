@@ -2,7 +2,7 @@
 #include <QRandomGenerator>
 
 GameLogic::GameLogic(QObject *parent) : QObject{parent} {
-    resetGame();
+    createGrid();
 }
 
 void GameLogic::createGrid() {
@@ -17,6 +17,7 @@ void GameLogic::createGrid() {
 
 void GameLogic::resetGame() {
     createGrid();
+    emit cellsChanged(); // 通知 QML 更新
 }
 
 int GameLogic::getCell(int row, int col) const {
