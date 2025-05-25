@@ -31,7 +31,6 @@ ui_*.h
 qrc_*.cpp
 Thumbs.db
 *.res
-*.rc
 /.qmake.cache
 /.qmake.stash
 
@@ -84,6 +83,3 @@ CMakeLists.txt.user*
 
 # CMake 生成的文件
 .qmlls.ini
-
-# 不包括的文件
-!./images/* 
