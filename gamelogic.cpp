@@ -1,17 +1,16 @@
 #include "gamelogic.h"
+#include <QPair>
+#include <QPoint>
+#include <QQueue>
 #include <QRandomGenerator>
 #include <QVariantList>
 #include <QVariantMap>
-#include <QQueue>
-#include <QPoint>
-#include <QPair>
 
 // #include <iostream>
 
 GameLogic::GameLogic(QObject *parent) : QObject{parent} {
     createGrid();
 }
-
 
 /**
  * @brief 生成游戏网格
@@ -74,42 +73,57 @@ bool GameLogic::canLink(int r1, int c1, int r2, int c2) {
         // 方向数组：上、右、下、左
         const int dr[] = {-1, 0, 1, 0};
         const int dc[] = {0, 1, 0, -1};
-        
+
         // BFS需要的队列
-        QQueue<QPoint> queue;
-        
+        // QQueue<QPoint> queue;
+        struct Node {
+            int x, y, direction, turns; // x, y为坐标，direction为当前方向（0:上, 1:右, 2:下, 3:左），turns为转弯次数
+        };
+        QQueue<Node> queue;
+
         // 记录已访问的节点
-        QVector<QVector<bool>> visited(ROWS, QVector<bool>(COLS, false));
-        
+        // QVector<QVector<bool>> visited(ROWS, QVector<bool>(COLS, false));
+        QVector<QVector<int>> visited(ROWS, QVector<int>(COLS, INT_MAX));
+
         // 将起点加入队列
-        queue.enqueue(QPoint(r1, c1));
-        visited[r1][c1] = true;
-        
+        // queue.enqueue(QPoint(r1, c1));
+        // visited[r1][c1] = true;
+
+        // 将起点加入队列
+        for (int i = 0; i < 4; ++i) {
+            int nr = r1 + dr[i];
+            int nc = c1 + dc[i];
+            if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && (grid[nr][nc] == 0 || (nr == r2 && nc == c2))) {
+                queue.enqueue({nr, nc, i, 0});
+                visited[nr][nc] = 0;
+            }
+        }
+
         // BFS寻路
         while (!queue.isEmpty()) {
-            QPoint current = queue.dequeue();
-            
+            Node current = queue.dequeue();
+
+            // 如果到达目标点，返回true
+            if (current.x == r2 && current.y == c2) {
+                return true;
+            }
+
             // 检查四个方向
             for (int i = 0; i < 4; ++i) {
-                int nr = current.x() + dr[i];
-                int nc = current.y() + dc[i];
-                
+                int nr = current.x + dr[i];
+                int nc = current.y + dc[i];
+                int newTurns = current.turns + (i != current.direction ? 1 : 0); // 计算转弯次数
+
                 // 检查新坐标是否有效
-                if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && !visited[nr][nc]) {
-                    // 如果是空格子或者是外圈格子，则可以继续搜索
-                    if (grid[nr][nc] == 0 || isOuterCell(nr, nc)) {
-                        visited[nr][nc] = true;
-                        queue.enqueue(QPoint(nr, nc));
-                    } 
-                    // 如果是目标点，说明找到路径
-                    else if (nr == r2 && nc == c2) {
-                        return true;
-                    }
+                if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && newTurns <= 2 && visited[nr][nc] > newTurns &&
+                    (grid[nr][nc] == 0 || (nr == r2 && nc == c2))) {
+                    visited[nr][nc] = newTurns;
+                    queue.enqueue({nr, nc, i, newTurns});
                 }
             }
         }
     }
-    
+
     return false;
 }
 
@@ -142,35 +156,35 @@ QVariantList GameLogic::getLinkPath(int r1, int c1, int r2, int c2) {
     // 方向数组：上、右、下、左
     const int dr[] = {-1, 0, 1, 0};
     const int dc[] = {0, 1, 0, -1};
-    
+
     // 结果路径
     QVariantList path;
-    
+
     // BFS需要的队列
     QQueue<QPoint> queue;
-    
+
     // 记录已访问的节点
     QVector<QVector<bool>> visited(ROWS, QVector<bool>(COLS, false));
-    
+
     // 记录每个点的前驱节点，用于还原路径
     QVector<QVector<QPoint>> parent(ROWS, QVector<QPoint>(COLS, QPoint(-1, -1)));
-    
+
     // 将起点加入队列
     queue.enqueue(QPoint(r1, c1));
     visited[r1][c1] = true;
-    
+
     // 标记是否找到路径
     bool found = false;
-    
+
     // BFS寻路
     while (!queue.isEmpty() && !found) {
         QPoint current = queue.dequeue();
-        
+
         // 检查四个方向
         for (int i = 0; i < 4; ++i) {
             int nr = current.x() + dr[i];
             int nc = current.y() + dc[i];
-            
+
             // 检查新坐标是否有效
             if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && !visited[nr][nc]) {
                 // 如果是空格子、外圈格子或者是目标点，则可以移动
@@ -178,7 +192,7 @@ QVariantList GameLogic::getLinkPath(int r1, int c1, int r2, int c2) {
                     visited[nr][nc] = true;
                     parent[nr][nc] = current;
                     queue.enqueue(QPoint(nr, nc));
-                    
+
                     // 如果找到目标点
                     if (nr == r2 && nc == c2) {
                         found = true;
@@ -188,27 +202,27 @@ QVariantList GameLogic::getLinkPath(int r1, int c1, int r2, int c2) {
             }
         }
     }
-    
+
     // 如果找到路径，则还原路径
     if (found) {
         QPoint current(r2, c2);
-        
+
         // 从目标点开始，一直回溯到起点
         while (!(current.x() == r1 && current.y() == c1)) {
             QVariantMap point;
             point["row"] = current.x();
             point["col"] = current.y();
             path.prepend(point); // 从终点向起点倒序添加
-            
+
             current = parent[current.x()][current.y()];
         }
-        
+
         // 添加起点
         QVariantMap startPoint;
         startPoint["row"] = r1;
         startPoint["col"] = c1;
         path.prepend(startPoint);
     }
-    
+
     return path;
 }
