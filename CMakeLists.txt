@@ -9,11 +9,14 @@ find_package(Qt6 REQUIRED COMPONENTS Quick)
 
 qt_standard_project_setup(REQUIRES 6.8)
 
-
-qt_add_executable(appLinkGame
-    main.cpp
-    "./image/icon.rc"   # 添加图标资源
+# 添加外部库 toml11
+include(FetchContent)
+FetchContent_Declare(
+  toml11
+  GIT_REPOSITORY https://github.com/ToruNiina/toml11.git
+  GIT_TAG        v4.4.0
 )
+FetchContent_MakeAvailable(toml11)
 
 set(MYQML_FILES
     qml/Main.qml
@@ -21,6 +24,17 @@ set(MYQML_FILES
     qml/Settings.qml
     qml/GameOver.qml
     qml/GameBoard.qml
+)
+
+set(MYPRIVATE
+    Qt6::Quick
+    toml11::toml11
+)
+
+
+qt_add_executable(appLinkGame
+    main.cpp
+    "./image/icon.rc"   # 添加图标资源
 )
 
 qt_add_qml_module(appLinkGame
@@ -43,7 +57,7 @@ set_target_properties(appLinkGame PROPERTIES
 )
 
 target_link_libraries(appLinkGame
-    PRIVATE Qt6::Quick
+    PRIVATE ${MYPRIVATE}
 )
 
 include(GNUInstallDirs)
