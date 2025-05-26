@@ -4,6 +4,7 @@ project(LinkGame VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(QT_QML_GENERATE_QMLLS_INI ON)
+set(CMAKE_AUTORCC ON) # 自动处理资源文件
 
 find_package(Qt6 REQUIRED COMPONENTS Quick)
 
@@ -18,6 +19,11 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(toml11)
 
+set(PROJECT_SOURCE
+    main.cpp
+    "./image/icon.rc" # 添加图标资源
+)
+
 set(MYQML_FILES
     qml/Main.qml
     qml/Help.qml
@@ -31,10 +37,33 @@ set(MYPRIVATE
     toml11::toml11
 )
 
+set(RESOURCES
+    # 添加资源文件
+    image/fruits/1.svg
+    image/fruits/2.svg
+    image/fruits/3.svg
+    image/fruits/4.svg
+    image/fruits/5.svg
+    image/fruits/6.svg
+    image/fruits/7.svg
+    image/fruits/8.svg
+    image/fruits/9.svg
+    image/fruits/10.svg
+    image/fruits/11.svg
+    image/fruits/12.svg
+    image/fruits/13.svg
+    image/fruits/14.svg
+    image/fruits/15.svg
+    image/fruits/16.svg
+    image/fruits/17.svg
+    image/fruits/18.svg
+    image/fruits/19.svg
+    image/fruits/20.svg
+)
 
+# 将文件添加到Qt_Creator的列表中
 qt_add_executable(appLinkGame
-    main.cpp
-    "./image/icon.rc"   # 添加图标资源
+    ${PROJECT_SOURCE}
 )
 
 qt_add_qml_module(appLinkGame
@@ -43,6 +72,8 @@ qt_add_qml_module(appLinkGame
     QML_FILES
         SOURCES gamelogic.h gamelogic.cpp
         QML_FILES ${MYQML_FILES}
+    RESOURCES
+        ${RESOURCES}
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

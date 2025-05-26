@@ -16,6 +16,7 @@ Rectangle {
     signal menuRequested // 返回主菜单信号
     signal scoreUpdated(int newScore) // 分数变化信号
     signal hintRequested // 提示信号
+    signal resetAllCell
 
     // 连接路径画布
     Canvas {
@@ -126,15 +127,22 @@ Rectangle {
                 // 添加颜色变化的行为
                 Behavior on color {
                     ColorAnimation {
-                        duration: 100
-                    } // 渐变持续时间 100 毫秒
+                        duration: 100 // 渐变持续时间 100 毫秒
+                    }
                 }
 
-                Text {
+                Image {
+                    id: image
                     // 显示方块内容
-                    anchors.centerIn: parent // 文本居中
-                    text: gameLogic.getCell(Math.floor(index / gameLogic.cols()), index % gameLogic.cols());
-                    color: grid.getCell(index) === 0 ? "transparent" : "black" // 根据方块内容设置文字颜色
+                    anchors.centerIn: parent // 图片居中
+                    width: parent.width // 设置图片宽度为方块宽度的80%
+                    height: parent.height // 设置图片高度为方块高度的80%
+                    source: {
+                        // 获取单元格中的值
+                        let cellValue = grid.getCell(index);
+                        // 如果值为0，返回空字符串，否则返回对应的图片路径
+                        return cellValue === 0 ? "" : "qrc:/qt/qml/LinkGame/image/fruits/" + cellValue + ".svg";
+                    }
                 }
 
                 MouseArea {
@@ -181,11 +189,13 @@ Rectangle {
                     }
                 }
 
-                // 连接重置颜色信号
+                // 连接重置信号
                 Connections {
                     target: root
-                    function onResetAllColors() {
-                        cell.color = grid.getCell(index) === 0 ? "transparent" : "skyblue";
+                    function onresetAllCell() {
+                        cell.color = grid.getCell(index) === 0 ? "transparent" : "skyblue"; // 根据游戏逻辑设置颜色
+                        cell.border.color = grid.getCell(index) === 0 ? "transparent" : "black"; // 根据方块内容设置边框颜色
+                        image.source = grid.getCell(index) === 0 ? "" : "qrc:/qt/qml/LinkGame/image/fruits/" + grid.getCell(index) + ".svg"; // 设置图片路径
                     }
                 }
             }
@@ -209,7 +219,7 @@ Rectangle {
             root.selectedRow = -1;
             root.selectedCol = -1;
             // 重置所有颜色
-            root.resetAllColors();
+            root.resetAllCell();
         }
     }
 
@@ -222,21 +232,19 @@ Rectangle {
         property int firstRow: -1
         property int firstCol: -1
         property int secondRow: -1
-        property int secondCol: -1
-
-        // 定时器触发时的处理函数
+        property int secondCol: -1        // 定时器触发时的处理函数
         onTriggered: {
             // 移除连通的方块并隐藏路径
             gameLogic.removeLink(firstRow, firstCol, secondRow, secondCol);
             // 更改方块颜色
-            root.resetAllColors(); // 重置所有颜色
+            root.resetAllCell(); // 重置
             root.showingPath = false;
             linkCanvas.requestPaint(); // 请求重绘画布
             root.selectedRow = -1;
             root.selectedCol = -1;
 
             root.score += 10; // 增加分数
-            scoreChanged(root.score);  // 发送信号
+            root.scoreUpdated(root.score);  // 发送信号
         }
     }
 
@@ -279,13 +287,11 @@ Rectangle {
             pathTimer.start();
         }
     }
-
     Connections {
         target: gameLogic
-        onCellsChanged: {
+        function onCellsChanged() {
             grid.forceLayout(); // 强制刷新网格
         }
     }
 
-    signal resetAllColors
 }
