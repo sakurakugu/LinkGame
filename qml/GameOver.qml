@@ -45,7 +45,12 @@ Rectangle {
         Button {
             text: "再来一局"
             Layout.preferredWidth: 200
-            onClicked: root.restartGame()
+            onClicked: {
+                if (finalScore > 0) {
+                    gameLogic.addScoreToLeaderboard(playerName, finalScore);
+                }
+                root.restartGame()
+            }
         }
         
         Button {

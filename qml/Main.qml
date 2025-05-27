@@ -276,8 +276,6 @@ Window {
                 gameState = 0;
             }
             onExitGameRequested: {
-                // 保存得分并进入结算界面
-                gameLogic.addScoreToLeaderboard(playerName, root.score);
                 gameState = 2; // 切换到游戏结束界面
             }
             score: root.score
@@ -294,13 +292,10 @@ Window {
             finalScore: score
             onRestartGame: {
                 gameState = 1;
-                gameLogic.resetGame();
                 score = 0;
                 timeLeft = gameLogic.getGameTime();
             }
             onReturnToMenu: {
-                // 添加分数到排行榜
-                gameLogic.addScoreToLeaderboard(playerName, score);
                 gameState = 0;
             }
         }
