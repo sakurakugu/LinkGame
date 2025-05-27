@@ -30,6 +30,8 @@ set(MYQML_FILES
     qml/Settings.qml
     qml/GameOver.qml
     qml/GameBoard.qml
+    qml/PlayerNameInput.qml
+    qml/Leaderboard.qml
 )
 
 set(MYPRIVATE

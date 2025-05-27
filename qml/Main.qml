@@ -12,11 +12,12 @@ Window {
     minimumHeight: 700
 
     // 游戏状态枚举
-    property int gameState: 0  // 0=菜单, 1=游戏中, 2=游戏结束
+    property int gameState: 0  // 0=菜单, 1=游戏中, 2=游戏结束, 3=排行榜, 4=用户名输入
     property int selectedRow: -1
     property int selectedCol: -1
     property int score: 0
-    property int timeLeft: 180  // 3分钟游戏时间
+    property int timeLeft: gameLogic.getGameTime()  // 从配置获取游戏时间
+    property string playerName: gameLogic.getPlayerName()  // 从配置获取玩家名称
 
     // 定时器
     Timer {
@@ -28,8 +29,37 @@ Window {
             timeLeft--;
             if (timeLeft <= 0) {
                 gameState = 2;
-                gameStatus.text = "时间到！游戏结束";
             }
+        }
+    }
+    
+    // 检查游戏是否结束的计时器
+    Timer {
+        id: checkGameOverTimer
+        interval: 500 // 每0.5秒检查一次
+        repeat: true
+        running: gameState === GameState.Playing
+        onTriggered: {
+            if (gameLogic.isGameOver()) {
+                gameTimer.stop();
+                gameState = GameState.GameOver;
+            }
+        }
+    }
+    
+    // 监听游戏时间变化
+    Connections {
+        target: gameLogic
+        function onGameTimeChanged() {
+            timeLeft = gameLogic.getGameTime();
+        }
+    }
+    
+    // 监听玩家名称变化
+    Connections {
+        target: gameLogic
+        function onPlayerNameChanged() {
+            playerName = gameLogic.getPlayerName();
         }
     }
 
@@ -39,6 +69,39 @@ Window {
         anchors.fill: parent
         sourceComponent: menuComponent
         active: gameState === 0
+    }
+    
+    // 排行榜界面
+    Loader {
+        id: leaderboardLoader
+        anchors.fill: parent
+        source: "Leaderboard.qml"
+        active: gameState === 3
+        onLoaded: {
+            item.closed.connect(function() {
+                gameState = 0;
+            });
+        }
+    }
+    
+    // 用户名输入界面
+    Loader {
+        id: playerNameLoader
+        anchors.fill: parent
+        source: "PlayerNameInput.qml"
+        active: gameState === 4
+        onLoaded: {
+            item.confirmed.connect(function(name) {
+                gameLogic.setPlayerName(name);
+                playerName = name;
+                gameState = 1;
+                score = 0;
+                timeLeft = gameLogic.getGameTime();
+            });
+            item.canceled.connect(function() {
+                gameState = 0;
+            });
+        }
     }
 
     Component {
@@ -81,14 +144,36 @@ Window {
                     }
 
                     onClicked: {
-                        // 创建并显示游戏窗口
+                        // 显示用户名输入界面
                         console.log("点击-主页面-开始游戏");
-                        gameState = 1;
-                        score = 0;
-                        timeLeft = 180;
+                        gameState = 4; // 切换到用户名输入界面
                     }
                 }
 
+                Button {
+                    text: qsTr("排行榜")
+                    font.pixelSize: 24
+                    Layout.preferredWidth: 200
+                    Layout.preferredHeight: 60
+                    background: Rectangle {
+                        color: parent.pressed ? "#4a90e2" : "#5ca9fb"
+                        radius: 10
+                    }
+                    contentItem: Text {
+                        text: parent.text
+                        font: parent.font
+                        color: "white"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+
+                    onClicked: {
+                        // 显示排行榜
+                        console.log("点击-主页面-排行榜");
+                        gameState = 3;
+                    }
+                }
+                
                 Button {
                     text: qsTr("设置")
                     font.pixelSize: 24
@@ -164,7 +249,7 @@ Window {
             onResetRequested: {
                 gameLogic.resetGame();
                 score = 0;
-                timeLeft = 180;
+                timeLeft = gameLogic.getGameTime();
             }
             onMenuRequested: {
                 gameState = 0;
@@ -185,9 +270,13 @@ Window {
                 gameState = 1;
                 gameLogic.resetGame();
                 score = 0;
-                timeLeft = 180;
+                timeLeft = gameLogic.getGameTime();
             }
-            onReturnToMenu: gameState = 0
+            onReturnToMenu: {
+                // 添加分数到排行榜
+                gameLogic.addScoreToLeaderboard(playerName, score);
+                gameState = 0;
+            }
         }
         active: gameState === 2
     }// 设置界面
@@ -197,6 +286,7 @@ Window {
         sourceComponent: Settings {
             onClosed: settingsLoader.active = false
             onTimeChanged: seconds => {
+                gameLogic.setGameTime(seconds);
                 timeLeft = seconds;
             }
         }
