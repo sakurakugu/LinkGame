@@ -1,31 +1,31 @@
 #include "gamelogic.h"
+#include <QDebug>
+#include <QDir>
+#include <QFile>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QPair>
 #include <QPoint>
 #include <QQueue>
 #include <QRandomGenerator>
+#include <QTextStream>
 #include <QVariantList>
 #include <QVariantMap>
-#include <QFile>
-#include <QTextStream>
-#include <QDebug>
-#include <QDir>
-#include <QJsonDocument>
-#include <QJsonArray>
-#include <QJsonObject>
 #include <algorithm>
-#include <toml.hpp>
 #include <fstream>
 #include <iostream>
+#include <toml.hpp>
 
 GameLogic::GameLogic(QObject *parent) : QObject{parent} {
     // 设置默认值
     m_playerName = "未命名";
     m_difficulty = "中等";
     m_gameTime = 180;
-    
+
     // 加载配置
     loadConfig();
-    
+
     // 创建游戏网格
     createGrid();
 }
@@ -208,23 +208,29 @@ QVariantList GameLogic::getLeaderboard() const {
  * @param score 分数
  */
 void GameLogic::addScoreToLeaderboard(const QString &name, int score) {
-    // 添加新的分数
-    LeaderboardEntry newEntry;
-    newEntry.name = name;
-    newEntry.score = score;
-    m_leaderboard.append(newEntry);
-    
-    // 按分数降序排序
-    std::sort(m_leaderboard.begin(), m_leaderboard.end(), 
-              [](const LeaderboardEntry &a, const LeaderboardEntry &b) {
-                  return a.score > b.score;
-              });
-    
-    // 只保留前10名
-    if (m_leaderboard.size() > 10) {
-        m_leaderboard.resize(10);
+    auto it = std::find_if(m_leaderboard.begin(), m_leaderboard.end(),
+                           [&name](const LeaderboardEntry &entry) { return entry.name == name; });
+
+    if (it != m_leaderboard.end()) {
+        // 如果找到相同用户名，更新分数
+        it->score = std::max(it->score, score); // 保留更高分数
+    } else {
+        // 如果没有相同用户名，添加新的分数
+        LeaderboardEntry newEntry;
+        newEntry.name = name;
+        newEntry.score = score;
+        m_leaderboard.append(newEntry);
     }
-    
+
+    // 按分数降序排序
+    std::sort(m_leaderboard.begin(), m_leaderboard.end(),
+              [](const LeaderboardEntry &a, const LeaderboardEntry &b) { return a.score > b.score; });
+
+    // // 只保留前10名
+    // if (m_leaderboard.size() > 10) {
+    //     m_leaderboard.resize(10);
+    // }
+
     emit leaderboardChanged();
     saveConfig();
 }
@@ -276,37 +282,37 @@ void GameLogic::loadConfig() {
     try {
         // 使用toml11库解析配置文件
         const auto data = toml::parse("config.toml");
-        
+
         // 解析玩家名称
         if (data.contains("player") && toml::find(data, "player").contains("name")) {
             m_playerName = QString::fromStdString(toml::find<std::string>(data, "player", "name"));
         }
-        
+
         // 解析游戏设置
         if (data.contains("settings")) {
-            const auto& settings = toml::find(data, "settings");
-            
+            const auto &settings = toml::find(data, "settings");
+
             if (settings.contains("difficulty")) {
                 m_difficulty = QString::fromStdString(toml::find<std::string>(settings, "difficulty"));
             }
-            
+
             if (settings.contains("game_time")) {
                 m_gameTime = toml::find<int>(settings, "game_time");
             }
         }
-        
+
         // 解析排行榜
         m_leaderboard.clear();
         if (data.contains("leaderboard") && toml::find(data, "leaderboard").contains("entries")) {
-            const auto& entries = toml::find(data, "leaderboard", "entries").as_array();
-            for (const auto& entry : entries) {
+            const auto &entries = toml::find(data, "leaderboard", "entries").as_array();
+            for (const auto &entry : entries) {
                 LeaderboardEntry leaderboardEntry;
                 leaderboardEntry.name = QString::fromStdString(toml::find<std::string>(entry, "name"));
                 leaderboardEntry.score = toml::find<int>(entry, "score");
                 m_leaderboard.append(leaderboardEntry);
             }
         }
-    } catch (const std::exception& e) {
+    } catch (const std::exception &e) {
         qDebug() << "解析配置文件出错:" << e.what() << "，使用默认配置";
     }
 }
@@ -318,41 +324,41 @@ void GameLogic::saveConfig() {
     try {
         // 创建toml数据结构
         toml::value data;
-        
+
         // 写入玩家信息
-        data["player"]["name"] = m_playerName.toStdString();
         data["player"].comments().push_back(" 玩家信息");
-        
+        data["player"]["name"] = m_playerName.toStdString();
+
         // 写入游戏设置
-        data["settings"]["difficulty"] = m_difficulty.toStdString();
         data["settings"].comments().push_back(" 游戏设置");
+        data["settings"]["difficulty"] = m_difficulty.toStdString();
         data["settings"]["game_time"] = m_gameTime;
-        
+
         // 写入排行榜
+        data["leaderboard"].comments().push_back(" 玩家排行榜");
         std::vector<toml::value> entriesArray;
-        for (const auto& entry : std::as_const(m_leaderboard)) {
+        for (const auto &entry : std::as_const(m_leaderboard)) {
             toml::value entryData;
             entryData["name"] = entry.name.toStdString();
             entryData["score"] = entry.score;
             entriesArray.push_back(entryData);
         }
         data["leaderboard"]["entries"] = entriesArray;
-        data["leaderboard"].comments().push_back(" 玩家排行榜");
-        
+
         // 添加注释
         data.comments().push_back(" 连连看游戏配置文件");
         data.comments().push_back(" \u4f5c\u8005: \u6f58\u5f66\u73ae\u3001\u8c22\u667a\u884c");
-        
+
         // 写入文件
         std::ofstream file("config.toml");
         if (!file) {
             qDebug() << "无法保存配置文件";
             return;
         }
-        
+
         file << toml::format(data);
         file.close();
-    } catch (const std::exception& e) {
+    } catch (const std::exception &e) {
         qDebug() << "保存配置文件出错:" << e.what();
     }
 }
