@@ -84,3 +84,6 @@ CMakeLists.txt.user*
 
 # CMake 生成的文件
 .qmlls.ini
+
+# 其他
+config.toml
