@@ -17,6 +17,7 @@ Rectangle {
     signal scoreUpdated(int newScore) // 分数变化信号
     signal hintRequested // 提示信号
     signal resetAllCell
+    signal exitGameRequested // 退出游戏信号
 
     // 连接路径画布
     Canvas {
@@ -77,15 +78,25 @@ Rectangle {
                 font.pixelSize: 18
                 Layout.alignment: Qt.AlignCenter
             }
-
             Button {
                 text: "重置游戏"
-                onClicked: root.resetRequested()
+                onClicked: {
+                    root.resetRequested();
+                    root.resetAllCell(); // 直接发射信号来重置所有单元格
+                }
             }
-
             Button {
                 text: "提示"
                 onClicked: root.hintRequested() // 提示
+            }
+            Button {
+                text: "退出游戏"
+                onClicked: {
+                    // 发射信号，告知Main.qml退出到结算界面
+                    root.resetRequested();
+                    root.resetAllCell(); // 直接发射信号来重置所有单元格
+                    root.exitGameRequested();
+                }
             }
 
             Button {
@@ -187,12 +198,10 @@ Rectangle {
                             }
                         }
                     }
-                }
-
-                // 连接重置信号
+                }                // 连接重置信号
                 Connections {
                     target: root
-                    function onresetAllCell() {
+                    function onResetAllCell() {
                         cell.color = grid.getCell(index) === 0 ? "transparent" : "skyblue"; // 根据游戏逻辑设置颜色
                         cell.border.color = grid.getCell(index) === 0 ? "transparent" : "black"; // 根据方块内容设置边框颜色
                         image.source = grid.getCell(index) === 0 ? "" : "qrc:/qt/qml/LinkGame/image/fruits/" + grid.getCell(index) + ".svg"; // 设置图片路径
@@ -293,5 +302,4 @@ Rectangle {
             grid.forceLayout(); // 强制刷新网格
         }
     }
-
 }
