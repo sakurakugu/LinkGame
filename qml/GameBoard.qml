@@ -236,15 +236,15 @@ Rectangle {
         onTriggered: {
             // 移除连通的方块并隐藏路径
             gameLogic.removeLink(firstRow, firstCol, secondRow, secondCol);
+            // 更新分数（每消除一对方块加10分）
+            root.score += 10; // 增加分数
+            root.scoreUpdated(root.score);  // 发送信号
             // 更改方块颜色
             root.resetAllCell(); // 重置
             root.showingPath = false;
             linkCanvas.requestPaint(); // 请求重绘画布
             root.selectedRow = -1;
             root.selectedCol = -1;
-
-            root.score += 10; // 增加分数
-            root.scoreUpdated(root.score);  // 发送信号
         }
     }
 

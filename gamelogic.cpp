@@ -5,11 +5,34 @@
 #include <QRandomGenerator>
 #include <QVariantList>
 #include <QVariantMap>
-
-// #include <iostream>
+#include <QFile>
+#include <QTextStream>
+#include <QDebug>
+#include <QDir>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <algorithm>
+#include <toml.hpp>
+#include <fstream>
+#include <iostream>
 
 GameLogic::GameLogic(QObject *parent) : QObject{parent} {
+    // 设置默认值
+    m_playerName = "未命名";
+    m_difficulty = "中等";
+    m_gameTime = 180;
+    
+    // 加载配置
+    loadConfig();
+    
+    // 创建游戏网格
     createGrid();
+}
+
+GameLogic::~GameLogic() {
+    // 保存配置
+    saveConfig();
 }
 
 /**
@@ -142,6 +165,212 @@ void GameLogic::removeLink(int r1, int c1, int r2, int c2) {
         // 发送信号，通知UI更新
         emit cellsChanged();
     }
+}
+
+/**
+ * @brief 获取玩家名称
+ * @return 玩家名称
+ */
+QString GameLogic::getPlayerName() const {
+    return m_playerName;
+}
+
+/**
+ * @brief 设置玩家名称
+ * @param name 玩家名称
+ */
+void GameLogic::setPlayerName(const QString &name) {
+    if (m_playerName != name) {
+        m_playerName = name;
+        emit playerNameChanged();
+        saveConfig();
+    }
+}
+
+/**
+ * @brief 获取排行榜
+ * @return 排行榜列表
+ */
+QVariantList GameLogic::getLeaderboard() const {
+    QVariantList result;
+    for (const auto &entry : m_leaderboard) {
+        QVariantMap item;
+        item["name"] = entry.name;
+        item["score"] = entry.score;
+        result.append(item);
+    }
+    return result;
+}
+
+/**
+ * @brief 添加分数到排行榜
+ * @param name 玩家名称
+ * @param score 分数
+ */
+void GameLogic::addScoreToLeaderboard(const QString &name, int score) {
+    // 添加新的分数
+    LeaderboardEntry newEntry;
+    newEntry.name = name;
+    newEntry.score = score;
+    m_leaderboard.append(newEntry);
+    
+    // 按分数降序排序
+    std::sort(m_leaderboard.begin(), m_leaderboard.end(), 
+              [](const LeaderboardEntry &a, const LeaderboardEntry &b) {
+                  return a.score > b.score;
+              });
+    
+    // 只保留前10名
+    if (m_leaderboard.size() > 10) {
+        m_leaderboard.resize(10);
+    }
+    
+    emit leaderboardChanged();
+    saveConfig();
+}
+
+/**
+ * @brief 获取难度
+ * @return 难度
+ */
+QString GameLogic::getDifficulty() const {
+    return m_difficulty;
+}
+
+/**
+ * @brief 设置难度
+ * @param difficulty 难度
+ */
+void GameLogic::setDifficulty(const QString &difficulty) {
+    if (m_difficulty != difficulty) {
+        m_difficulty = difficulty;
+        emit difficultyChanged();
+        saveConfig();
+    }
+}
+
+/**
+ * @brief 获取游戏时间
+ * @return 游戏时间（秒）
+ */
+int GameLogic::getGameTime() const {
+    return m_gameTime;
+}
+
+/**
+ * @brief 设置游戏时间
+ * @param seconds 游戏时间（秒）
+ */
+void GameLogic::setGameTime(int seconds) {
+    if (m_gameTime != seconds) {
+        m_gameTime = seconds;
+        emit gameTimeChanged();
+        saveConfig();
+    }
+}
+
+/**
+ * @brief 加载配置
+ */
+void GameLogic::loadConfig() {
+    try {
+        // 使用toml11库解析配置文件
+        const auto data = toml::parse("config.toml");
+        
+        // 解析玩家名称
+        if (data.contains("player") && toml::find(data, "player").contains("name")) {
+            m_playerName = QString::fromStdString(toml::find<std::string>(data, "player", "name"));
+        }
+        
+        // 解析游戏设置
+        if (data.contains("settings")) {
+            const auto& settings = toml::find(data, "settings");
+            
+            if (settings.contains("difficulty")) {
+                m_difficulty = QString::fromStdString(toml::find<std::string>(settings, "difficulty"));
+            }
+            
+            if (settings.contains("game_time")) {
+                m_gameTime = toml::find<int>(settings, "game_time");
+            }
+        }
+        
+        // 解析排行榜
+        m_leaderboard.clear();
+        if (data.contains("leaderboard") && toml::find(data, "leaderboard").contains("entries")) {
+            const auto& entries = toml::find(data, "leaderboard", "entries").as_array();
+            for (const auto& entry : entries) {
+                LeaderboardEntry leaderboardEntry;
+                leaderboardEntry.name = QString::fromStdString(toml::find<std::string>(entry, "name"));
+                leaderboardEntry.score = toml::find<int>(entry, "score");
+                m_leaderboard.append(leaderboardEntry);
+            }
+        }
+    } catch (const std::exception& e) {
+        qDebug() << "解析配置文件出错:" << e.what() << "，使用默认配置";
+    }
+}
+
+/**
+ * @brief 保存配置
+ */
+void GameLogic::saveConfig() {
+    try {
+        // 创建toml数据结构
+        toml::value data;
+        
+        // 写入玩家信息
+        data["player"]["name"] = m_playerName.toStdString();
+        data["player"].comments().push_back(" 玩家信息");
+        
+        // 写入游戏设置
+        data["settings"]["difficulty"] = m_difficulty.toStdString();
+        data["settings"].comments().push_back(" 游戏设置");
+        data["settings"]["game_time"] = m_gameTime;
+        
+        // 写入排行榜
+        std::vector<toml::value> entriesArray;
+        for (const auto& entry : std::as_const(m_leaderboard)) {
+            toml::value entryData;
+            entryData["name"] = entry.name.toStdString();
+            entryData["score"] = entry.score;
+            entriesArray.push_back(entryData);
+        }
+        data["leaderboard"]["entries"] = entriesArray;
+        data["leaderboard"].comments().push_back(" 玩家排行榜");
+        
+        // 添加注释
+        data.comments().push_back(" 连连看游戏配置文件");
+        data.comments().push_back(" \u4f5c\u8005: \u6f58\u5f66\u73ae\u3001\u8c22\u667a\u884c");
+        
+        // 写入文件
+        std::ofstream file("config.toml");
+        if (!file) {
+            qDebug() << "无法保存配置文件";
+            return;
+        }
+        
+        file << toml::format(data);
+        file.close();
+    } catch (const std::exception& e) {
+        qDebug() << "保存配置文件出错:" << e.what();
+    }
+}
+
+/**
+ * @brief 检查游戏是否结束
+ * @return 如果游戏结束返回true，否则返回false
+ */
+bool GameLogic::isGameOver() const {
+    // 检查是否还有非空方块
+    for (int r = 1; r < ROWS - 1; ++r) {
+        for (int c = 1; c < COLS - 1; ++c) {
+            if (grid[r][c] != 0) {
+                return false; // 还有方块，游戏未结束
+            }
+        }
+    }
+    return true; // 所有方块都已消除，游戏结束
 }
 
 /**
