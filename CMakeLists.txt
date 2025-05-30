@@ -32,6 +32,7 @@ set(MYQML_FILES
     qml/GameBoard.qml
     qml/PlayerNameInput.qml
     qml/Leaderboard.qml
+    qml/Cell.qml
 )
 
 set(MYPRIVATE

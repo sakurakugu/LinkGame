@@ -21,18 +21,25 @@ public:
     static const int HARD_PATTERNS = 12;   // 困难难度：12种图案
     static const int TOTAL_PATTERNS = 20;  // 总图案数量
 
+    // 提示相关的结构体
+    struct HintStep {
+        int row1, col1;  // 第一个方块的位置
+        int row2, col2;  // 第二个方块的位置
+        QVariantList path;  // 连接路径
+    };
+
     Q_INVOKABLE int cols() const { return COLS; }
     Q_INVOKABLE int rows() const { return ROWS; }
     Q_INVOKABLE int getCell(int row, int col) const; // 获取单元格的值
     Q_INVOKABLE bool isOuterCell(int row, int col) const; // 判断是否是外圈格子
     Q_INVOKABLE int getPatternCount() const; // 获取当前难度的图案数量
-    Q_INVOKABLE int getTotalPatterns() const { return TOTAL_PATTERNS; } // 获取总图案数量
-
+    Q_INVOKABLE int getTotalPatterns() const { return TOTAL_PATTERNS; } // 获取总图案数量    
     Q_INVOKABLE void resetGame(); // 重置游戏    
-    Q_INVOKABLE bool canLink(int r1, int c1, int r2, int c2); // 检查两个单元格是否可以连接
+    Q_INVOKABLE bool canLink(int r1, int c1, int r2, int c2) const; // 检查两个单元格是否可以连接
     Q_INVOKABLE void removeLink(int r1, int c1, int r2, int c2); // 移除连接的两个方块
     Q_INVOKABLE QVariantList getLinkPath(int r1, int c1, int r2, int c2); // 获取连接路径
     Q_INVOKABLE bool isGameOver() const; // 检查游戏是否结束
+    Q_INVOKABLE QVariantList getHint(); // 获取提示
     
     // 用户名相关
     Q_INVOKABLE QString getPlayerName() const; // 获取玩家名称
@@ -56,6 +63,10 @@ private:
     int VISIBLE_COLS = COLS-2; // 可见列数
     QVector<QVector<int>> grid; // 游戏网格
     
+    // 提示相关的成员
+    QVector<HintStep> solutionSteps; // 存储解决方案步骤
+    int currentStep; // 当前步骤索引
+    
     // 玩家信息
     QString m_playerName; // 玩家名称
     
@@ -73,6 +84,11 @@ private:
     void createGrid(); // 生成游戏网格
     void loadConfig(); // 加载配置
     void saveConfig(); // 保存配置
+    void generateSolution(); // 生成解决方案
+    bool isValidPosition(int row, int col) const; // 检查位置是否有效
+    QVector<QPair<int, int>> getValidPositions() const; // 获取所有有效位置
+    bool hasValidMove() const; // 检查是否有有效移动
+    QVector<HintStep> findSolution(); // 寻找解决方案
 
 signals:
     Q_SIGNAL void cellsChanged(); // 当方块状态改变时发出信号
@@ -81,6 +97,7 @@ signals:
     Q_SIGNAL void difficultyChanged(); // 当难度改变时发出信号
     Q_SIGNAL void gameTimeChanged(); // 当游戏时间改变时发出信号
     Q_SIGNAL void volumeChanged(); // 当音量改变时发出信号
+    Q_SIGNAL void hintAvailable(bool available); // 提示可用信号
 };
 
 #endif // GAMELOGIC_H

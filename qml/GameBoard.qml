@@ -181,17 +181,56 @@ Rectangle {
             }
 
             Button {
+                id: hintButton
                 text: "提示"
-                onClicked: root.hintRequested() 
-            }
-
-            Button {
-                text: "退出游戏"
                 onClicked: {
-                    // 发射信号，告知Main.qml退出到结算界面
-                    root.resetRequested()
-                    root.resetAllCell()
-                    root.exitGameRequested()
+                    var hint = gameLogic.getHint()
+                    if (hint.length > 0) {
+                        // 高亮显示提示的方块
+                        var row1 = hint[0]
+                        var col1 = hint[1]
+                        var row2 = hint[2]
+                        var col2 = hint[3]
+                        var path = hint[4]
+                        
+                        // 检查索引是否有效
+                        var index1 = row1 * gameLogic.cols() + col1
+                        var index2 = row2 * gameLogic.cols() + col2
+                        
+                        // 高亮第一个方块
+                        if (index1 >= 0 && index1 < grid.children.length) {
+                            var cell1 = grid.children[index1]
+                            if (cell1) {
+                                cell1.highlighted = true
+                            }
+                        }
+                        
+                        // 高亮第二个方块
+                        if (index2 >= 0 && index2 < grid.children.length) {
+                            var cell2 = grid.children[index2]
+                            if (cell2) {
+                                cell2.highlighted = true
+                            }
+                        }
+                        
+                        // 显示连接路径
+                        if (path && path.length > 0) {
+                            for (var i = 0; i < path.length; i += 2) {
+                                var pathRow = path[i]
+                                var pathCol = path[i + 1]
+                                var pathIndex = pathRow * gameLogic.cols() + pathCol
+                                if (pathIndex >= 0 && pathIndex < grid.children.length) {
+                                    var pathCell = grid.children[pathIndex]
+                                    if (pathCell) {
+                                        pathCell.pathHighlighted = true
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // 3秒后取消高亮
+                        highlightTimer.start()
+                    }
                 }
             }
 
@@ -223,31 +262,29 @@ Rectangle {
 
             delegate: Rectangle {
                 id: cell
-
-                // 每个方块
                 width: 50
                 height: 50
-                // visible: !grid.isOuterCell(index) // 外圈方块不可见
-                color: grid.getCell(index) === 0 ? "transparent" : "skyblue" // 根据游戏逻辑设置颜色
-                border.color: grid.getCell(index) === 0 ? "transparent" : "black" // 根据方块内容设置边框颜色
+                // visible: !grid.isOuterCell(index)
+                color: grid.getCell(index) === 0 ? "transparent" : "skyblue"
+                border.color: grid.getCell(index) === 0 ? "transparent" : "black"
+
+                property bool highlighted: false
+                property bool pathHighlighted: false
 
                 // 添加颜色变化的行为
                 Behavior on color {
                     ColorAnimation {
-                        duration: 100 // 渐变持续时间 100 毫秒
+                        duration: 100
                     }
                 }
 
                 Image {
                     id: image
-                    // 显示方块内容
-                    anchors.centerIn: parent // 图片居中
-                    width: parent.width // 设置图片宽度为方块宽度的80%
-                    height: parent.height // 设置图片高度为方块高度的80%
+                    anchors.centerIn: parent
+                    width: parent.width
+                    height: parent.height
                     source: {
-                        // 获取单元格中的值
                         let cellValue = grid.getCell(index);
-                        // 如果值为0，返回空字符串，否则返回对应的图片路径
                         return cellValue === 0 ? "" : "qrc:/qt/qml/LinkGame/image/fruits/" + cellValue + ".svg";
                     }
                 }
@@ -255,46 +292,36 @@ Rectangle {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        // 如果方块已隐藏（值为0），不处理点击
                         if (grid.getCell(index) === 0) {
                             return;
                         }
                         
-                        // 计算行列
                         let r = Math.floor(index / gameLogic.cols());
                         let c = index % gameLogic.cols();
-                        // 播放点击音效
-                        clickSound.stop();  // 先停止可能正在播放的音效
-                        clickSound.play();  // 播放点击音效
+                        clickSound.stop();
+                        clickSound.play();
 
-                        // 如果当前正在显示路径，不处理点击
                         if (root.showingPath)
                             return;
                         if (gameLogic.getCell(r, c) !== 0) {
                             console.log("选中: " + index + " -> (" + r + "," + c + ") = " + gameLogic.getCell(r, c));
                             if (root.selectedRow === -1 && root.selectedCol === -1) {
-                                // 如果之前没有选中任何方块，记录选中的方块
                                 root.selectedRow = r;
                                 root.selectedCol = c;
                                 cell.color = "blue";
                             } else if (root.selectedRow === r && root.selectedCol === c) {
-                                // 如果点击的是同一个方块，取消之前的选中
                                 root.selectedRow = -1;
                                 root.selectedCol = -1;
                                 cell.color = "skyblue";
                             } else if (gameLogic.canLink(root.selectedRow, root.selectedCol, r, c)) {
-                                // 如果可以连接两个方块
-                                cell.color = "blue"; // 先将第二个方块变为蓝色
-                                // 准备连接信息
+                                cell.color = "blue";
                                 showLinkTimer.firstRow = root.selectedRow;
                                 showLinkTimer.firstCol = root.selectedCol;
                                 showLinkTimer.secondRow = r;
                                 showLinkTimer.secondCol = c;
                                 showLinkTimer.start();
                             } else {
-                                // 不能连通
-                                cell.color = "blue"; // 先将第二个方块变为蓝色
-                                // 设置不能连通时的定时器
+                                cell.color = "blue";
                                 resetColorTimer.firstRow = root.selectedRow;
                                 resetColorTimer.firstCol = root.selectedCol;
                                 resetColorTimer.secondRow = r;
@@ -303,13 +330,14 @@ Rectangle {
                             }
                         }
                     }
-                }                // 连接重置信号
+                }
+
                 Connections {
                     target: root
                     function onResetAllCell() {
-                        cell.color = grid.getCell(index) === 0 ? "transparent" : "skyblue"; // 根据游戏逻辑设置颜色
-                        cell.border.color = grid.getCell(index) === 0 ? "transparent" : "black"; // 根据方块内容设置边框颜色
-                        image.source = grid.getCell(index) === 0 ? "" : "qrc:/qt/qml/LinkGame/image/fruits/" + grid.getCell(index) + ".svg"; // 设置图片路径
+                        cell.color = grid.getCell(index) === 0 ? "transparent" : "skyblue";
+                        cell.border.color = grid.getCell(index) === 0 ? "transparent" : "black";
+                        image.source = grid.getCell(index) === 0 ? "" : "qrc:/qt/qml/LinkGame/image/fruits/" + grid.getCell(index) + ".svg";
                     }
                 }
             }
@@ -465,6 +493,22 @@ Rectangle {
         target: gameLogic
         function onCellsChanged() {
             grid.forceLayout(); // 强制刷新网格
+        }
+    }
+
+    Timer {
+        id: highlightTimer
+        interval: 3000
+        repeat: false
+        onTriggered: {
+            // 取消所有高亮
+            for (var i = 0; i < grid.children.length; ++i) {
+                var cell = grid.children[i]
+                if (cell) {
+                    cell.highlighted = false
+                    cell.pathHighlighted = false
+                }
+            }
         }
     }
 }

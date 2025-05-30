@@ -41,43 +41,8 @@ GameLogic::~GameLogic() {
  * @details 生成一个ROWS x COLS的网格，并随机填充1到4之间的数字
  */
 void GameLogic::createGrid() {
-    grid.resize(ROWS);
-    
-    // 计算需要填充的格子数量（不包括外圈）
-    int totalCells = (ROWS - 2) * (COLS - 2);
-    int patternCount = getPatternCount();
-    
-    // 确保格子数量是偶数
-    if (totalCells % 2 != 0) {
-        totalCells--;
-    }
-    
-    // 创建图案对
-    QVector<int> patterns;
-    for (int i = 0; i < totalCells / 2; ++i) {
-        // 从1到TOTAL_PATTERNS中随机选择一个图案
-        int pattern = QRandomGenerator::global()->bounded(1, TOTAL_PATTERNS + 1);
-        // 添加两次，确保成对
-        patterns.append(pattern);
-        patterns.append(pattern);
-    }
-    
-    // 随机打乱图案顺序
-    std::random_shuffle(patterns.begin(), patterns.end());
-    
-    // 填充网格
-    int patternIndex = 0;
-    for (int r = 0; r < ROWS; ++r) {
-        grid[r].resize(COLS);
-        for (int c = 0; c < COLS; ++c) {
-            // 外圈格子设为0（空格子）
-            if (isOuterCell(r, c)) {
-                grid[r][c] = 0;
-            } else {
-                grid[r][c] = patterns[patternIndex++];
-            }
-        }
-    }
+    generateSolution(); // 生成解决方案
+    emit cellsChanged(); // 通知 QML 更新
 }
 
 bool GameLogic::isOuterCell(int row, int col) const {
@@ -114,7 +79,7 @@ int GameLogic::getCell(int row, int col) const {
  * @param c2 第二个方块的列
  * @return 如果可以连接返回true，否则返回false
  */
-bool GameLogic::canLink(int r1, int c1, int r2, int c2) {
+bool GameLogic::canLink(int r1, int c1, int r2, int c2) const {
     // 检查两个方块是否相同且不为0
     if (grid[r1][c1] == grid[r2][c2] && grid[r1][c1] != 0 && grid[r2][c2] != 0) {
         // 方向数组：上、右、下、左
@@ -521,4 +486,151 @@ int GameLogic::getPatternCount() const {
         return HARD_PATTERNS;
     }
     return MEDIUM_PATTERNS; // 默认返回中等难度
+}
+
+/**
+ * @brief 检查指定位置是否有效
+ * @param row 行
+ * @param col 列
+ * @return 如果位置有效返回true，否则返回false
+ */
+bool GameLogic::isValidPosition(int row, int col) const {
+    return row >= 1 && row < ROWS - 1 && col >= 1 && col < COLS - 1;
+}
+
+/**
+ * @brief 获取所有有效位置
+ * @return 所有有效位置的列表
+ */
+QVector<QPair<int, int>> GameLogic::getValidPositions() const {
+    QVector<QPair<int, int>> positions;
+    for (int r = 1; r < ROWS - 1; ++r) {
+        for (int c = 1; c < COLS - 1; ++c) {
+            if (grid[r][c] != 0) {
+                positions.append(qMakePair(r, c));
+            }
+        }
+    }
+    return positions;
+}
+
+bool GameLogic::hasValidMove() const {
+    auto positions = getValidPositions();
+    for (int i = 0; i < positions.size(); ++i) {
+        for (int j = i + 1; j < positions.size(); ++j) {
+            int r1 = positions[i].first;
+            int c1 = positions[i].second;
+            int r2 = positions[j].first;
+            int c2 = positions[j].second;
+            
+            if (grid[r1][c1] == grid[r2][c2] && canLink(r1, c1, r2, c2)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+QVector<GameLogic::HintStep> GameLogic::findSolution() {
+    QVector<HintStep> solution;
+    QVector<QVector<int>> tempGrid = grid; // 创建临时网格
+    
+    while (hasValidMove()) {
+        auto positions = getValidPositions();
+        bool found = false;
+        
+        for (int i = 0; i < positions.size() && !found; ++i) {
+            for (int j = i + 1; j < positions.size() && !found; ++j) {
+                int r1 = positions[i].first;
+                int c1 = positions[i].second;
+                int r2 = positions[j].first;
+                int c2 = positions[j].second;
+                
+                if (grid[r1][c1] == grid[r2][c2] && canLink(r1, c1, r2, c2)) {
+                    HintStep step;
+                    step.row1 = r1;
+                    step.col1 = c1;
+                    step.row2 = r2;
+                    step.col2 = c2;
+                    step.path = getLinkPath(r1, c1, r2, c2);
+                    solution.append(step);
+                    
+                    // 移除这对方块
+                    grid[r1][c1] = 0;
+                    grid[r2][c2] = 0;
+                    found = true;
+                }
+            }
+        }
+    }
+    
+    grid = tempGrid; // 恢复原始网格
+    return solution;
+}
+
+void GameLogic::generateSolution() {
+    // 初始化网格大小
+    grid.resize(ROWS);
+    for (int r = 0; r < ROWS; ++r) {
+        grid[r].resize(COLS);
+        for (int c = 0; c < COLS; ++c) {
+            grid[r][c] = 0;
+        }
+    }
+    
+    // 生成成对的图案
+    QVector<int> patterns;
+    int totalCells = (ROWS - 2) * (COLS - 2); // 内部格子数量
+    int pairs = totalCells / 2; // 需要生成的图案对数
+    
+    // 确保图案数量是偶数
+    if (pairs * 2 != totalCells) {
+        pairs--;
+    }
+    
+    // 生成成对的图案
+    for (int i = 0; i < pairs; ++i) {
+        int pattern = QRandomGenerator::global()->bounded(1, TOTAL_PATTERNS + 1);
+        patterns.append(pattern);
+        patterns.append(pattern);
+    }
+    
+    // 随机打乱图案
+    std::random_shuffle(patterns.begin(), patterns.end());
+    
+    // 填充网格
+    int index = 0;
+    for (int r = 1; r < ROWS - 1; ++r) {
+        for (int c = 1; c < COLS - 1; ++c) {
+            if (index < patterns.size()) {
+                grid[r][c] = patterns[index++];
+            }
+        }
+    }
+    
+    // 生成解决方案
+    solutionSteps = findSolution();
+    currentStep = 0;
+}
+
+QVariantList GameLogic::getHint() {
+    if (currentStep >= solutionSteps.size()) {
+        return QVariantList();
+    }
+    
+    const HintStep& step = solutionSteps[currentStep];
+    QVariantList hint;
+    
+    // 检查位置是否有效
+    if (step.row1 >= 0 && step.row1 < ROWS && step.col1 >= 0 && step.col1 < COLS &&
+        step.row2 >= 0 && step.row2 < ROWS && step.col2 >= 0 && step.col2 < COLS) {
+        hint.append(step.row1);
+        hint.append(step.col1);
+        hint.append(step.row2);
+        hint.append(step.col2);
+        hint.append(step.path);
+    }
+    
+    currentStep++;
+    return hint;
 }
