@@ -41,6 +41,7 @@ set(MYPRIVATE
 
 set(RESOURCES
     # 添加资源文件
+    # 图标
     image/fruits/1.svg
     image/fruits/2.svg
     image/fruits/3.svg
@@ -61,6 +62,8 @@ set(RESOURCES
     image/fruits/18.svg
     image/fruits/19.svg
     image/fruits/20.svg
+    # 音乐
+    music/sound_effect/1.mp3
 )
 
 # 将文件添加到Qt_Creator的列表中

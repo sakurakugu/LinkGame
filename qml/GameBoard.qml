@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtMultimediaa
 
 Rectangle {
     id: root
@@ -12,12 +13,26 @@ Rectangle {
     property bool showingPath: false // 是否正在显示路径
     property int score: 0 // 当前分数
 
-    signal resetRequested // 重置游戏信号
+    signal resetRequested // 重置游戏信号    
     signal menuRequested // 返回主菜单信号
     signal scoreUpdated(int newScore) // 分数变化信号
     signal hintRequested // 提示信号
     signal resetAllCell
     signal exitGameRequested // 退出游戏信号
+    
+    // 音效组件
+    MediaPlayer {
+        id: clickSound
+        source: "qrc:/qt/qml/LinkGame/music/sound_effect/1.mp3"
+    }
+    
+    // 音频输出
+    AudioOutput {
+        id: audioOutput
+        volume: 1.0
+        muted: false
+        attachedTo: clickSound
+    }
 
     // 连接路径画布
     Canvas {
@@ -157,11 +172,15 @@ Rectangle {
                 }
 
                 MouseArea {
-                    anchors.fill: parent // 鼠标区域填充整个矩形
+                    anchors.fill: parent // 鼠标区域填充整个矩形                    
                     onClicked: {
                         // 计算行列
                         let r = Math.floor(index / gameLogic.cols());
                         let c = index % gameLogic.cols();
+                        // 播放点击音效
+                        clickSound.stop();  // 先停止可能正在播放的音效
+                        clickSound.play();  // 播放点击音效
+                        
                         // 如果当前正在显示路径，不处理点击
                         if (root.showingPath)
                             return;
