@@ -33,19 +33,30 @@ Rectangle {
         visible: root.isPaused
         z: 100
 
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                // 阻止点击事件传递到下层
+            }
+        }
+
         Rectangle {
-            width: parent.width
-            height: 100
+            width: parent.width * 0.4
+            height: parent.height * 0.4
             anchors.centerIn: parent
             color: "#ffffff"
             opacity: 0.9
+            radius: 10
 
-            RowLayout {
+            ColumnLayout {
                 anchors.centerIn: parent
-                spacing: 20
+                spacing: parent.parent.height * 0.02
 
                 Button {
                     text: "继续"
+                    Layout.preferredWidth: parent.parent.width * 0.6
+                    Layout.preferredHeight: parent.parent.height * 0.15
+                    font.pixelSize: parent.parent.width * 0.04
                     onClicked: {
                         root.isPaused = false
                         root.pauseStateChanged(false)
@@ -53,7 +64,35 @@ Rectangle {
                 }
 
                 Button {
+                    text: "重置游戏"
+                    Layout.preferredWidth: parent.parent.width * 0.6
+                    Layout.preferredHeight: parent.parent.height * 0.15
+                    font.pixelSize: parent.parent.width * 0.04
+                    onClicked: {
+                        root.resetRequested()
+                        root.resetAllCell()
+                        root.isPaused = false
+                        root.pauseStateChanged(false)
+                    }
+                }
+
+                Button {
+                    text: "返回主菜单"
+                    Layout.preferredWidth: parent.parent.width * 0.6
+                    Layout.preferredHeight: parent.parent.height * 0.15
+                    font.pixelSize: parent.parent.width * 0.04
+                    onClicked: {
+                        root.menuRequested()
+                        root.isPaused = false
+                        root.pauseStateChanged(false)
+                    }
+                }
+
+                Button {
                     text: "设置"
+                    Layout.preferredWidth: parent.parent.width * 0.6
+                    Layout.preferredHeight: parent.parent.height * 0.15
+                    font.pixelSize: parent.parent.width * 0.04
                     onClicked: {
                         settingsLoader.active = true
                     }
@@ -61,6 +100,9 @@ Rectangle {
 
                 Button {
                     text: "退出"
+                    Layout.preferredWidth: parent.parent.width * 0.6
+                    Layout.preferredHeight: parent.parent.height * 0.15
+                    font.pixelSize: parent.parent.width * 0.04
                     onClicked: {
                         root.exitGameRequested()
                     }
@@ -75,6 +117,7 @@ Rectangle {
         anchors.fill: parent
         source: "Settings.qml"
         active: false
+        z: 1000 // 确保设置界面在暂停页面之上
         onLoaded: {
             item.closed.connect(function() {
                 settingsLoader.active = false
@@ -119,6 +162,13 @@ Rectangle {
             ctx.clearRect(0, 0, width, height);
             ctx.strokeStyle = "red";
             ctx.lineWidth = 3;
+            
+            // 只有在提示模式下才使用虚线
+            if (hintBlinkTimer.running) {
+                ctx.setLineDash([5, 5]); // 设置虚线样式
+            } else {
+                ctx.setLineDash([]); // 使用实线
+            }
 
             ctx.beginPath();
             ctx.moveTo(root.linkPath[0].x, root.linkPath[0].y);
@@ -131,41 +181,67 @@ Rectangle {
         }
     }
 
+    // 提示闪烁定时器
+    Timer {
+        id: hintBlinkTimer
+        interval: 200 // 200毫秒闪烁一次
+        repeat: true
+        running: false
+        property int blinkCount: 0
+        property int maxBlinks: 5 // 闪烁5次
+
+        onTriggered: {
+            if (blinkCount >= maxBlinks) {
+                stop();
+                root.showingPath = false;
+                linkCanvas.requestPaint();
+                return;
+            }
+            root.showingPath = !root.showingPath;
+            linkCanvas.requestPaint();
+            blinkCount++;
+        }
+    }
+
     // 状态栏
     Rectangle {
         id: statusBar
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
-        height: 50
+        height: parent.height * 0.08
         color: "#e0e0e0"
+        enabled: !root.isPaused
 
         RowLayout {
             anchors.centerIn: parent
-            spacing: 20
+            spacing: parent.parent.width * 0.02
 
             Text {
                 id: gameStatus
                 text: root.isPaused ? "游戏暂停" : "游戏进行中"
-                font.pixelSize: 18
+                font.pixelSize: parent.parent.height * 0.4
                 Layout.alignment: Qt.AlignCenter
             }
 
             Text {
                 id: scoreText
                 text: "分数: " + root.score
-                font.pixelSize: 18
+                font.pixelSize: parent.parent.height * 0.4
             }
 
             Text {
                 id: timeText
                 text: "时间：" + Math.floor(timeLeft / 60) + ":" + (timeLeft % 60).toString().padStart(2, "0")
-                font.pixelSize: 18
+                font.pixelSize: parent.parent.height * 0.4
                 Layout.alignment: Qt.AlignCenter
             }
 
             Button {
                 text: root.isPaused ? "继续" : "暂停"
+                Layout.preferredWidth: parent.parent.width * 0.1
+                Layout.preferredHeight: parent.parent.height * 0.6
+                font.pixelSize: parent.parent.height * 0.3
                 onClicked: {
                     root.isPaused = !root.isPaused
                     root.pauseStateChanged(root.isPaused)
@@ -173,25 +249,23 @@ Rectangle {
             }
 
             Button {
-                text: "重置游戏"
-                onClicked: {
-                    root.resetRequested()
-                    root.resetAllCell() // 发射信号，重置所有单元格
-                }
-            }
-
-            Button {
                 id: hintButton
                 text: "提示"
+                Layout.preferredWidth: parent.parent.width * 0.1
+                Layout.preferredHeight: parent.parent.height * 0.6
+                font.pixelSize: parent.parent.height * 0.3
                 onClicked: {
                     var hint = gameLogic.getHint()
-                    if (hint.length > 0) {
+                    console.log("Hint:", hint) // 添加调试输出
+                    if (hint && hint.length > 0) {
                         // 高亮显示提示的方块
                         var row1 = hint[0]
                         var col1 = hint[1]
                         var row2 = hint[2]
                         var col2 = hint[3]
                         var path = hint[4]
+                        
+                        console.log("Hint path:", path) // 添加调试输出
                         
                         // 检查索引是否有效
                         var index1 = row1 * gameLogic.cols() + col1
@@ -215,6 +289,7 @@ Rectangle {
                         
                         // 显示连接路径
                         if (path && path.length > 0) {
+                            root.linkPath = []
                             for (var i = 0; i < path.length; i += 2) {
                                 var pathRow = path[i]
                                 var pathCol = path[i + 1]
@@ -222,21 +297,35 @@ Rectangle {
                                 if (pathIndex >= 0 && pathIndex < grid.children.length) {
                                     var pathCell = grid.children[pathIndex]
                                     if (pathCell) {
-                                        pathCell.pathHighlighted = true
+                                        // 计算路径点的坐标
+                                        var cellSize = 50 + 4 // 单元格尺寸 + 间距
+                                        var x = pathCol * cellSize + cellSize / 2
+                                        var y = pathRow * cellSize + cellSize / 2
+                                        root.linkPath.push({
+                                            x: x,
+                                            y: y
+                                        })
                                     }
                                 }
                             }
+                            // 开始闪烁效果
+                            hintBlinkTimer.blinkCount = 0
+                            root.showingPath = true
+                            hintBlinkTimer.start()
+                            linkCanvas.requestPaint()
                         }
-                        
-                        // 3秒后取消高亮
-                        highlightTimer.start()
                     }
                 }
             }
 
             Button {
-                text: "返回主菜单"
-                onClicked: root.menuRequested()
+                text: "退出"
+                Layout.preferredWidth: parent.parent.width * 0.1
+                Layout.preferredHeight: parent.parent.height * 0.6
+                font.pixelSize: parent.parent.height * 0.3
+                onClicked: {
+                    root.exitGameRequested()
+                }
             }
         }
     }

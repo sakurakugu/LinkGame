@@ -5,8 +5,16 @@ import QtQuick.Layouts
 Rectangle {
     id: root
     color: "#f0f0f0"
+    focus: true // 确保可以接收键盘事件
     
     signal closed()
+    
+    // 添加键盘事件处理
+    Keys.onPressed: function(event) {
+        if (event.key === Qt.Key_Escape) {
+            root.closed()
+        }
+    }
     
     ColumnLayout {
         anchors.fill: parent
