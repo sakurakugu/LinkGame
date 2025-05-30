@@ -22,6 +22,7 @@ GameLogic::GameLogic(QObject *parent) : QObject{parent} {
     m_playerName = "未命名";
     m_difficulty = "中等";
     m_gameTime = 180;
+    m_volume = 0.8; // 默认音量设置为80%
 
     // 加载配置
     loadConfig();
@@ -41,6 +42,31 @@ GameLogic::~GameLogic() {
  */
 void GameLogic::createGrid() {
     grid.resize(ROWS);
+    
+    // 计算需要填充的格子数量（不包括外圈）
+    int totalCells = (ROWS - 2) * (COLS - 2);
+    int patternCount = getPatternCount();
+    
+    // 确保格子数量是偶数
+    if (totalCells % 2 != 0) {
+        totalCells--;
+    }
+    
+    // 创建图案对
+    QVector<int> patterns;
+    for (int i = 0; i < totalCells / 2; ++i) {
+        // 从1到TOTAL_PATTERNS中随机选择一个图案
+        int pattern = QRandomGenerator::global()->bounded(1, TOTAL_PATTERNS + 1);
+        // 添加两次，确保成对
+        patterns.append(pattern);
+        patterns.append(pattern);
+    }
+    
+    // 随机打乱图案顺序
+    std::random_shuffle(patterns.begin(), patterns.end());
+    
+    // 填充网格
+    int patternIndex = 0;
     for (int r = 0; r < ROWS; ++r) {
         grid[r].resize(COLS);
         for (int c = 0; c < COLS; ++c) {
@@ -48,11 +74,9 @@ void GameLogic::createGrid() {
             if (isOuterCell(r, c)) {
                 grid[r][c] = 0;
             } else {
-                grid[r][c] = QRandomGenerator::global()->bounded(1, 5); // 假设有4种图案
+                grid[r][c] = patterns[patternIndex++];
             }
-            // std::cout << grid[r][c] << " ";
         }
-        // std::cout << "\n";
     }
 }
 
@@ -276,6 +300,28 @@ void GameLogic::setGameTime(int seconds) {
 }
 
 /**
+ * @brief 获取音量
+ * @return 音量（0.0-1.0）
+ */
+double GameLogic::getVolume() const {
+    return m_volume;
+}
+
+/**
+ * @brief 设置音量
+ * @param volume 音量（0.0-1.0）
+ */
+void GameLogic::setVolume(double volume) {
+    // 确保音量在合法范围内
+    double newVolume = qBound(0.0, volume, 1.0);
+    if (m_volume != newVolume) {
+        m_volume = newVolume;
+        emit volumeChanged();
+        saveConfig();
+    }
+}
+
+/**
  * @brief 加载配置
  */
 void GameLogic::loadConfig() {
@@ -286,9 +332,7 @@ void GameLogic::loadConfig() {
         // 解析玩家名称
         if (data.contains("player") && toml::find(data, "player").contains("name")) {
             m_playerName = QString::fromStdString(toml::find<std::string>(data, "player", "name"));
-        }
-
-        // 解析游戏设置
+        }        // 解析游戏设置
         if (data.contains("settings")) {
             const auto &settings = toml::find(data, "settings");
 
@@ -298,6 +342,12 @@ void GameLogic::loadConfig() {
 
             if (settings.contains("game_time")) {
                 m_gameTime = toml::find<int>(settings, "game_time");
+            }
+            
+            if (settings.contains("volume")) {
+                m_volume = toml::find<double>(settings, "volume");
+                // 确保音量在合法范围内
+                m_volume = qBound(0.0, m_volume, 1.0);
             }
         }
 
@@ -460,4 +510,15 @@ QVariantList GameLogic::getLinkPath(int r1, int c1, int r2, int c2) {
     }
 
     return path;
+}
+
+int GameLogic::getPatternCount() const {
+    if (m_difficulty == "简单") {
+        return EASY_PATTERNS;
+    } else if (m_difficulty == "中等") {
+        return MEDIUM_PATTERNS;
+    } else if (m_difficulty == "困难") {
+        return HARD_PATTERNS;
+    }
+    return MEDIUM_PATTERNS; // 默认返回中等难度
 }

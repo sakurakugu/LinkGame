@@ -301,28 +301,41 @@ Window {
             }
         }
         active: gameState === 2
-    }// 设置界面
+    }
+    
+    // 设置界面    
     Loader {
         id: settingsLoader
         anchors.fill: parent
-        sourceComponent: Settings {
-            onClosed: settingsLoader.active = false
-            onTimeChanged: seconds => {
-                gameLogic.setGameTime(seconds);
-                timeLeft = seconds;
-            }
-        }
+        source: "Settings.qml"
         active: false
+        z: 1000 // 确保设置界面在最上层
+        onLoaded: {
+            item.closed.connect(function() {
+                settingsLoader.active = false
+            })
+            item.timeChanged.connect(function(seconds) {
+                gameLogic.setGameTime(seconds)
+                timeLeft = seconds
+            })
+            item.volumeChanged.connect(function(volume) {
+                gameLogic.setVolume(volume)
+            })
+        }
     }
 
     // 帮助界面
     Loader {
         id: helpLoader
         anchors.fill: parent
-        sourceComponent: Help {
-            onClosed: helpLoader.active = false
-        }
+        source: "Help.qml"
         active: false
+        z: 999 // 确保帮助界面在设置界面下方
+        onLoaded: {
+            item.closed.connect(function() {
+                helpLoader.active = false
+            })
+        }
     }    // 游戏逻辑连接
     Connections {
         target: gameLogic
