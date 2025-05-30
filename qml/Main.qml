@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "."  // 导入当前目录下的QML文件
 
 Window {
     id: root
