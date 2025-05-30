@@ -63,7 +63,7 @@ set(RESOURCES
     image/fruits/19.svg
     image/fruits/20.svg
     # 音乐
-    music/sound_effect/1.mp3
+    music/sound_effect.mp3
 )
 
 # 将文件添加到Qt_Creator的列表中
