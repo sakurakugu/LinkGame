@@ -335,12 +335,12 @@ QVariantList GameLogic::getLinkPath(int r1, int c1, int r2, int c2) {
 int GameLogic::getPatternCount() const {
     if (settings->getDifficulty() == "简单") {
         return EASY_PATTERNS;
-    } else if (settings->getDifficulty() == "中等") {
+    } else if (settings->getDifficulty() == "普通") {
         return MEDIUM_PATTERNS;
     } else if (settings->getDifficulty() == "困难") {
         return HARD_PATTERNS;
     }
-    return MEDIUM_PATTERNS; // 默认返回中等难度
+    return MEDIUM_PATTERNS; // 默认返回普通难度
 }
 
 /**

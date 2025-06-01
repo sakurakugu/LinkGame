@@ -3,7 +3,7 @@
 
 struct DefaultValues {
     static constexpr const char *player_name = "Player";
-    static constexpr const char *difficulty = "normal";
+    static constexpr const char *difficulty = "普通";
     static constexpr int game_time = 180;      // 默认游戏时间为3分钟
     static constexpr double volume = 0.8;      // 默认音量为80%
     static constexpr int screen_width = 800;   // 默认窗口宽度

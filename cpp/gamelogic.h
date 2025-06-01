@@ -32,7 +32,7 @@ class GameLogic : public QObject {
 
     // 难度相关常量
     static const int EASY_PATTERNS = 4;   // 简单难度：4种图案
-    static const int MEDIUM_PATTERNS = 8; // 中等难度：8种图案
+    static const int MEDIUM_PATTERNS = 8; // 普通难度：8种图案
     static const int HARD_PATTERNS = 12;  // 困难难度：12种图案
     static const int TOTAL_PATTERNS = 20; // 总图案数量
 

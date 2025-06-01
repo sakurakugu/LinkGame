@@ -6,9 +6,10 @@ Rectangle {
     id: root
     color: "#f0f0f0"
     focus: true // 确保可以接收键盘事件
-    signal closed
+    
+    // 定义信号
+    signal closed()
     signal timeChanged(int seconds)
-    signal volumeChanged(double volume)
     signal soundStateChanged(bool enabled)
 
     // 从GameLogic获取当前设置
@@ -92,11 +93,11 @@ Rectangle {
                         }
                         RadioButton {
                             id: mediumRadio
-                            text: "中等"
-                            checked: root.difficulty === "中等"
+                            text: "普通"
+                            checked: root.difficulty === "普通"
                             font.pixelSize: parent.parent.parent.parent.width * 0.02
                             onCheckedChanged: if (checked)
-                                settings.setDifficulty("中等")
+                                settings.setDifficulty("普通")
                         }
                         RadioButton {
                             id: hardRadio
