@@ -19,9 +19,13 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(toml11)
 
-set(PROJECT_SOURCE
-    main.cpp
-    "./image/icon.rc" # 添加图标资源
+set(PROJECT_SOURCES
+    cpp/gamelogic.cpp
+    cpp/gamelogic.h
+    cpp/config.cpp
+    cpp/config.h
+    cpp/settings.cpp
+    cpp/settings.h
 )
 
 set(MYQML_FILES
@@ -69,14 +73,16 @@ set(RESOURCES
 
 # 将文件添加到Qt_Creator的列表中
 qt_add_executable(appLinkGame
-    ${PROJECT_SOURCE}
+    main.cpp
+    ${PROJECT_SOURCES}
+    "./image/icon.rc" # 添加图标资源
 )
 
 qt_add_qml_module(appLinkGame
     URI LinkGame
     VERSION 1.0
     QML_FILES
-        SOURCES gamelogic.h gamelogic.cpp
+        SOURCES ${PROJECT_SOURCES}
         QML_FILES ${MYQML_FILES}
     RESOURCES
         ${RESOURCES}

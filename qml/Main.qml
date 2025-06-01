@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import QtQuick.Window
 import "."  // 导入当前目录下的QML文件
 
 Window {
@@ -10,7 +11,79 @@ Window {
     visible: true
     title: qsTr("连连看小游戏")
     minimumWidth: 800
-    minimumHeight: 600    // 游戏状态枚举
+    minimumHeight: 600
+    flags: isFullScreen ? (Qt.Window | Qt.FramelessWindowHint) : Qt.Window
+
+    property bool isFullScreen: false
+
+    // 窗口拖动相关属性
+    property int dragX: 0
+    property int dragY: 0
+
+    // 窗口拖动区域
+    Rectangle {
+        id: titleBar
+        width: parent.width
+        height: 30
+        color: "#4a90e2"
+        visible: isFullScreen
+        MouseArea {
+            anchors.fill: parent
+            onPressed: {
+                dragX = mouseX
+                dragY = mouseY
+            }
+            onPositionChanged: {
+                if (pressed) {
+                    root.x += mouseX - dragX
+                    root.y += mouseY - dragY
+                }
+            }
+        }
+
+        RowLayout {
+            anchors.right: parent.right
+            anchors.rightMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 10
+
+            ComboBox {
+                id: windowSizeCombo
+                model: windowSizes.map(size => size.name)
+                currentIndex: 0
+                onActivated: {
+                    if (currentIndex < windowSizes.length) {
+                        root.width = windowSizes[currentIndex].width
+                        root.height = windowSizes[currentIndex].height
+                    }
+                }
+            }
+
+            Button {
+                text: isFullScreen ? "退出全屏" : "全屏"
+                onClicked: {
+                    isFullScreen = !isFullScreen
+                    if (isFullScreen) {
+                        root.showFullScreen()
+                    } else {
+                        root.showNormal()
+                    }
+                }
+            }
+
+            Button {
+                text: "最小化"
+                onClicked: root.showMinimized()
+            }
+
+            Button {
+                text: "关闭"
+                onClicked: Qt.quit()
+            }
+        }
+    }
+
+    // 游戏状态枚举
     readonly property var gameStateEnum: {
         "Menu": 0       // 菜单
         ,
@@ -121,9 +194,10 @@ Window {
             item.confirmed.connect(function (name) {
                 gameLogic.setPlayerName(name);
                 playerName = name;
-                gameState = gameStateEnum.Playing;
+                gameLogic.resetGame(); // 重置游戏
                 score = 0;
                 timeLeft = gameLogic.getGameTime();
+                gameState = gameStateEnum.Playing;
             });
             item.canceled.connect(function () {
                 gameState = gameStateEnum.Menu;
@@ -161,11 +235,11 @@ Window {
 
                 Button {
                     text: qsTr("开始游戏")
-                    font.pixelSize: parent.parent.width * 0.03 // 使用窗口宽度的3%作为字体大小
-                    Layout.preferredWidth: parent.parent.width * 0.25 // 使用窗口宽度的25%作为按钮宽度
-                    Layout.preferredHeight: parent.parent.height * 0.08 // 使用窗口高度的8%作为按钮高度
+                    font.pixelSize: parent.parent.width * 0.03
+                    Layout.preferredWidth: parent.parent.width * 0.25
+                    Layout.preferredHeight: parent.parent.height * 0.08
                     background: Rectangle {
-                        color: parent.pressed ? "#4a90e2" : "#5ca9fb"
+                        color: parent.hovered ? "#4a90e2" : "#5ca9fb"
                         radius: 10
                     }
                     contentItem: Text {
@@ -175,18 +249,15 @@ Window {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
-
                     onClicked: {
-                        // 如果已经设置过用户名，直接进入游戏
                         if (directStartEnabled && playerName !== "") {
                             console.log("直接进入游戏，玩家：" + playerName);
                             gameState = gameStateEnum.Playing;
                             score = 0;
                             timeLeft = gameLogic.getGameTime();
                         } else {
-                            // 显示用户名输入界面
                             console.log("点击-主页面-开始游戏");
-                            gameState = gameStateEnum.NameInput; // 切换到用户名输入界面
+                            gameState = gameStateEnum.NameInput;
                         }
                     }
                 }
@@ -197,7 +268,7 @@ Window {
                     Layout.preferredWidth: parent.parent.width * 0.25
                     Layout.preferredHeight: parent.parent.height * 0.08
                     background: Rectangle {
-                        color: parent.pressed ? "#4a90e2" : "#5ca9fb"
+                        color: parent.hovered ? "#4a90e2" : "#5ca9fb"
                         radius: 10
                     }
                     contentItem: Text {
@@ -207,9 +278,7 @@ Window {
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }
-
                     onClicked: {
-                        // 显示排行榜                        
                         console.log("点击-主页面-排行榜");
                         gameState = gameStateEnum.Leaderboard;
                     }
@@ -221,7 +290,7 @@ Window {
                     Layout.preferredWidth: parent.parent.width * 0.25
                     Layout.preferredHeight: parent.parent.height * 0.08
                     background: Rectangle {
-                        color: parent.pressed ? "#4a90e2" : "#5ca9fb"
+                        color: parent.hovered ? "#4a90e2" : "#5ca9fb"
                         radius: 10
                     }
                     contentItem: Text {
@@ -233,7 +302,7 @@ Window {
                     }
                     onClicked: {
                         console.log("点击-主页面-设置");
-                        helpLoader.active = false; // 确保帮助界面关闭
+                        helpLoader.active = false;
                         settingsLoader.active = true;
                     }
                 }
@@ -244,7 +313,7 @@ Window {
                     Layout.preferredWidth: parent.parent.width * 0.25
                     Layout.preferredHeight: parent.parent.height * 0.08
                     background: Rectangle {
-                        color: parent.pressed ? "#4a90e2" : "#5ca9fb"
+                        color: parent.hovered ? "#4a90e2" : "#5ca9fb"
                         radius: 10
                     }
                     contentItem: Text {
@@ -256,7 +325,7 @@ Window {
                     }
                     onClicked: {
                         console.log("点击-主页面-游戏帮助");
-                        settingsLoader.active = false; // 确保设置界面关闭
+                        settingsLoader.active = false;
                         helpLoader.active = true;
                     }
                 }
@@ -267,7 +336,7 @@ Window {
                     Layout.preferredWidth: parent.parent.width * 0.25
                     Layout.preferredHeight: parent.parent.height * 0.08
                     background: Rectangle {
-                        color: parent.pressed ? "#e74c3c" : "#ff6b6b"
+                        color: parent.hovered ? "#e74c3c" : "#ff6b6b"
                         radius: 10
                     }
                     contentItem: Text {
@@ -300,12 +369,20 @@ Window {
             });
             item.menuRequested.connect(function () {
                 gameState = 0;  // GameState.Menu
+                // 不重置时间，只是暂停游戏
             });
             item.exitGameRequested.connect(function () {
                 gameState = 2;  // GameState.GameOver
             });
             item.scoreUpdated.connect(function (newScore) {
                 root.score = newScore;
+            });
+            item.pauseStateChanged.connect(function(paused) {
+                if (paused) {
+                    gameTimer.stop();
+                } else {
+                    gameTimer.start();
+                }
             });
         }
     }
@@ -317,15 +394,19 @@ Window {
         sourceComponent: GameOver {
             finalScore: score
             onRestartGame: {
-                gameState = gameStateEnum.Playing;
+                gameLogic.resetGame(); // 重置游戏
                 score = 0;
                 timeLeft = gameLogic.getGameTime();
+                gameState = gameStateEnum.Playing;
             }
             onReturnToMenu: {
+                gameLogic.resetGame(); // 重置游戏
+                score = 0;
+                timeLeft = gameLogic.getGameTime();
                 gameState = gameStateEnum.Menu;
             }
         }
-        active: gameState === 2  // GameState.GameOver
+        active: gameState === gameStateEnum.GameOver
     }
 
     // 设置界面

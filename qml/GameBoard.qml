@@ -336,7 +336,7 @@ Rectangle {
         columns: gameLogic.cols()
         rows: gameLogic.rows()
         anchors.centerIn: parent
-        spacing: 4
+        spacing: parent.width * 0.005 // 使用窗口宽度的0.5%作为间距
 
         function getCell(i) {
             return gameLogic.getCell(Math.floor(i / gameLogic.cols()), i % gameLogic.cols());
@@ -351,8 +351,8 @@ Rectangle {
 
             delegate: Rectangle {
                 id: cell
-                width: 50
-                height: 50
+                width: Math.min(parent.parent.width * 0.08, parent.parent.height * 0.08) // 使用窗口宽度和高度的8%作为方块大小
+                height: width // 保持方块为正方形
                 // visible: !grid.isOuterCell(index)
                 color: grid.getCell(index) === 0 ? "transparent" : "skyblue"
                 border.color: grid.getCell(index) === 0 ? "transparent" : "black"
@@ -493,13 +493,15 @@ Rectangle {
         // 定时器触发时的处理函数
         onTriggered: {
             // 获取连接路径
-            root.linkPath = gameLogic.getLinkPath(firstRow, firstCol, secondRow, secondCol);
+            root.linkPath = gameLogic.findPath(firstRow, firstCol, secondRow, secondCol);
 
             // 转换路径点坐标到Canvas坐标系统
             for (var i = 0; i < root.linkPath.length; i++) {
-                let cellSize = 50 + 4; // 单元格尺寸 + 间距
-                let x = root.linkPath[i].col * cellSize + cellSize / 2;
-                let y = root.linkPath[i].row * cellSize + cellSize / 2;
+                let cellSize = Math.min(parent.parent.width * 0.08, parent.parent.height * 0.08); // 使用实际的方块大小
+                let spacing = parent.width * 0.005; // 使用实际的间距
+                let totalSize = cellSize + spacing;
+                let x = root.linkPath[i].x * totalSize + cellSize / 2;
+                let y = root.linkPath[i].y * totalSize + cellSize / 2;
                 root.linkPath[i] = {
                     x: x,
                     y: y

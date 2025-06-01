@@ -4,7 +4,7 @@ import QtQuick.Layouts
 
 Rectangle {
     id: root
-    color: "#f0f0f0"    
+    color: "#f0f0f0"
     focus: true // 确保可以接收键盘事件
     signal closed
     signal timeChanged(int seconds)
@@ -12,69 +12,180 @@ Rectangle {
     signal soundStateChanged(bool enabled)
 
     // 从GameLogic获取当前设置
-    property string currentUsername: gameLogic.getPlayerName()
-    property string currentDifficulty: gameLogic.getDifficulty()
-    property int currentGameTime: gameLogic.getGameTime()
-    property double currentVolume: gameLogic.getVolume()
+    property string currentUsername: settings.getPlayerName()
+    property string currentDifficulty: settings.getDifficulty()
+    property int currentGameTime: settings.getGameTime()
+    property double currentVolume: settings.getVolume()
     property bool isSoundEnabled: true
 
     // 添加键盘事件处理
-    Keys.onPressed: function(event) {
+    Keys.onPressed: function (event) {
         if (event.key === Qt.Key_Escape) {
-            root.closed()
+            root.closed();
         }
     }
 
     ColumnLayout {
         anchors.centerIn: parent
-        spacing: 20
+        spacing: parent.height * 0.03 // 使用窗口高度的3%作为间距
+        width: parent.width * 0.6 // 使用窗口宽度的60%
+        height: parent.height * 0.8 // 使用窗口高度的80%
 
         Text {
             text: "游戏设置"
-            font.pixelSize: 36
+            font.pixelSize: parent.parent.width * 0.04 // 使用窗口宽度的4%作为字体大小
             Layout.alignment: Qt.AlignHCenter
         }
 
         RowLayout {
+            Layout.fillWidth: true
+            spacing: parent.parent.width * 0.02 // 使用父容器宽度的2%作为间距
+
             Text {
                 text: "用户名:"
+                font.pixelSize: parent.parent.parent.width * 0.02 // 使用窗口宽度的2%作为字体大小
             }
             TextField {
                 id: usernameField
                 text: root.currentUsername
                 Layout.fillWidth: true
                 maximumLength: 20
+                font.pixelSize: parent.parent.parent.width * 0.02 // 使用窗口宽度的2%作为字体大小
                 onTextChanged: {
-                    gameLogic.setPlayerName(text);
+                    settings.setPlayerName(text);
                 }
             }
         }
 
         RowLayout {
+            Layout.fillWidth: true
+            spacing: parent.parent.width * 0.02
+
             Text {
                 text: "难度级别:"
+                font.pixelSize: parent.parent.parent.width * 0.02
             }
-            ComboBox {
-                id: difficultyCombo
-                model: ["简单", "中等", "困难"]
-                currentIndex: {
-                    if (root.currentDifficulty === "简单")
-                        return 0;
-                    if (root.currentDifficulty === "困难")
-                        return 2;
-                    return 1; // 默认中等
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: parent.parent.parent.width * 0.02
+
+                RadioButton {
+                    id: easyRadio
+                    text: "简单"
+                    checked: root.currentDifficulty === "简单"
+                    font.pixelSize: parent.parent.parent.parent.width * 0.02
+                    onCheckedChanged: if (checked)
+                        settings.setDifficulty("简单")
                 }
-                onActivated: {
-                    gameLogic.setDifficulty(model[currentIndex]);
+                RadioButton {
+                    id: mediumRadio
+                    text: "中等"
+                    checked: root.currentDifficulty === "中等"
+                    font.pixelSize: parent.parent.parent.parent.width * 0.02
+                    onCheckedChanged: if (checked)
+                        settings.setDifficulty("中等")
+                }
+                RadioButton {
+                    id: hardRadio
+                    text: "困难"
+                    checked: root.currentDifficulty === "困难"
+                    font.pixelSize: parent.parent.parent.parent.width * 0.02
+                    onCheckedChanged: if (checked)
+                        settings.setDifficulty("困难")
+                }
+                RadioButton {
+                    id: customRadio
+                    text: "自定义"
+                    checked: root.currentDifficulty === "自定义"
+                    font.pixelSize: parent.parent.parent.parent.width * 0.02
+                    onCheckedChanged: if (checked)
+                        settings.setDifficulty("自定义")
                 }
             }
-        }        RowLayout {
+        }
+
+        // 自定义设置面板
+        Rectangle {
+            visible: customRadio.checked
+            Layout.fillWidth: true
+            Layout.preferredHeight: parent.parent.height * 0.3
+            color: "#f8f8f8"
+            radius: 5
+
+            ColumnLayout {
+                anchors.fill: parent
+                anchors.margins: parent.parent.parent.width * 0.02
+                spacing: parent.parent.parent.height * 0.01
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    Text {
+                        text: "游戏时间(秒):"
+                        font.pixelSize: parent.parent.parent.parent.width * 0.02
+                    }
+                    TextField {
+                        id: customTimeField
+                        text: root.currentGameTime
+                        Layout.fillWidth: true
+                        validator: IntValidator {
+                            bottom: 30
+                            top: 3600
+                        }
+                        onTextChanged: {
+                            if (text !== "") {
+                                settings.setGameTime(parseInt(text));
+                            }
+                        }
+                    }
+                }
+
+                RowLayout {
+                    Layout.fillWidth: true
+                    Text {
+                        text: "方块数量:"
+                        font.pixelSize: parent.parent.parent.parent.width * 0.02
+                    }
+                    TextField {
+                        id: customBlocksField
+                        text: "36"
+                        Layout.fillWidth: true
+                        validator: IntValidator {
+                            bottom: 16
+                            top: 100
+                        }
+                        onTextChanged: {
+                            if (text !== "") {
+                                settings.setCustomBlocks(parseInt(text));
+                            }
+                        }
+                    }
+                }
+
+                CheckBox {
+                    id: customLeaderboardCheck
+                    text: "参加排行榜"
+                    checked: true
+                    font.pixelSize: parent.parent.parent.parent.width * 0.02
+                    onCheckedChanged: {
+                        settings.setCustomLeaderboardEnabled(checked);
+                    }
+                }
+            }
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: parent.parent.width * 0.02
+
             Text {
                 text: "游戏时间:"
+                font.pixelSize: parent.parent.parent.width * 0.02
             }
             ComboBox {
                 id: timeCombo
                 model: ["1分钟", "3分钟", "5分钟", "无限"]
+                Layout.fillWidth: true
+                font.pixelSize: parent.parent.parent.width * 0.02
                 currentIndex: {
                     if (root.currentGameTime <= 60)
                         return 0;
@@ -86,61 +197,81 @@ Rectangle {
                 }
                 onActivated: {
                     var seconds = [60, 180, 300, 9999][currentIndex];
-                    timeChanged(seconds);
+                    settings.setGameTime(seconds);
                 }
             }
         }
-        
-        // 音效开关
+
+        // 音效开关和音量设置
         RowLayout {
+            Layout.fillWidth: true
+            spacing: parent.parent.width * 0.02
+
             Text {
-                text: "音效:"
+                text: "音量:"
+                font.pixelSize: parent.parent.parent.width * 0.02
             }
             CheckBox {
                 id: soundCheckbox
                 checked: root.isSoundEnabled
+                font.pixelSize: parent.parent.parent.width * 0.02
                 onCheckedChanged: {
-                    root.isSoundEnabled = checked
-                    root.soundStateChanged(checked)
+                    root.isSoundEnabled = checked;
+                    root.soundStateChanged(checked);
                 }
             }
-        }
-        
-        // 音量设置
-        RowLayout {
-            Layout.fillWidth: true
-            spacing: 10
-            
-            Text {
-                text: "音效音量:"
-            }
-            
+
             Slider {
                 id: volumeSlider
-                from: 0
-                to: 1.0
-                value: root.currentVolume
-                stepSize: 0.01
                 Layout.fillWidth: true
+                from: 0
+                to: 1
+                value: root.currentVolume
                 enabled: soundCheckbox.checked
-                
                 onValueChanged: {
-                    // 将值传递给GameLogic并更新音量
-                    gameLogic.setVolume(value);
-                    volumeChanged(value);
+                    settings.setVolume(value);
                 }
             }
-            
             Text {
                 text: Math.round(volumeSlider.value * 100) + "%"
-                Layout.preferredWidth: 50
+                font.pixelSize: parent.parent.parent.width * 0.02
+                Layout.preferredWidth: parent.parent.parent.width * 0.1
+            }
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: parent.parent.width * 0.02
+
+            Text {
+                text: "窗口大小:"
+                font.pixelSize: parent.parent.parent.width * 0.02
+            }
+            ComboBox {
+                id: windowSizeCombo
+                model: ["800x600", "1024x768", "1280x720", "1920x1080"]
+                Layout.fillWidth: true
+                font.pixelSize: parent.parent.parent.width * 0.02
+                currentIndex: {
+                    let currentSize = settings.getScreenSize();
+                    return model.indexOf(currentSize);
+                }
+                onActivated: {
+                    let size = model[currentIndex].split("x");
+                    settings.resizeWindow(parseInt(size[0]), parseInt(size[1]));
+                }
             }
         }
 
         Button {
-            text: "返回"
-            Layout.preferredWidth: 200
-            onClicked: root.closed()
+            text: "确定"
+            Layout.alignment: Qt.AlignHCenter
+            Layout.preferredWidth: parent.parent.width * 0.2 // 使用窗口宽度的20%作为按钮宽度
+            Layout.preferredHeight: parent.parent.height * 0.08 // 使用窗口高度的8%作为按钮高度
+            font.pixelSize: parent.parent.width * 0.02 // 使用窗口宽度的2%作为字体大小
+            onClicked: {
+                root.closed();
+            }
         }
     }
 }

@@ -22,6 +22,7 @@
 #include <fstream>
 #include <iostream>
 #include <toml.hpp>
+#include "settings.h"
 
 class GameLogic : public QObject {
     Q_OBJECT
@@ -69,13 +70,35 @@ class GameLogic : public QObject {
     // 排行榜相关
     Q_INVOKABLE QVariantList getLeaderboard() const;                        // 获取排行榜
     Q_INVOKABLE void addScoreToLeaderboard(const QString &name, int score); // 添加分数到排行榜
-                                                                            // 设置相关
+    Q_INVOKABLE void addScore(const QString &name, int score);              // 添加分数
+
+    // 设置相关
     Q_INVOKABLE QString getDifficulty() const;                              // 获取难度
     Q_INVOKABLE void setDifficulty(const QString &difficulty);              // 设置难度
     Q_INVOKABLE int getGameTime() const;                                    // 获取游戏时间
     Q_INVOKABLE void setGameTime(int seconds);                              // 设置游戏时间
     Q_INVOKABLE double getVolume() const;                                   // 获取音量
     Q_INVOKABLE void setVolume(double volume);                              // 设置音量
+
+    // 游戏管理相关
+    void startGame();  // 开始游戏
+    void pauseGame();  // 暂停游戏
+    void resumeGame(); // 恢复游戏
+    void endGame();    // 结束游戏
+
+  signals:
+    Q_SIGNAL void cellsChanged();                // 当方块状态改变时发出信号
+    Q_SIGNAL void playerNameChanged();           // 当玩家名称改变时发出信号
+    Q_SIGNAL void leaderboardChanged();          // 当排行榜改变时发出信号
+    Q_SIGNAL void difficultyChanged();           // 当难度改变时发出信号
+    Q_SIGNAL void gameTimeChanged();             // 当游戏时间改变时发出信号
+    Q_SIGNAL void volumeChanged();               // 当音量改变时发出信号
+    Q_SIGNAL void hintAvailable(bool available); // 提示可用信号
+    Q_SIGNAL void gameStarted();           // 游戏开始信号
+    Q_SIGNAL void gamePaused();            // 游戏暂停信号
+    Q_SIGNAL void gameResumed();           // 游戏恢复信号
+    Q_SIGNAL void gameEnded();             // 游戏结束信号
+    Q_SIGNAL void scoreChanged(int score); // 分数变化信号
 
   private:
     int ROWS = 8;                // 行数
@@ -88,19 +111,12 @@ class GameLogic : public QObject {
     QVector<HintStep> solutionSteps; // 存储解决方案步骤
     int currentStep;                 // 当前步骤索引
 
-    // 玩家信息
-    QString m_playerName; // 玩家名称
+    Settings* settings; // 设置管理器
 
-    // 排行榜信息
-    struct LeaderboardEntry {
-        QString name;
-        int score;
-    };
-    QVector<LeaderboardEntry> m_leaderboard; // 排行榜
-                                             // 游戏设置
-    QString m_difficulty;                    // 难度
-    int m_gameTime;                          // 游戏时间（秒）
-    double m_volume;                         // 音量（0.0-1.0）
+    Config::config config;
+    bool m_customLeaderboardEnabled = true;
+    bool isGameRunning; // 游戏是否正在运行
+    int currentScore;   // 当前分数
 
     void createGrid();                                  // 生成游戏网格
     void loadConfig();                                  // 加载配置
@@ -115,15 +131,6 @@ class GameLogic : public QObject {
     QPair<QPoint, QPoint> findTwoCornerPath(int row1, int col1, int row2, int col2);
     void setCustomBlocks(int count);
     void setCustomLeaderboardEnabled(bool enabled);
-
-  signals:
-    Q_SIGNAL void cellsChanged();                // 当方块状态改变时发出信号
-    Q_SIGNAL void playerNameChanged();           // 当玩家名称改变时发出信号
-    Q_SIGNAL void leaderboardChanged();          // 当排行榜改变时发出信号
-    Q_SIGNAL void difficultyChanged();           // 当难度改变时发出信号
-    Q_SIGNAL void gameTimeChanged();             // 当游戏时间改变时发出信号
-    Q_SIGNAL void volumeChanged();               // 当音量改变时发出信号
-    Q_SIGNAL void hintAvailable(bool available); // 提示可用信号
 };
 
 #endif // GAMELOGIC_H
