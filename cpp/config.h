@@ -35,6 +35,8 @@ class Config : public QObject {
         int screenWidth;                       // 窗口宽度
         int screenHeight;                      // 窗口高度
         bool fullscreen;                       // 是否全屏
+        int blockCount;                        // 方块数量
+        int blockTypes;                        // 方块种类数
     };
 
     void loadConfig(config &config);       // 加载配置

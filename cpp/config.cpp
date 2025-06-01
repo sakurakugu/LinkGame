@@ -14,12 +14,14 @@ void Config::initConfig(config &config) {
     // 设置默认配置
     config.playerName = DefaultValues::player_name;
     config.difficulty = DefaultValues::difficulty;
-    config.gameTime = DefaultValues::game_time; // 默认游戏时间为3分钟
-    config.volume = DefaultValues::volume;   // 默认音量为80%
-    config.screenWidth = DefaultValues::screen_width; // 默认窗口宽度 
+    config.gameTime = DefaultValues::game_time;         // 默认游戏时间为3分钟
+    config.volume = DefaultValues::volume;              // 默认音量为80%
+    config.screenWidth = DefaultValues::screen_width;   // 默认窗口宽度
     config.screenHeight = DefaultValues::screen_height; // 默认窗口高度
-    config.fullscreen = DefaultValues::fullscreen; // 默认不全屏
-    config.leaderboard.clear(); // 清空排行榜
+    config.fullscreen = DefaultValues::fullscreen;      // 默认不全屏
+    config.blockCount = DefaultValues::block_count;     // 默认方块数量
+    config.blockTypes = DefaultValues::block_types;     // 默认方块种类数
+    config.leaderboard.clear();                         // 清空排行榜
 }
 
 /**
@@ -58,10 +60,22 @@ void Config::loadConfig(config &config) {
             } else {
                 config.volume = DefaultValues::volume;
             }
+            if (settings.contains("block_count")) {
+                config.blockCount = toml::find<int>(settings, "block_count");
+            } else {
+                config.blockCount = DefaultValues::block_count;
+            }
+            if (settings.contains("block_types")) {
+                config.blockTypes = toml::find<int>(settings, "block_types");
+            } else {
+                config.blockTypes = DefaultValues::block_types;
+            }
         } else {
             config.difficulty = DefaultValues::difficulty;
             config.gameTime = DefaultValues::game_time;
             config.volume = DefaultValues::volume;
+            config.blockCount = DefaultValues::block_count;
+            config.blockTypes = DefaultValues::block_types;
         }
 
         // 读取排行榜
@@ -90,7 +104,6 @@ void Config::loadConfig(config &config) {
     } catch (const std::exception &e) {
         qWarning() << "加载配置文件失败:" << e.what() << "，使用默认配置";
         initConfig(config);
-
     }
 }
 
@@ -111,6 +124,8 @@ void Config::saveConfig(const config &config) {
         data["settings"]["difficulty"] = config.difficulty.toStdString();
         data["settings"]["game_time"] = config.gameTime;
         data["settings"]["volume"] = config.volume;
+        data["settings"]["block_count"] = config.blockCount;
+        data["settings"]["block_types"] = config.blockTypes;
 
         // 保存排行榜
         toml::array leaderboard;

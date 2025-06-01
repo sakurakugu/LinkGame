@@ -173,3 +173,27 @@ void Settings::setScreenSize(int width, int height) {
 void Settings::saveConfig() {
     configManager.saveConfig(config);
 }
+
+int Settings::getBlockCount() const {
+    return config.blockCount;
+}
+
+void Settings::setBlockCount(int count) {
+    if (config.blockCount != count) {
+        config.blockCount = count;
+        emit blockSettingsChanged();
+        saveConfig();
+    }
+}
+
+int Settings::getBlockTypes() const {
+    return config.blockTypes;
+}
+
+void Settings::setBlockTypes(int types) {
+    if (config.blockTypes != types) {
+        config.blockTypes = types;
+        emit blockSettingsChanged();
+        saveConfig();
+    }
+}
