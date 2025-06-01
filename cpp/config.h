@@ -27,16 +27,17 @@ class Config : public QObject {
 
     // 配置结构体
     struct config {
-        QString playerName;                    // 玩家名称
-        QString difficulty;                    // 游戏难度
-        int gameTime;                          // 游戏时间（秒）
-        double volume;                         // 音量（0.0 - 1.0）
-        QVector<LeaderboardEntry> leaderboard; // 排行榜，存储玩家名称和分数
-        int screenWidth;                       // 窗口宽度
-        int screenHeight;                      // 窗口高度
-        bool fullscreen;                       // 是否全屏
-        int blockCount;                        // 方块数量
-        int blockTypes;                        // 方块种类数
+        QString playerName;           // 玩家名称
+        QVector<LeaderboardEntry> leaderboard; // 排行榜
+        QString difficulty;           // 难度
+        int gameTime;                 // 游戏时间
+        double volume;                // 音量
+        int screenWidth;              // 屏幕宽度
+        int screenHeight;             // 屏幕高度
+        bool fullscreen;              // 是否全屏
+        bool borderless;              // 是否无边框
+        int blockCount;               // 方块数量
+        int blockTypes;               // 方块种类数
     };
 
     void loadConfig(config &config);       // 加载配置
@@ -46,4 +47,4 @@ class Config : public QObject {
   private:
 };
 
-#endif // SETTINGS_H
+#endif // CONFIG_H

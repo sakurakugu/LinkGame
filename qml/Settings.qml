@@ -294,17 +294,38 @@ Rectangle {
                     }
                     ComboBox {
                         id: windowSizeCombo
-                        model: ["800x600", "1024x768", "1280x720", "1920x1080"]
+                        model: ["800x600", "1024x768", "1280x720", "1920x1080", "全屏", "无边框全屏"]
                         Layout.fillWidth: true
                         font.pixelSize: parent.parent.parent.width * 0.02
                         currentIndex: {
                             let currentSize = settings.getScreenSize();
+                            if (currentSize.startsWith("全屏")) return 4;
+                            if (currentSize.startsWith("无边框")) return 5;
                             return model.indexOf(currentSize);
                         }
                         onActivated: {
-                            let size = model[currentIndex].split("x");
-                            settings.resizeWindow(parseInt(size[0]), parseInt(size[1]));
+                            if (currentIndex === 4) {
+                                settings.setFullscreen(true);
+                            } else if (currentIndex === 5) {
+                                settings.setBorderless(true);
+                            } else {
+                                let size = model[currentIndex].split("x");
+                                settings.setFullscreen(false);
+                                settings.setBorderless(false);
+                                settings.resizeWindow(parseInt(size[0]), parseInt(size[1]));
+                            }
                         }
+                    }
+                }
+
+                // 添加窗口大小变化监听
+                Connections {
+                    target: root.Window.window
+                    function onWidthChanged() {
+                        settings.updateWindowSize();
+                    }
+                    function onHeightChanged() {
+                        settings.updateWindowSize();
                     }
                 }
 

@@ -13,6 +13,7 @@
 #include <QVariantMap>
 #include <QDebug>
 #include <algorithm>
+#include <QTimer>
 
 class Settings : public QObject {
     Q_OBJECT
@@ -20,6 +21,9 @@ class Settings : public QObject {
   public:
     explicit Settings(QObject *parent = nullptr);
     ~Settings();
+
+    // 初始化窗口
+    Q_INVOKABLE void initializeWindow();
 
     // 玩家名称相关
     Q_INVOKABLE QString getPlayerName() const;           // 获取玩家名称
@@ -52,7 +56,10 @@ class Settings : public QObject {
     Q_INVOKABLE void setScreenSize(int width, int height); // 设置屏幕大小
     Q_INVOKABLE bool isFullscreen() const;                 // 获取是否全屏
     Q_INVOKABLE void setFullscreen(bool fullscreen);       // 设置全屏
+    Q_INVOKABLE bool isBorderless() const;                 // 获取是否无边框
+    Q_INVOKABLE void setBorderless(bool borderless);       // 设置无边框
     Q_INVOKABLE void resizeWindow(int width, int height);  // 调整窗口大小
+    Q_INVOKABLE void updateWindowSize();                   // 更新窗口大小
 
     // 配置相关
     Q_INVOKABLE void saveConfig(); // 保存配置
@@ -63,6 +70,7 @@ class Settings : public QObject {
     Q_SIGNAL void volumeChanged();      // 音量变化信号
     Q_SIGNAL void windowSizeChanged();  // 窗口大小变化信号
     Q_SIGNAL void blockSettingsChanged(); // 方块设置变化信号
+    Q_SIGNAL void windowStateChanged();   // 窗口状态变化信号
 
   private:
     Config::config config; // 配置

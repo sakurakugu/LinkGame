@@ -1,19 +1,35 @@
 #include "settings.h"
 #include <QDebug>
+#include <QTimer>
 #include <algorithm>
 
 Settings::Settings(QObject *parent) : QObject{parent}, window(nullptr) {
     // 加载配置
     configManager.loadConfig(config);
 
+    // 使用定时器延迟初始化窗口
+    QTimer::singleShot(100, this, &Settings::initializeWindow);
+}
+
+void Settings::initializeWindow() {
+    if (window) {
+        return; // 如果已经初始化过，直接返回
+    }
+
     // 获取主窗口
     QWindowList windows = QGuiApplication::allWindows();
-    if (!windows.isEmpty()) {
-        // 尝试将 QWindow 转换为 QQuickWindow
-        window = qobject_cast<QQuickWindow*>(windows.first());
-        if (!window) {
-            qWarning() << "无法获取 QQuickWindow 实例";
+    for (QWindow *w : windows) {
+        window = qobject_cast<QQuickWindow *>(w);
+        if (window) {
+            qDebug() << "成功获取 QQuickWindow 实例";
+            break;
         }
+    }
+
+    if (!window) {
+        qWarning() << "无法获取 QQuickWindow 实例，将在下一次尝试";
+        // 如果还是获取不到，再次尝试
+        QTimer::singleShot(500, this, &Settings::initializeWindow);
     }
 }
 
@@ -46,7 +62,7 @@ QVariantList Settings::getLeaderboard() const {
 
 void Settings::addScoreToLeaderboard(const QString &name, int score) {
     auto it = std::find_if(config.leaderboard.begin(), config.leaderboard.end(),
-                          [&name](const Config::LeaderboardEntry &entry) { return entry.name == name; });
+                           [&name](const Config::LeaderboardEntry &entry) { return entry.name == name; });
 
     if (it != config.leaderboard.end()) {
         // 如果找到相同用户名，更新分数
@@ -69,7 +85,7 @@ void Settings::addScoreToLeaderboard(const QString &name, int score) {
     }
 
     emit leaderboardChanged(); // 排行榜变化信号
-    saveConfig();             // 保存配置
+    saveConfig();              // 保存配置
 }
 
 QString Settings::getDifficulty() const {
@@ -110,49 +126,91 @@ void Settings::setVolume(double volume) {
 }
 
 void Settings::resizeWindow(int width, int height) {
-    if (window) {
-        // 获取屏幕尺寸
-        QScreen *screen = window->screen();        // 获取窗口所在的屏幕
-        QRect screenGeometry = screen->geometry(); // 获取屏幕几何尺寸
-
-        // 确保窗口不会超出屏幕
-        width = qMin(width, screenGeometry.width());
-        height = qMin(height, screenGeometry.height());
-
-        // 计算窗口位置，使其居中
-        int x = (screenGeometry.width() - width) / 2;
-        int y = (screenGeometry.height() - height) / 2;
-
-        // 设置窗口大小和位置
-        window->setGeometry(x, y, width, height);
-
-        // 更新配置
-        config.screenWidth = width;
-        config.screenHeight = height;
-        saveConfig();
-
-        emit windowSizeChanged();
+    if (!window) {
+        qWarning() << "resizeWindow: window 为空，尝试重新初始化窗口";
+        initializeWindow();
+        if (!window) {
+            qWarning() << "resizeWindow: 无法获取窗口，操作取消";
+            return;
+        }
     }
+
+    // 获取屏幕尺寸
+    QScreen *screen = window->screen();
+    if (!screen) {
+        qWarning() << "resizeWindow: 无法获取屏幕";
+        return;
+    }
+
+    QRect screenGeometry = screen->geometry();
+    qDebug() << "当前屏幕尺寸:" << screenGeometry.width() << "x" << screenGeometry.height();
+
+    // 确保窗口不会超出屏幕
+    width = qMin(width, screenGeometry.width());
+    height = qMin(height, screenGeometry.height());
+
+    // 确保窗口不小于最小尺寸
+    width = qMax(width, 800);
+    height = qMax(height, 600);
+
+    qDebug() << "尝试调整窗口大小到:" << width << "x" << height;
+
+    // 计算窗口位置，使其居中
+    int x = (screenGeometry.width() - width) / 2;
+    int y = (screenGeometry.height() - height) / 2;
+
+    // 先退出全屏和无边框模式
+    if (window->windowState() & Qt::WindowFullScreen) {
+        window->showNormal();
+    }
+    if (window->flags() & Qt::FramelessWindowHint) {
+        window->setFlags(window->flags() & ~Qt::FramelessWindowHint);
+    }
+
+    // 设置窗口大小和位置
+    window->setGeometry(x, y, width, height);
+    window->show();
+
+    // 更新配置
+    config.screenWidth = width;
+    config.screenHeight = height;
+    config.fullscreen = false;
+    config.borderless = false;
+    saveConfig();
+
+    qDebug() << "窗口大小调整完成";
+    emit windowSizeChanged();
 }
 
 QString Settings::getScreenSize() const {
     if (window) {
-        return QString("%1x%2").arg(window->width()).arg(window->height());
+        if (window->windowState() & Qt::WindowFullScreen) {
+            return QString("全屏 (%1x%2)").arg(window->width()).arg(window->height());
+        } else if (window->flags() & Qt::FramelessWindowHint) {
+            return QString("无边框 (%1x%2)").arg(window->width()).arg(window->height());
+        } else {
+            return QString("%1x%2").arg(window->width()).arg(window->height());
+        }
     }
     return QString("%1x%2").arg(config.screenWidth).arg(config.screenHeight);
 }
 
 void Settings::setFullscreen(bool fullscreen) {
-    if (window && config.fullscreen != fullscreen) { // 如果窗口存在且全屏状态不同
+    if (window && config.fullscreen != fullscreen) {
         config.fullscreen = fullscreen;
         if (fullscreen) {
-            window->showFullScreen(); // 全屏显示
+            // 退出无边框模式
+            if (window->flags() & Qt::FramelessWindowHint) {
+                window->setFlags(window->flags() & ~Qt::FramelessWindowHint);
+                config.borderless = false;
+            }
+            window->showFullScreen();
         } else {
-            window->showNormal();                                  // 非全屏显示
-            resizeWindow(config.screenWidth, config.screenHeight); // 调整窗口大小
+            window->showNormal();
+            resizeWindow(config.screenWidth, config.screenHeight);
         }
-        saveConfig(); // 保存配置
-        emit windowSizeChanged();         // 窗口大小变化信号
+        saveConfig();
+        emit windowSizeChanged();
     }
 }
 
@@ -160,11 +218,48 @@ bool Settings::isFullscreen() const {
     return window ? (window->windowState() & Qt::WindowFullScreen) : config.fullscreen;
 }
 
+void Settings::setBorderless(bool borderless) {
+    if (window && config.borderless != borderless) {
+        config.borderless = borderless;
+        if (borderless) {
+            // 退出全屏模式
+            if (window->windowState() & Qt::WindowFullScreen) {
+                window->showNormal();
+                config.fullscreen = false;
+            }
+            window->setFlags(window->flags() | Qt::FramelessWindowHint);
+            window->show();
+        } else {
+            window->setFlags(window->flags() & ~Qt::FramelessWindowHint);
+            window->show();
+            resizeWindow(config.screenWidth, config.screenHeight);
+        }
+        saveConfig();
+        emit windowSizeChanged();
+    }
+}
+
+bool Settings::isBorderless() const {
+    return config.borderless;
+}
+
+void Settings::updateWindowSize() {
+    if (window) {
+        // 只有在非全屏和非无边框模式下才更新配置
+        if (!(window->windowState() & Qt::WindowFullScreen) && !(window->flags() & Qt::FramelessWindowHint)) {
+            config.screenWidth = window->width();
+            config.screenHeight = window->height();
+            saveConfig();
+            emit windowSizeChanged();
+        }
+    }
+}
+
 void Settings::setScreenSize(int width, int height) {
     if (config.screenWidth != width || config.screenHeight != height) {
         config.screenWidth = width;
         config.screenHeight = height;
-        if (!config.fullscreen) {
+        if (!config.fullscreen && !config.borderless) {
             resizeWindow(width, height);
         }
         saveConfig();

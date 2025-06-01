@@ -6,15 +6,37 @@ import "."  // 导入当前目录下的QML文件
 
 Window {
     id: root
-    width: 800
-    height: 600
+    width: settings.getScreenWidth()
+    height: settings.getScreenHeight()
     visible: true
     title: qsTr("连连看小游戏")
     minimumWidth: 800
     minimumHeight: 600
     flags: isFullScreen ? (Qt.Window | Qt.FramelessWindowHint) : Qt.Window
 
-    property bool isFullScreen: false
+    property bool isFullScreen: settings.isFullscreen()
+
+    // 窗口初始化完成后执行
+    Component.onCompleted: {
+        // 检查玩家名称，如果已经设置过，点击"开始游戏"时可以直接进入游戏
+        if (playerName !== "") {
+            hasConfirmedName = true;
+        }
+        // 初始化设置窗口
+        settings.initializeWindow();
+    }
+
+    // 窗口大小变化处理
+    onWidthChanged: {
+        if (!isFullScreen) {
+            settings.updateWindowSize();
+        }
+    }
+    onHeightChanged: {
+        if (!isFullScreen) {
+            settings.updateWindowSize();
+        }
+    }
 
     // 窗口拖动相关属性
     property int dragX: 0
@@ -94,14 +116,6 @@ Window {
         "Leaderboard": 3// 排行榜
         ,
         "NameInput": 4   // 用户名输入
-    }
-
-    // 窗口初始化完成后执行
-    Component.onCompleted: {
-        // 检查玩家名称，如果已经设置过，点击"开始游戏"时可以直接进入游戏
-        if (playerName !== "") {
-            hasConfirmedName = true;
-        }
     }
 
     property int gameState: gameStateEnum.Menu  // 使用枚举值
