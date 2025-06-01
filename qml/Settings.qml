@@ -12,12 +12,12 @@ Rectangle {
     signal soundStateChanged(bool enabled)
 
     // 从GameLogic获取当前设置
-    property string currentUsername: settings.getPlayerName()
-    property string currentDifficulty: settings.getDifficulty()
-    property int currentGameTime: settings.getGameTime()
-    property double currentVolume: settings.getVolume()
-    property int currentBlockCount: settings.getBlockCount()
-    property int currentBlockTypes: settings.getBlockTypes()
+    property string username: settings.getPlayerName()
+    property string difficulty: settings.getDifficulty()
+    property int gameTime: settings.getGameTime()
+    property double volume: settings.getVolume()
+    property int blockCount: settings.getBlockCount()
+    property int blockTypes: settings.getBlockTypes()
     property bool isSoundEnabled: true
 
     // 添加键盘事件处理
@@ -60,7 +60,7 @@ Rectangle {
                     }
                     TextField {
                         id: usernameField
-                        text: root.currentUsername
+                        text: root.username
                         Layout.fillWidth: true
                         maximumLength: 20
                         font.pixelSize: parent.parent.parent.width * 0.02 // 使用窗口宽度的2%作为字体大小
@@ -85,7 +85,7 @@ Rectangle {
                         RadioButton {
                             id: easyRadio
                             text: "简单"
-                            checked: root.currentDifficulty === "简单"
+                            checked: root.difficulty === "简单"
                             font.pixelSize: parent.parent.parent.parent.width * 0.02
                             onCheckedChanged: if (checked)
                                 settings.setDifficulty("简单")
@@ -93,7 +93,7 @@ Rectangle {
                         RadioButton {
                             id: mediumRadio
                             text: "中等"
-                            checked: root.currentDifficulty === "中等"
+                            checked: root.difficulty === "中等"
                             font.pixelSize: parent.parent.parent.parent.width * 0.02
                             onCheckedChanged: if (checked)
                                 settings.setDifficulty("中等")
@@ -101,7 +101,7 @@ Rectangle {
                         RadioButton {
                             id: hardRadio
                             text: "困难"
-                            checked: root.currentDifficulty === "困难"
+                            checked: root.difficulty === "困难"
                             font.pixelSize: parent.parent.parent.parent.width * 0.02
                             onCheckedChanged: if (checked)
                                 settings.setDifficulty("困难")
@@ -109,7 +109,7 @@ Rectangle {
                         RadioButton {
                             id: customRadio
                             text: "自定义"
-                            checked: root.currentDifficulty === "自定义"
+                            checked: root.difficulty === "自定义"
                             font.pixelSize: parent.parent.parent.parent.width * 0.02
                             onCheckedChanged: if (checked)
                                 settings.setDifficulty("自定义")
@@ -138,7 +138,7 @@ Rectangle {
                             }
                             TextField {
                                 id: customTimeField
-                                text: root.currentGameTime
+                                text: root.gameTime
                                 Layout.fillWidth: true
                                 font.pixelSize: parent.parent.parent.parent.width * 0.02
                                 validator: IntValidator {
@@ -161,7 +161,7 @@ Rectangle {
                             }
                             TextField {
                                 id: blockCountField
-                                text: root.currentBlockCount
+                                text: root.blockCount
                                 Layout.fillWidth: true
                                 font.pixelSize: parent.parent.parent.parent.width * 0.02
                                 validator: IntValidator {
@@ -184,7 +184,7 @@ Rectangle {
                             }
                             TextField {
                                 id: blockTypesField
-                                text: root.currentBlockTypes
+                                text: root.blockTypes
                                 Layout.fillWidth: true
                                 font.pixelSize: parent.parent.parent.parent.width * 0.02
                                 validator: IntValidator {
@@ -231,11 +231,11 @@ Rectangle {
                         Layout.fillWidth: true
                         font.pixelSize: parent.parent.parent.width * 0.02
                         currentIndex: {
-                            if (root.currentGameTime <= 60)
+                            if (root.gameTime <= 60)
                                 return 0;
-                            if (root.currentGameTime <= 180)
+                            if (root.gameTime <= 180)
                                 return 1;
-                            if (root.currentGameTime <= 300)
+                            if (root.gameTime <= 300)
                                 return 2;
                             return 3; // 无限
                         }
@@ -270,7 +270,7 @@ Rectangle {
                         Layout.fillWidth: true
                         from: 0
                         to: 1
-                        value: root.currentVolume
+                        value: root.volume
                         enabled: soundCheckbox.checked
                         onValueChanged: {
                             settings.setVolume(value);

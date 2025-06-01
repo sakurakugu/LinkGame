@@ -101,6 +101,7 @@ double Settings::getVolume() const {
 
 void Settings::setVolume(double volume) {
     double newVolume = qBound(0.0, volume, 1.0);
+    newVolume = qRound(newVolume * 100.0) / 100.0; // 保留两位小数
     if (config.volume != newVolume) {
         config.volume = newVolume;
         emit volumeChanged();
