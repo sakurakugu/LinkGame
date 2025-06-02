@@ -131,16 +131,15 @@ void Config::saveConfig(const config &config) {
         data["settings"]["block_types"] = config.blockTypes;
 
         // 保存排行榜
-        toml::array leaderboard;
         data["leaderboard"].comments().push_back(" 玩家排行榜");
-        std::vector<toml::value> entriesArray;
+        std::vector<toml::value> leaderboard;
         for (const auto &entry : std::as_const(config.leaderboard)) {
             toml::value entryData;
             entryData["name"] = entry.name.toStdString();
             entryData["score"] = entry.score;
             leaderboard.push_back(entryData);
         }
-        data["leaderboard"] = leaderboard;
+        data["leaderboard"]["entries"] = leaderboard;
 
         // 保存屏幕设置
         data["screen"].comments().push_back(" 屏幕设置");
