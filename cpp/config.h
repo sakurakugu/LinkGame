@@ -39,6 +39,7 @@ class Config : public QObject {
         bool borderless;              // 是否无边框
         int blockCount;               // 方块数量
         int blockTypes;               // 方块种类数
+        QString theme;                // 主题
     };
 
     void loadConfig(config &config);       // 加载配置

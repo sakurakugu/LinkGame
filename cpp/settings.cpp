@@ -371,3 +371,15 @@ void Settings::setSoundState(bool state) {
         emit soundStateChanged(state);
     }
 }
+
+QString Settings::getTheme() const {
+    return config.theme;
+}
+
+void Settings::setTheme(const QString &theme) {
+    if (config.theme != theme) {
+        config.theme = theme;
+        emit themeChanged();
+        saveConfig();
+    }
+}

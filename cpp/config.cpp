@@ -23,6 +23,7 @@ void Config::initConfig(config &config) {
     config.borderless = DefaultValues::borderless;      // 默认不无边框
     config.blockCount = DefaultValues::block_count;     // 默认方块数量
     config.blockTypes = DefaultValues::block_types;     // 默认方块种类数
+    config.theme = DefaultValues::theme;                // 默认主题为浅色
     config.leaderboard.clear();                         // 清空排行榜
 }
 
@@ -77,12 +78,18 @@ void Config::loadConfig(config &config) {
             } else {
                 config.blockTypes = DefaultValues::block_types;
             }
+            if (settings.contains("theme")) {
+                config.theme = QString::fromStdString(toml::find<std::string>(settings, "theme"));
+            } else {
+                config.theme = DefaultValues::theme;
+            }
         } else {
             config.difficulty = DefaultValues::difficulty;
             config.gameTime = DefaultValues::game_time;
             config.volume = DefaultValues::volume;
             config.blockCount = DefaultValues::block_count;
             config.blockTypes = DefaultValues::block_types;
+            config.theme = DefaultValues::theme;
         }
 
         // 读取排行榜
@@ -136,6 +143,7 @@ void Config::saveConfig(const config &config) {
         data["settings"]["sound_state"] = config.soundState;
         data["settings"]["block_count"] = config.blockCount;
         data["settings"]["block_types"] = config.blockTypes;
+        data["settings"]["theme"] = config.theme.toStdString();
 
         // 保存排行榜
         data["leaderboard"].comments().push_back(" 玩家排行榜");

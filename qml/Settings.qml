@@ -19,6 +19,7 @@ Rectangle {
     property int blockCount: settings.getBlockCount()
     property int blockTypes: settings.getBlockTypes()
     property bool isSoundEnabled: settings.getSoundState()
+    property string theme: settings.getTheme()
 
     // 添加键盘事件处理
     Keys.onPressed: function (event) {
@@ -299,6 +300,48 @@ Rectangle {
                         displayText: settings.getScreenSize()
                         // 确保model中的每个项目都是字符串
                         textRole: ""
+                    }
+                }
+
+                // 添加主题切换选项
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: parent.parent.width * 0.02
+
+                    Text {
+                        text: "主题:"
+                        font.pixelSize: parent.parent.parent.width * 0.02
+                        color: themeManager.getColor("text")
+                    }
+
+                    RowLayout {
+                        Layout.fillWidth: true
+                        spacing: parent.parent.parent.width * 0.02
+
+                        RadioButton {
+                            id: lightThemeRadio
+                            text: "浅色"
+                            checked: root.theme === themeManager.LIGHT_THEME
+                            font.pixelSize: parent.parent.parent.parent.width * 0.02
+                            onCheckedChanged: {
+                                if (checked) {
+                                    console.warn("当前主题:", root.theme, themeManager.LIGHT_THEME);
+                                    themeManager.toggleTheme();
+                                }
+                            }
+                        }
+                        RadioButton {
+                            id: darkThemeRadio
+                            text: "深色"
+                            checked: root.theme === themeManager.DARK_THEME
+                            font.pixelSize: parent.parent.parent.parent.width * 0.02
+                            onCheckedChanged: {
+                                if (checked) {
+                                    console.warn("当前主题:", root.theme, themeManager.LIGHT_THEME);
+                                    themeManager.toggleTheme();
+                                }
+                            }
+                        }
                     }
                 }
 

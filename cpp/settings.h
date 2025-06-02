@@ -54,6 +54,10 @@ class Settings : public QObject {
     Q_INVOKABLE int getBlockTypes() const;     // 获取方块种类数
     Q_INVOKABLE void setBlockTypes(int types); // 设置方块种类数
 
+    // 主题相关
+    Q_INVOKABLE QString getTheme() const;           // 获取主题
+    Q_INVOKABLE void setTheme(const QString &theme); // 设置主题
+
     // 窗口管理相关
     Q_INVOKABLE QString getScreenSize() const;             // 获取当前屏幕大小
     Q_INVOKABLE void setScreenSize(int width, int height); // 设置屏幕大小
@@ -84,6 +88,7 @@ class Settings : public QObject {
     Q_SIGNAL void windowSizeChanged();             // 窗口大小变化信号
     Q_SIGNAL void blockSettingsChanged();          // 方块设置变化信号
     Q_SIGNAL void windowStateChanged();            // 窗口状态变化信号
+    Q_SIGNAL void themeChanged();                  // 主题变化信号
 
   private:
     Config::config config; // 配置
