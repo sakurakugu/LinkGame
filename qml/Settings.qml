@@ -120,16 +120,15 @@ Rectangle {
 
                 // 自定义设置面板
                 Rectangle {
-                    visible: customRadio.checked
                     Layout.fillWidth: true
-                    Layout.preferredHeight: parent.parent.height * 0.4
+                    Layout.preferredHeight: parent.parent.height * 0.3 // 使用窗口高度的40%作为高度
                     color: "#f8f8f8"
                     radius: 5
 
                     ColumnLayout {
                         anchors.fill: parent
-                        anchors.margins: parent.parent.parent.width * 0.02
-                        spacing: parent.parent.parent.height * 0.01
+                        anchors.margins: parent.parent.parent.width * 0.02 // 使用窗口宽度的2%作为间距
+                        spacing: parent.parent.parent.height * 0.01 // 使用窗口高度的1%作为间距
 
                         RowLayout {
                             Layout.fillWidth: true
@@ -142,12 +141,13 @@ Rectangle {
                                 text: root.gameTime
                                 Layout.fillWidth: true
                                 font.pixelSize: parent.parent.parent.parent.width * 0.02
+                                enabled: customRadio.checked
                                 validator: IntValidator {
                                     bottom: 30
                                     top: 3600
                                 }
                                 onTextChanged: {
-                                    if (text !== "") {
+                                    if (text !== "" && customRadio.checked) {
                                         settings.setGameTime(parseInt(text));
                                     }
                                 }
@@ -165,12 +165,13 @@ Rectangle {
                                 text: root.blockCount
                                 Layout.fillWidth: true
                                 font.pixelSize: parent.parent.parent.parent.width * 0.02
+                                enabled: customRadio.checked
                                 validator: IntValidator {
                                     bottom: 16
                                     top: 100
                                 }
                                 onTextChanged: {
-                                    if (text !== "") {
+                                    if (text !== "" && customRadio.checked) {
                                         settings.setBlockCount(parseInt(text));
                                     }
                                 }
@@ -188,12 +189,13 @@ Rectangle {
                                 text: root.blockTypes
                                 Layout.fillWidth: true
                                 font.pixelSize: parent.parent.parent.parent.width * 0.02
+                                enabled: customRadio.checked
                                 validator: IntValidator {
                                     bottom: 8
                                     top: 36
                                 }
                                 onTextChanged: {
-                                    if (text !== "") {
+                                    if (text !== "" && customRadio.checked) {
                                         settings.setBlockTypes(parseInt(text));
                                     }
                                 }
@@ -209,40 +211,14 @@ Rectangle {
                             CheckBox {
                                 id: customLeaderboardCheck
                                 checked: true
+                                enabled: customRadio.checked
                                 font.pixelSize: parent.parent.parent.parent.width * 0.02
                                 onCheckedChanged: {
-                                    settings.setCustomLeaderboardEnabled(checked);
+                                    if (customRadio.checked) {
+                                        settings.setCustomLeaderboardEnabled(checked);
+                                    }
                                 }
                             }
-                        }
-                    }
-                }
-
-                RowLayout {
-                    Layout.fillWidth: true
-                    spacing: parent.parent.width * 0.02
-
-                    Text {
-                        text: "游戏时间:"
-                        font.pixelSize: parent.parent.parent.width * 0.02
-                    }
-                    ComboBox {
-                        id: timeCombo
-                        model: ["1分钟", "3分钟", "5分钟", "无限"]
-                        Layout.fillWidth: true
-                        font.pixelSize: parent.parent.parent.width * 0.02
-                        currentIndex: {
-                            if (root.gameTime <= 60)
-                                return 0;
-                            if (root.gameTime <= 180)
-                                return 1;
-                            if (root.gameTime <= 300)
-                                return 2;
-                            return 3; // 无限
-                        }
-                        onActivated: {
-                            var seconds = [60, 180, 300, 9999][currentIndex];
-                            settings.setGameTime(seconds);
                         }
                     }
                 }

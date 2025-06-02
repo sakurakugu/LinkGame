@@ -293,11 +293,7 @@ QPair<int, int> Settings::getPhysicalScreenSize() const {
     QScreen *screen = QGuiApplication::primaryScreen();
     if (screen) {
         QSize logicalSize = screen->geometry().size(); // 获取屏幕的逻辑像素大小
-        qreal dpr = screen->devicePixelRatio();        // 获取屏幕的设备像素比 dpi
-        int realWidth = qFloor(logicalSize.width() * dpr);
-        int realHeight = qFloor(logicalSize.height() * dpr);
-        // qDebug() << "物理屏幕大小:" << realWidth << "x" << realHeight;
-        return {realWidth, realHeight};
+        return logicalToPhysical(logicalSize.width(), logicalSize.height());
     }
     return QPair<int, int>(1920, 1080); // 默认值
 }
@@ -306,25 +302,33 @@ QPair<int, int> Settings::getAvailableScreenSize() const {
     QScreen *screen = QGuiApplication::primaryScreen();
     if (screen) {
         QRect availableGeometry = screen->availableGeometry(); // 不包括任务栏等系统区域
-        qreal dpr = screen->devicePixelRatio();
-        int realWidth = qFloor(availableGeometry.width() * dpr);
-        int realHeight = qFloor(availableGeometry.height() * dpr);
-        return {realWidth, realHeight};
+        return logicalToPhysical(availableGeometry.width(), availableGeometry.height());
     }
     return QPair<int, int>(1920, 1080); // 默认值
+}
+
+QPair<int, int> Settings::logicalToPhysical(int width, int height) const {
+    qreal dpr = window->effectiveDevicePixelRatio();
+    return {qFloor(width * dpr), qFloor(height * dpr)};
+}
+
+int Settings::logicalToPhysical(int number) const {
+    qreal dpr = window->effectiveDevicePixelRatio();
+    return qFloor(number * dpr);
 }
 
 QStringList Settings::getWindowSizeModel() const {
     QStringList model;
     QPair<int, int> physicalSize = getPhysicalScreenSize();
     QPair<int, int> availableSize = getAvailableScreenSize();
+
     // 添加预设的分辨率
     model << QString("全屏 (%1x%2)").arg(physicalSize.first).arg(physicalSize.second)
           << QString("无边框全屏 (%1x%2)").arg(physicalSize.first).arg(physicalSize.second)
-          << QString("%1x%2").arg(availableSize.first).arg(availableSize.second);
-    model << "1920x1080"
-          << "1280x720"
-          << "1024x768"
-          << "800x600";
+          << QString("%1x%2").arg(availableSize.first).arg(availableSize.second)
+          << QString("%1x%2").arg(logicalToPhysical(1920)).arg(logicalToPhysical(1080))
+          << QString("%1x%2").arg(logicalToPhysical(1280)).arg(logicalToPhysical(720))
+          << QString("%1x%2").arg(logicalToPhysical(1024)).arg(logicalToPhysical(768))
+          << QString("%1x%2").arg(logicalToPhysical(800)).arg(logicalToPhysical(600));
     return model;
 }
