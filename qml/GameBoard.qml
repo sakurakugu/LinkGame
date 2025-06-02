@@ -179,7 +179,7 @@ Rectangle {
 
             var ctx = getContext("2d"); // 获取2D上下文
             ctx.clearRect(0, 0, width, height); // 清除画布
-            ctx.strokeStyle = "red"; // 设置线条颜色
+            ctx.strokeStyle = "#FF0000"; // 设置线条颜色为红色
             ctx.lineWidth = 3; // 设置线条宽度
 
             ctx.beginPath(); // 开始路径
@@ -428,8 +428,8 @@ Rectangle {
                 let cellSize = Math.min(parent.parent.width * 0.08, parent.parent.height * 0.08); // 使用实际的方块大小
                 let spacing = parent.width * 0.005; // 使用实际的间距
                 let totalSize = cellSize + spacing;
-                let x = root.linkPath[i].x * totalSize + cellSize / 2;
-                let y = root.linkPath[i].y * totalSize + cellSize / 2;
+                let x = root.linkPath[i].col * totalSize + cellSize / 2;
+                let y = root.linkPath[i].row * totalSize + cellSize / 2;
                 root.linkPath[i] = {
                     x: x,
                     y: y
