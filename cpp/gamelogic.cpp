@@ -3,7 +3,8 @@
 #include <QRandomGenerator>
 #include <algorithm>
 
-GameLogic::GameLogic(QObject *parent) : QObject{parent}, isGameRunning(false), currentScore(0), timeLeft_(0), isPaused_(false) {
+GameLogic::GameLogic(QObject *parent)
+    : QObject{parent}, isGameRunning(false), currentScore(0), timeLeft_(0), isPaused_(false) {
     // 创建设置管理器
     settings = new Settings(this);
 
@@ -137,6 +138,12 @@ void GameLogic::removeLink(int r1, int c1, int r2, int c2) {
         grid[r2][c2] = 0;
         // 发送信号，通知UI更新
         emit cellsChanged();
+        
+        // 检查游戏是否结束
+        if (isGameOver()) {
+            isGameRunning = false;
+            emit gameCompleted();
+        }
     }
 }
 
@@ -265,6 +272,10 @@ QVector<QPair<int, int>> GameLogic::getValidPositions() const {
     return positions;
 }
 
+/**
+ * @brief 检查是否还有有效的移动
+ * @return 如果还有有效的移动返回true，否则返回false
+ */
 bool GameLogic::hasValidMove() const {
     auto positions = getValidPositions();
     for (int i = 0; i < positions.size(); ++i) {
@@ -282,13 +293,17 @@ bool GameLogic::hasValidMove() const {
     return false;
 }
 
+/**
+ * @brief 生成解决方案
+ * @return 解决方案步骤列表
+ */
 QVector<GameLogic::HintStep> GameLogic::findSolution() {
-    QVector<HintStep> solution;
+    QVector<HintStep> solution; // 解决方案步骤列表
     QVector<QVector<int>> tempGrid = grid; // 创建临时网格
 
     while (hasValidMove()) {
-        auto positions = getValidPositions();
-        bool found = false;
+        auto positions = getValidPositions(); // 获取所有有效位置
+        bool found = false; // 是否找到解决方案
 
         for (int i = 0; i < positions.size() && !found; ++i) {
             for (int j = i + 1; j < positions.size() && !found; ++j) {
@@ -303,8 +318,8 @@ QVector<GameLogic::HintStep> GameLogic::findSolution() {
                     step.col1 = c1;
                     step.row2 = r2;
                     step.col2 = c2;
-                    step.path = getLinkPath(r1, c1, r2, c2);
-                    solution.append(step);
+                    step.path = getLinkPath(r1, c1, r2, c2); // 获取连接路径
+                    solution.append(step); // 添加步骤到解决方案列表
 
                     // 移除这对方块
                     grid[r1][c1] = 0;
@@ -317,130 +332,6 @@ QVector<GameLogic::HintStep> GameLogic::findSolution() {
 
     grid = tempGrid; // 恢复原始网格
     return solution;
-}
-
-QVariantList GameLogic::getHint() {
-    if (currentStep >= solutionSteps.size()) {
-        return QVariantList();
-    }
-
-    const HintStep &step = solutionSteps[currentStep];
-    QVariantList hint;
-
-    // 检查位置是否有效
-    if (step.row1 >= 0 && step.row1 < ROWS && step.col1 >= 0 && step.col1 < COLS && step.row2 >= 0 &&
-        step.row2 < ROWS && step.col2 >= 0 && step.col2 < COLS) {
-        hint.append(step.row1);
-        hint.append(step.col1);
-        hint.append(step.row2);
-        hint.append(step.col2);
-        hint.append(step.path);
-    }
-
-    currentStep++;
-    return hint;
-}
-
-QVector<QPoint> GameLogic::findPath(int row1, int col1, int row2, int col2) {
-    QVector<QPoint> path;
-
-    // 检查是否可以直接连接（直线）
-    if (canConnectDirectly(row1, col1, row2, col2)) {
-        path.append(QPoint(row1, col1));
-        path.append(QPoint(row2, col2));
-        return path;
-    }
-
-    // 检查是否可以通过一个拐点连接
-    QPoint corner = findOneCornerPath(row1, col1, row2, col2);
-    if (corner.x() != -1) {
-        path.append(QPoint(row1, col1));
-        path.append(corner);
-        path.append(QPoint(row2, col2));
-        return path;
-    }
-
-    // 检查是否可以通过两个拐点连接
-    QPair<QPoint, QPoint> corners = findTwoCornerPath(row1, col1, row2, col2);
-    if (corners.first.x() != -1) {
-        path.append(QPoint(row1, col1));
-        path.append(corners.first);
-        path.append(corners.second);
-        path.append(QPoint(row2, col2));
-        return path;
-    }
-
-    return path;
-}
-
-bool GameLogic::canConnectDirectly(int row1, int col1, int row2, int col2) {
-    // 检查是否在同一行
-    if (row1 == row2) {
-        int minCol = qMin(col1, col2);
-        int maxCol = qMax(col1, col2);
-        for (int col = minCol + 1; col < maxCol; col++) {
-            if (grid[row1][col] != 0)
-                return false;
-        }
-        return true;
-    }
-
-    // 检查是否在同一列
-    if (col1 == col2) {
-        int minRow = qMin(row1, row2);
-        int maxRow = qMax(row1, row2);
-        for (int row = minRow + 1; row < maxRow; row++) {
-            if (grid[row][col1] != 0)
-                return false;
-        }
-        return true;
-    }
-
-    return false;
-}
-
-QPoint GameLogic::findOneCornerPath(int row1, int col1, int row2, int col2) {
-    // 尝试水平-垂直连接
-    QPoint corner1(col2, row1);
-    if (canConnectDirectly(row1, col1, row1, col2) && canConnectDirectly(row1, col2, row2, col2)) {
-        return corner1;
-    }
-
-    // 尝试垂直-水平连接
-    QPoint corner2(col1, row2);
-    if (canConnectDirectly(row1, col1, row2, col1) && canConnectDirectly(row2, col1, row2, col2)) {
-        return corner2;
-    }
-
-    return QPoint(-1, -1);
-}
-
-QPair<QPoint, QPoint> GameLogic::findTwoCornerPath(int row1, int col1, int row2, int col2) {
-    // 尝试所有可能的两拐点路径
-    QVector<QPair<QPoint, QPoint>> possiblePaths;
-
-    // 水平-垂直-水平
-    QPoint corner1(col1, row2);
-    QPoint corner2(col2, row2);
-    if (canConnectDirectly(row1, col1, row1, col1) && canConnectDirectly(row1, col1, row2, col1) &&
-        canConnectDirectly(row2, col1, row2, col2)) {
-        possiblePaths.append(qMakePair(corner1, corner2));
-    }
-
-    // 垂直-水平-垂直
-    QPoint corner3(col2, row1);
-    QPoint corner4(col2, row2);
-    if (canConnectDirectly(row1, col1, row1, col2) && canConnectDirectly(row1, col2, row2, col2) &&
-        canConnectDirectly(row2, col2, row2, col2)) {
-        possiblePaths.append(qMakePair(corner3, corner4));
-    }
-
-    // 选择最短路径
-    if (!possiblePaths.isEmpty()) {
-        return possiblePaths.first();
-    }
-
-    return qMakePair(QPoint(-1, -1), QPoint(-1, -1));
 }
 
 /**
@@ -458,11 +349,11 @@ void GameLogic::generateSolution() {
     }
 
     // 获取当前难度下的图案数量
-    int patternCount = settings->getBlockTypes();
+    int blockTypes = settings->getBlockTypes();
 
     // 计算每种图案需要的对数 (总需要的方块数除以图案种数)
-    int totalCells = (ROWS - 2) * (COLS - 2);
-    int pairsPerPattern = totalCells / (2 * patternCount);
+    int totalCells = VISIBLE_ROWS * VISIBLE_COLS;
+    int pairsPerPattern = totalCells / (2 * blockTypes);
 
     // 准备可用位置列表 (只考虑内部格子)
     QVector<QPair<int, int>> positions;
@@ -472,12 +363,12 @@ void GameLogic::generateSolution() {
         }
     }
 
-    // 随机打乱位置列表
-    std::random_shuffle(positions.begin(), positions.end());
+    // 随机打乱位置列表，使用C++11的梅森旋转算法（std::mt19937），random_device{}()生成随机种子
+    std::shuffle(positions.begin(), positions.end(), std::mt19937{std::random_device{}()});
 
     // 分配图案到格子中
     int posIndex = 0;
-    for (int pattern = 1; pattern <= patternCount; ++pattern) {
+    for (int pattern = 1; pattern <= blockTypes; ++pattern) {
         for (int pair = 0; pair < pairsPerPattern * 2; pair += 2) {
             if (posIndex + 1 < positions.size()) {
                 // 为每对格子分配相同的图案
@@ -492,7 +383,7 @@ void GameLogic::generateSolution() {
     // 处理剩余的位置（如果有的话）
     while (posIndex + 1 < positions.size()) {
         // 为剩余的每对格子分配随机图案
-        int pattern = QRandomGenerator::global()->bounded(1, patternCount + 1);
+        int pattern = QRandomGenerator::global()->bounded(1, blockTypes + 1);
         auto [row1, col1] = positions[posIndex++];
         auto [row2, col2] = positions[posIndex++];
         grid[row1][col1] = pattern;
@@ -501,7 +392,7 @@ void GameLogic::generateSolution() {
 
     // 生成解决方案步骤
     solutionSteps = findSolution();
-    currentStep = 0;
+    currentStep = 0; // 当前步骤索引
 
     // 如果没有有效的解决方案，重新生成
     if (solutionSteps.isEmpty()) {
@@ -543,28 +434,21 @@ void GameLogic::endGame() {
     if (isGameRunning) {
         isGameRunning = false;
         gameTimer_->stop();
+        timeLeft_ = 0;  // 确保时间归零
+        emit timeLeftChanged(timeLeft_);
         emit gameEnded();
     }
 }
-
-
 
 void GameLogic::updateTimer() {
     if (timeLeft_ > 0) {
         timeLeft_--;
         emit timeLeftChanged(timeLeft_);
-        
+
         if (timeLeft_ <= 0) {
             endGame();
         }
     }
-}
-
-void GameLogic::addScoreToLeaderboard(const QString &playerName, int score) {
-    // 添加分数到排行榜
-    // 这里需要根据实际情况实现添加分数到排行榜的功能
-    // 例如，可以将分数存储在本地文件或数据库中
-    // 这里暂时不实现具体功能
 }
 
 QString GameLogic::getRank(const QString &playerName, int score) const {

@@ -47,23 +47,20 @@ class GameLogic : public QObject {
     Q_INVOKABLE int rows() const {
         return ROWS;
     }
-    Q_INVOKABLE int getCell(int row, int col) const;                         // 获取单元格的值
-    Q_INVOKABLE bool isOuterCell(int row, int col) const;                    // 判断是否是外圈格子
-    Q_INVOKABLE void resetGame();                                            // 重置游戏
-    Q_INVOKABLE bool canLink(int r1, int c1, int r2, int c2) const;          // 检查两个单元格是否可以连接
-    Q_INVOKABLE void removeLink(int r1, int c1, int r2, int c2);             // 移除连接的两个方块
-    Q_INVOKABLE QVariantList getLinkPath(int r1, int c1, int r2, int c2);    // 获取连接路径
-    Q_INVOKABLE bool isGameOver() const;                                     // 检查游戏是否结束
-    Q_INVOKABLE QVariantList getHint();                                      // 获取提示
-    Q_INVOKABLE QVector<QPoint> findPath(int row1, int col1, int row2, int col2); // 寻找最少弯折的路径
+    Q_INVOKABLE int getCell(int row, int col) const;                              // 获取单元格的值
+    Q_INVOKABLE bool isOuterCell(int row, int col) const;                         // 判断是否是外圈格子
+    Q_INVOKABLE void resetGame();                                                 // 重置游戏
+    Q_INVOKABLE bool canLink(int r1, int c1, int r2, int c2) const;               // 检查两个单元格是否可以连接
+    Q_INVOKABLE void removeLink(int r1, int c1, int r2, int c2);                  // 移除连接的两个方块
+    Q_INVOKABLE QVariantList getLinkPath(int r1, int c1, int r2, int c2);         // 获取连接路径
+    Q_INVOKABLE bool isGameOver() const;                                          // 检查游戏是否结束
     Q_INVOKABLE QString getRank(const QString &playerName, int score) const;      // 获取排名
-    Q_INVOKABLE void addScoreToLeaderboard(const QString &playerName, int score); // 添加分数到排行榜
 
     // 游戏管理相关
-    void startGame();  // 开始游戏
-    void pauseGame();  // 暂停游戏
-    void resumeGame(); // 恢复游戏
-    void endGame();    // 结束游戏
+    Q_INVOKABLE void startGame();  // 开始游戏
+    Q_INVOKABLE void pauseGame();  // 暂停游戏
+    Q_INVOKABLE void resumeGame(); // 恢复游戏
+    Q_INVOKABLE void endGame();    // 结束游戏
 
     // 倒计时相关
     Q_INVOKABLE int timeLeft() const;
@@ -82,6 +79,7 @@ class GameLogic : public QObject {
     Q_SIGNAL void gamePaused();                   // 游戏暂停信号
     Q_SIGNAL void gameResumed();                  // 游戏恢复信号
     Q_SIGNAL void gameEnded();                    // 游戏结束信号
+    Q_SIGNAL void gameCompleted();                // 游戏完成信号（所有方块都被消除）
     Q_SIGNAL void scoreChanged(int score);        // 分数变化信号
     Q_SIGNAL void timeLeftChanged(int time);      // 剩余时间变化信号
     Q_SIGNAL void pauseStateChanged(bool paused); // 暂停状态变化信号
@@ -106,19 +104,16 @@ class GameLogic : public QObject {
 
     // 倒计时相关
     QTimer *gameTimer_; // 游戏计时器
-    int timeLeft_;       // 剩余时间
-    bool isPaused_;      // 是否暂停
+    int timeLeft_;      // 剩余时间
+    bool isPaused_;     // 是否暂停
 
-    void createGrid();                                  // 生成游戏网格
-    void generateSolution();                            // 生成解决方案
-    bool isValidPosition(int row, int col) const;       // 检查位置是否有效
-    QVector<QPair<int, int>> getValidPositions() const; // 获取所有有效位置
-    bool hasValidMove() const;                          // 检查是否有有效移动
-    QVector<HintStep> findSolution();                   // 寻找解决方案
-    bool canConnectDirectly(int row1, int col1, int row2, int col2); // 检查是否可以直接连接
-    QPoint findOneCornerPath(int row1, int col1, int row2, int col2); // 寻找一条拐角路径
-    QPair<QPoint, QPoint> findTwoCornerPath(int row1, int col1, int row2, int col2); // 寻找两条拐角路径
-    void updateTimer(); // 更新计时器
+    void createGrid();                                                               // 生成游戏网格
+    void generateSolution();                                                         // 生成解决方案
+    bool isValidPosition(int row, int col) const;                                    // 检查位置是否有效
+    QVector<QPair<int, int>> getValidPositions() const;                              // 获取所有有效位置
+    bool hasValidMove() const;                                                       // 检查是否有有效移动
+    QVector<HintStep> findSolution();                                                // 寻找解决方案
+    void updateTimer();                                                              // 更新计时器
 };
 
 #endif // GAMELOGIC_H

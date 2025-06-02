@@ -15,29 +15,29 @@ Rectangle {
     property int score: 0 // 当前分数
     property bool isPaused: gameLogic.isPaused() // 是否暂停
 
-    signal gameReset // 重置游戏信号
     signal returnToMenu // 返回主菜单信号
+    signal closed // 退出游戏信号
     signal scoreUpdated(int newScore) // 分数变化信号
     signal gameHint // 提示信号
     signal resetAllCell // 重置所有方块信号
-    signal closed // 退出游戏信号
     signal pauseStateChanged(bool paused) // 暂停状态变化信号
     signal soundStateChanged(bool enabled) // 音效状态变化信号
 
-
-    // 监听游戏时间变化
     Connections {
         target: gameLogic
+        // 监听游戏时间变化
         function onTimeLeftChanged(time) {
             if (time <= 0) {
+                gameLogic.endGame();
                 PageState = Page.GameOver;
             }
         }
-    }
-
-    // 监听暂停状态变化
-    Connections {
-        target: gameLogic
+        // 监听游戏完成信号
+        function onGameCompleted() {
+            gameLogic.endGame();
+            PageState = Page.GameOver;
+        }
+        // 监听暂停状态变化
         function onPauseStateChanged(paused) {
             root.isPaused = paused;
         }
@@ -87,7 +87,7 @@ Rectangle {
                     font.pixelSize: parent.parent.width * 0.04
                     onClicked: {
                         gameLogic.setPaused(false);
-                        root.gameReset();
+                        gameLogic.resetGame();
                         root.resetAllCell();
                     }
                 }
@@ -119,6 +119,8 @@ Rectangle {
                     Layout.preferredHeight: parent.parent.height * 0.15
                     font.pixelSize: parent.parent.width * 0.04
                     onClicked: {
+                        gameLogic.setPaused(false);
+                        gameLogic.resetGame();
                         root.closed();
                     }
                 }
@@ -167,54 +169,25 @@ Rectangle {
         id: linkCanvas
         anchors.fill: grid // 填充整个网格
         z: 1 // 确保Canvas在网格上方
-        visible: root.showingPath
+        visible: root.showingPath // 只有在显示路径时才可见
 
         onPaint: {
-            if (root.linkPath.length < 2)
+            if (root.linkPath.length < 2) // 如果路径长度小于2，则不绘制
                 return;
 
-            var ctx = getContext("2d");
-            ctx.clearRect(0, 0, width, height);
-            ctx.strokeStyle = "red";
-            ctx.lineWidth = 3;
+            var ctx = getContext("2d"); // 获取2D上下文
+            ctx.clearRect(0, 0, width, height); // 清除画布
+            ctx.strokeStyle = "red"; // 设置线条颜色
+            ctx.lineWidth = 3; // 设置线条宽度
 
-            // 只有在提示模式下才使用虚线
-            if (hintBlinkTimer.running) {
-                ctx.setLineDash([5, 5]); // 设置虚线样式
-            } else {
-                ctx.setLineDash([]); // 使用实线
-            }
-
-            ctx.beginPath();
-            ctx.moveTo(root.linkPath[0].x, root.linkPath[0].y);
+            ctx.beginPath(); // 开始路径
+            ctx.moveTo(root.linkPath[0].x, root.linkPath[0].y); // 移动到第一个点
 
             for (var i = 1; i < root.linkPath.length; i++) {
-                ctx.lineTo(root.linkPath[i].x, root.linkPath[i].y);
+                ctx.lineTo(root.linkPath[i].x, root.linkPath[i].y); // 绘制路径
             }
 
-            ctx.stroke();
-        }
-    }
-
-    // 提示闪烁定时器
-    Timer {
-        id: hintBlinkTimer
-        interval: 200 // 200毫秒闪烁一次
-        repeat: true
-        running: false
-        property int blinkCount: 0
-        property int maxBlinks: 5 // 闪烁5次
-
-        onTriggered: {
-            if (blinkCount >= maxBlinks) {
-                stop();
-                root.showingPath = false;
-                linkCanvas.requestPaint();
-                return;
-            }
-            root.showingPath = !root.showingPath;
-            linkCanvas.requestPaint();
-            blinkCount++;
+            ctx.stroke(); // 绘制路径
         }
     }
 
@@ -269,66 +242,6 @@ Rectangle {
                 Layout.preferredHeight: parent.parent.height * 0.6
                 font.pixelSize: parent.parent.height * 0.3
                 onClicked: {
-                    var hint = gameLogic.getHint();
-                    console.log("Hint:", hint); // 添加调试输出
-                    if (hint && hint.length > 0) {
-                        // 高亮显示提示的方块
-                        var row1 = hint[0];
-                        var col1 = hint[1];
-                        var row2 = hint[2];
-                        var col2 = hint[3];
-                        var path = hint[4];
-
-                        console.log("Hint path:", path); // 添加调试输出
-
-                        // 检查索引是否有效
-                        var index1 = row1 * gameLogic.cols() + col1;
-                        var index2 = row2 * gameLogic.cols() + col2;
-
-                        // 高亮第一个方块
-                        if (index1 >= 0 && index1 < grid.children.length) {
-                            var cell1 = grid.children[index1];
-                            if (cell1) {
-                                cell1.highlighted = true;
-                            }
-                        }
-
-                        // 高亮第二个方块
-                        if (index2 >= 0 && index2 < grid.children.length) {
-                            var cell2 = grid.children[index2];
-                            if (cell2) {
-                                cell2.highlighted = true;
-                            }
-                        }
-
-                        // 显示连接路径
-                        if (path && path.length > 0) {
-                            root.linkPath = [];
-                            for (var i = 0; i < path.length; i += 2) {
-                                var pathRow = path[i];
-                                var pathCol = path[i + 1];
-                                var pathIndex = pathRow * gameLogic.cols() + pathCol;
-                                if (pathIndex >= 0 && pathIndex < grid.children.length) {
-                                    var pathCell = grid.children[pathIndex];
-                                    if (pathCell) {
-                                        // 计算路径点的坐标
-                                        var cellSize = 50 + 4; // 单元格尺寸 + 间距
-                                        var x = pathCol * cellSize + cellSize / 2;
-                                        var y = pathRow * cellSize + cellSize / 2;
-                                        root.linkPath.push({
-                                            x: x,
-                                            y: y
-                                        });
-                                    }
-                                }
-                            }
-                            // 开始闪烁效果
-                            hintBlinkTimer.blinkCount = 0;
-                            root.showingPath = true;
-                            hintBlinkTimer.start();
-                            linkCanvas.requestPaint();
-                        }
-                    }
                 }
             }
 
@@ -371,13 +284,13 @@ Rectangle {
                 color: grid.getCell(index) === 0 ? "transparent" : "skyblue"
                 border.color: grid.getCell(index) === 0 ? "transparent" : "black"
 
-                property bool highlighted: false
-                property bool pathHighlighted: false
+                property bool highlighted: false // 是否高亮
+                property bool pathHighlighted: false // 路径高亮
 
                 // 添加颜色变化的行为
                 Behavior on color {
                     ColorAnimation {
-                        duration: 100
+                        duration: 100 // 动画持续时间
                     }
                 }
 
@@ -471,7 +384,7 @@ Rectangle {
     // 连通后隐藏路径的定时器
     Timer {
         id: pathTimer
-        interval: 300 // 500毫秒
+        interval: 300 // 300毫秒
         running: false
         repeat: false
         property int firstRow: -1
@@ -507,7 +420,7 @@ Rectangle {
         // 定时器触发时的处理函数
         onTriggered: {
             // 获取连接路径
-            root.linkPath = gameLogic.findPath(firstRow, firstCol, secondRow, secondCol);
+            root.linkPath = gameLogic.getLinkPath(firstRow, firstCol, secondRow, secondCol);
 
             // 转换路径点坐标到Canvas坐标系统
             for (var i = 0; i < root.linkPath.length; i++) {
@@ -596,22 +509,6 @@ Rectangle {
         target: gameLogic
         function onCellsChanged() {
             grid.forceLayout(); // 强制刷新网格
-        }
-    }
-
-    Timer {
-        id: highlightTimer
-        interval: 3000
-        repeat: false
-        onTriggered: {
-            // 取消所有高亮
-            for (var i = 0; i < grid.children.length; ++i) {
-                var cell = grid.children[i];
-                if (cell) {
-                    cell.highlighted = false;
-                    cell.pathHighlighted = false;
-                }
-            }
         }
     }
 }
