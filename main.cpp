@@ -16,16 +16,6 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
-    // // 创建翻译器
-    // QTranslator translator;
-    // // 加载翻译文件
-    // if (!translator.load(":/qt/qml/Translated/i18n/qml_zh_CN.qm")) {
-    //     qWarning() << "无法加载翻译文件";
-    // }
-    // // 安装翻译器
-    // app.installTranslator(&translator);
-
-
     auto context = engine.rootContext(); // 获取根全局对象
     // 创建并注册Language
     Language language;
