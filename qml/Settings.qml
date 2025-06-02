@@ -301,7 +301,7 @@ Rectangle {
                             let currentSize = settings.getScreenSize(); // 获取当前屏幕大小
                             if (currentSize.startsWith("全屏")) // 如果当前屏幕大小以"全屏"开头
                                 return 0;
-                            if (currentSize.startsWith("无边框")) // 如果当前屏幕大小以"无边框"开头
+                            if (currentSize.startsWith("无边框全屏")) // 如果当前屏幕大小以"无边框全屏"开头
                                 return 1;
                             return model.indexOf(currentSize); // 返回当前屏幕大小在模型中的索引
                         }
@@ -309,9 +309,11 @@ Rectangle {
                             if (currentIndex === 0) {
                                 // 如果当前索引为0
                                 settings.setFullscreen(true); // 设置全屏
+                                settings.setBorderless(false); // 设置非无边框
                             } else if (currentIndex === 1) {
                                 // 如果当前索引为1
                                 settings.setBorderless(true); // 设置无边框
+                                settings.setFullscreen(true); // 设置非全屏
                             } else {
                                 let size = model[currentIndex].split("x"); // 将当前屏幕大小按"x"分割成数组
                                 settings.setFullscreen(false); // 设置非全屏
@@ -319,17 +321,30 @@ Rectangle {
                                 settings.resizeWindow(parseInt(size[0]), parseInt(size[1])); // 调整窗口大小
                             }
                         }
+                        // 自定义显示文本
+                        displayText: settings.getScreenSize()
+                        // 确保model中的每个项目都是字符串
+                        textRole: ""
                     }
                 }
 
                 // 添加窗口大小变化监听
                 Connections {
-                    target: root.Window.window
-                    function onWidthChanged() {
-                        settings.updateWindowSize();
-                    }
-                    function onHeightChanged() {
-                        settings.updateWindowSize();
+                    target: settings
+                    function onWindowSizeChanged() {
+                        // 更新下拉列表的选项
+                        windowSizeCombo.model = settings.getWindowSizeModel();
+                        // 更新显示文本
+                        windowSizeCombo.displayText = settings.getScreenSize();
+                        // 更新当前选中的选项
+                        let currentSize = settings.getScreenSize();
+                        if (currentSize.startsWith("全屏")) {
+                            windowSizeCombo.currentIndex = 0;
+                        } else if (currentSize.startsWith("无边框")) {
+                            windowSizeCombo.currentIndex = 1;
+                        } else {
+                            windowSizeCombo.currentIndex = windowSizeCombo.model.indexOf(currentSize);
+                        }
                     }
                 }
 

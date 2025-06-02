@@ -184,12 +184,16 @@ void Settings::resizeWindow(int width, int height) {
 
 QString Settings::getScreenSize() const {
     if (window) {
-        if (window->windowState() & Qt::WindowFullScreen) {
-            return QString("全屏 (%1x%2)").arg(window->width()).arg(window->height());
-        } else if (window->flags() & Qt::FramelessWindowHint) {
-            return QString("无边框 (%1x%2)").arg(window->width()).arg(window->height());
+        qreal dpr = window->effectiveDevicePixelRatio();
+        int realWidth = qFloor(window->width() * dpr);
+        int realHeight = qFloor(window->height() * dpr);
+
+        if (window->flags() & Qt::FramelessWindowHint && window->windowState() & Qt::WindowFullScreen) {
+            return QString("无边框全屏 (%1x%2)").arg(realWidth).arg(realHeight);
+        } else if (window->windowState() & Qt::WindowFullScreen) {
+            return QString("全屏 (%1x%2)").arg(realWidth).arg(realHeight);
         } else {
-            return QString("%1x%2").arg(window->width()).arg(window->height());
+            return QString("%1x%2").arg(realWidth).arg(realHeight);
         }
     }
     return QString("%1x%2").arg(config.screenWidth).arg(config.screenHeight);
@@ -199,11 +203,7 @@ void Settings::setFullscreen(bool fullscreen) {
     if (window && config.fullscreen != fullscreen) {
         config.fullscreen = fullscreen;
         if (fullscreen) {
-            // 退出无边框模式
-            if (window->flags() & Qt::FramelessWindowHint) {
-                window->setFlags(window->flags() & ~Qt::FramelessWindowHint);
-                config.borderless = false;
-            }
+            // 进入全屏模式
             window->showFullScreen();
         } else {
             window->showNormal();
@@ -222,16 +222,11 @@ void Settings::setBorderless(bool borderless) {
     if (window && config.borderless != borderless) {
         config.borderless = borderless;
         if (borderless) {
-            // 退出全屏模式
-            if (window->windowState() & Qt::WindowFullScreen) {
-                window->showNormal();
-                config.fullscreen = false;
-            }
+            // 进入无边框模式
             window->setFlags(window->flags() | Qt::FramelessWindowHint);
-            window->show();
         } else {
+            // 回到普通窗口模式
             window->setFlags(window->flags() & ~Qt::FramelessWindowHint);
-            window->show();
             resizeWindow(config.screenWidth, config.screenHeight);
         }
         saveConfig();
@@ -320,13 +315,14 @@ QPair<int, int> Settings::getAvailableScreenSize() const {
 }
 
 QStringList Settings::getWindowSizeModel() const {
+    QStringList model;
     QPair<int, int> physicalSize = getPhysicalScreenSize();
     QPair<int, int> availableSize = getAvailableScreenSize();
-    QStringList model;
+    // 添加预设的分辨率
     model << QString("全屏 (%1x%2)").arg(physicalSize.first).arg(physicalSize.second)
           << QString("无边框全屏 (%1x%2)").arg(physicalSize.first).arg(physicalSize.second)
-          << QString("%1x%2").arg(availableSize.first).arg(availableSize.second) 
-          << "1920x1080"
+          << QString("%1x%2").arg(availableSize.first).arg(availableSize.second);
+    model << "1920x1080"
           << "1280x720"
           << "1024x768"
           << "800x600";

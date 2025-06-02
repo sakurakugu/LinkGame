@@ -19,6 +19,7 @@ void Config::initConfig(config &config) {
     config.screenWidth = DefaultValues::screen_width;   // 默认窗口宽度
     config.screenHeight = DefaultValues::screen_height; // 默认窗口高度
     config.fullscreen = DefaultValues::fullscreen;      // 默认不全屏
+    config.borderless = DefaultValues::borderless;      // 默认不无边框
     config.blockCount = DefaultValues::block_count;     // 默认方块数量
     config.blockTypes = DefaultValues::block_types;     // 默认方块种类数
     config.leaderboard.clear();                         // 清空排行榜
@@ -96,10 +97,12 @@ void Config::loadConfig(config &config) {
             config.screenWidth = toml::find<int>(screen, "width");
             config.screenHeight = toml::find<int>(screen, "height");
             config.fullscreen = toml::find<bool>(screen, "fullscreen");
+            config.borderless = toml::find<bool>(screen, "borderless");
         } else {
             config.screenWidth = 800;
             config.screenHeight = 600;
             config.fullscreen = false;
+            config.borderless = false;
         }
     } catch (const std::exception &e) {
         qWarning() << "加载配置文件失败:" << e.what() << "，使用默认配置";
@@ -144,6 +147,7 @@ void Config::saveConfig(const config &config) {
         data["screen"]["width"] = config.screenWidth;
         data["screen"]["height"] = config.screenHeight;
         data["screen"]["fullscreen"] = config.fullscreen;
+        data["screen"]["borderless"] = config.borderless;
 
         // 添加注释
         data.comments().push_back(" 连连看游戏配置文件");

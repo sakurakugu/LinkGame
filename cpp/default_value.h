@@ -8,7 +8,8 @@ struct DefaultValues {
     static constexpr double volume = 0.8;      // 默认音量为80%
     static constexpr int screen_width = 800;   // 默认窗口宽度
     static constexpr int screen_height = 600;  // 默认窗口高度
-    static constexpr bool fullscreen = false;  // 默认不全屏
+    static constexpr bool fullscreen = false;  // 默认非全屏
+    static constexpr bool borderless = false;  // 默认非无边框
     static constexpr int block_count = 48;     // 默认方块数量
     static constexpr int block_types = 8;     // 默认方块种类数
 };
