@@ -23,7 +23,7 @@ Rectangle {
         spacing: 20
 
         Text {
-            text: "排行榜"
+            text: qsTr("排行榜")
             font.pixelSize: 36
             Layout.alignment: Qt.AlignHCenter
         }
@@ -49,7 +49,7 @@ Rectangle {
                     spacing: 10
 
                     Text {
-                        text: "排名"
+                        text: qsTr("排名")
                         font.pixelSize: parent.parent.width * 0.03
                         font.bold: true
                         Layout.preferredWidth: parent.width * 0.2
@@ -57,14 +57,14 @@ Rectangle {
                     }
 
                     Text {
-                        text: "玩家"
+                        text: qsTr("玩家")
                         font.pixelSize: parent.parent.width * 0.03
                         font.bold: true
                         Layout.fillWidth: true
                     }
 
                     Text {
-                        text: "分数"
+                        text: qsTr("分数")
                         font.pixelSize: parent.parent.width * 0.03
                         font.bold: true
                         Layout.preferredWidth: parent.width * 0.2
@@ -127,7 +127,7 @@ Rectangle {
         }
 
         MyButton {
-            text: "返回"
+            text: qsTr("返回")
             Layout.alignment: Qt.AlignHCenter
             buttonWidth: parent.width * 0.15
             buttonHeight: parent.height * 0.08

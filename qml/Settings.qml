@@ -46,7 +46,7 @@ Rectangle {
                 spacing: parent.parent.height * 0.05 // 使用窗口高度的3%作为间距
 
                 Text {
-                    text: "游戏设置"
+                    text: qsTr("游戏设置")
                     font.pixelSize: parent.parent.width * 0.04 // 使用窗口宽度的4%作为字体大小
                     Layout.alignment: Qt.AlignHCenter
                 }
@@ -56,7 +56,7 @@ Rectangle {
                     spacing: parent.parent.width * 0.02 // 使用父容器宽度的2%作为间距
 
                     Text {
-                        text: "用户名:"
+                        text: qsTr("用户名:")
                         font.pixelSize: parent.parent.parent.width * 0.02 // 使用窗口宽度的2%作为字体大小
                     }
                     TextField {
@@ -76,7 +76,7 @@ Rectangle {
                     spacing: parent.parent.width * 0.02
 
                     Text {
-                        text: "难度级别:"
+                        text: qsTr("难度级别:")
                         font.pixelSize: parent.parent.parent.width * 0.02
                     }
                     RowLayout {
@@ -85,7 +85,7 @@ Rectangle {
 
                         RadioButton {
                             id: easyRadio
-                            text: "简单"
+                            text: qsTr("简单")
                             checked: root.difficulty === "简单"
                             font.pixelSize: parent.parent.parent.parent.width * 0.02
                             onCheckedChanged: if (checked)
@@ -93,7 +93,7 @@ Rectangle {
                         }
                         RadioButton {
                             id: mediumRadio
-                            text: "普通"
+                            text: qsTr("普通")
                             checked: root.difficulty === "普通"
                             font.pixelSize: parent.parent.parent.parent.width * 0.02
                             onCheckedChanged: if (checked)
@@ -101,7 +101,7 @@ Rectangle {
                         }
                         RadioButton {
                             id: hardRadio
-                            text: "困难"
+                            text: qsTr("困难")
                             checked: root.difficulty === "困难"
                             font.pixelSize: parent.parent.parent.parent.width * 0.02
                             onCheckedChanged: if (checked)
@@ -109,7 +109,7 @@ Rectangle {
                         }
                         RadioButton {
                             id: customRadio
-                            text: "自定义"
+                            text: qsTr("自定义")
                             checked: root.difficulty === "自定义"
                             font.pixelSize: parent.parent.parent.parent.width * 0.02
                             onCheckedChanged: if (checked)
@@ -133,7 +133,7 @@ Rectangle {
                         RowLayout {
                             Layout.fillWidth: true
                             Text {
-                                text: "游戏时间(秒):"
+                                text: qsTr("游戏时间(秒):")
                                 font.pixelSize: parent.parent.parent.parent.width * 0.02
                             }
                             TextField {
@@ -157,7 +157,7 @@ Rectangle {
                         RowLayout {
                             Layout.fillWidth: true
                             Text {
-                                text: "方块数量:"
+                                text: qsTr("方块数量:")
                                 font.pixelSize: parent.parent.parent.parent.width * 0.02
                             }
                             TextField {
@@ -181,7 +181,7 @@ Rectangle {
                         RowLayout {
                             Layout.fillWidth: true
                             Text {
-                                text: "方块种类:"
+                                text: qsTr("方块种类:")
                                 font.pixelSize: parent.parent.parent.parent.width * 0.02
                             }
                             TextField {
@@ -205,7 +205,7 @@ Rectangle {
                         RowLayout {
                             Layout.fillWidth: true
                             Text {
-                                text: "参加排行榜"
+                                text: qsTr("参加排行榜")
                                 font.pixelSize: parent.parent.parent.parent.width * 0.02
                             }
                             CheckBox {
@@ -229,7 +229,7 @@ Rectangle {
                     spacing: parent.parent.width * 0.02
 
                     Text {
-                        text: "音量:"
+                        text: qsTr("音量:")
                         font.pixelSize: parent.parent.parent.width * 0.02
                     }
                     CheckBox {
@@ -264,7 +264,7 @@ Rectangle {
                     spacing: parent.parent.width * 0.02
 
                     Text {
-                        text: "窗口大小:"
+                        text: qsTr("窗口大小:")
                         font.pixelSize: parent.parent.parent.width * 0.02
                     }
                     ComboBox {
@@ -309,7 +309,7 @@ Rectangle {
                     spacing: parent.parent.width * 0.02
 
                     Text {
-                        text: "主题:"
+                        text: qsTr("主题:")
                         font.pixelSize: parent.parent.parent.width * 0.02
                         color: themeManager.getColor("text")
                     }
@@ -320,7 +320,7 @@ Rectangle {
 
                         RadioButton {
                             id: lightThemeRadio
-                            text: "浅色"
+                            text: qsTr("浅色")
                             checked: root.theme === themeManager.LIGHT_THEME
                             font.pixelSize: parent.parent.parent.parent.width * 0.02
                             onCheckedChanged: {
@@ -332,7 +332,7 @@ Rectangle {
                         }
                         RadioButton {
                             id: darkThemeRadio
-                            text: "深色"
+                            text: qsTr("深色")
                             checked: root.theme === themeManager.DARK_THEME
                             font.pixelSize: parent.parent.parent.parent.width * 0.02
                             onCheckedChanged: {
@@ -366,7 +366,7 @@ Rectangle {
                 }
 
                 MyButton {
-                    text: "确定"
+                    text: qsTr("确定")
                     Layout.alignment: Qt.AlignHCenter
                     buttonWidth: parent.width * 0.15
                     buttonHeight: parent.height * 0.08

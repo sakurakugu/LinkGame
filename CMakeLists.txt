@@ -7,6 +7,7 @@ set(QT_QML_GENERATE_QMLLS_INI ON)
 set(CMAKE_AUTORCC ON) # 自动处理资源文件
 
 find_package(Qt6 REQUIRED COMPONENTS Quick)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Qml LinguistTools) # 添加 国际化翻译 组件
 
 qt_standard_project_setup(REQUIRES 6.8)
 
@@ -92,6 +93,14 @@ qt_add_qml_module(appLinkGame
         QML_FILES ${MYQML_FILES}
     RESOURCES
         ${RESOURCES}
+)
+
+# 国际化翻译
+qt_add_translations(appLinkGame
+    # 最终路径：qrc:/qt/qml/Translated/i18n/qml_*.qm
+    RESOURCE_PREFIX /qt/qml/Translated/i18n
+    TS_FILE_BASE qml
+    TS_FILE_DIR i18n
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

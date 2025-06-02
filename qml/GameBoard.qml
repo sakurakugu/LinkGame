@@ -73,7 +73,7 @@ Rectangle {
                 spacing: parent.parent.height * 0.02
 
                 Button {
-                    text: "继续"
+                    text: qsTr("继续")
                     Layout.preferredWidth: parent.parent.width * 0.6
                     Layout.preferredHeight: parent.parent.height * 0.15
                     font.pixelSize: parent.parent.width * 0.04
@@ -83,7 +83,7 @@ Rectangle {
                 }
 
                 Button {
-                    text: "重置游戏"
+                    text: qsTr("重置游戏")
                     Layout.preferredWidth: parent.parent.width * 0.6
                     Layout.preferredHeight: parent.parent.height * 0.15
                     font.pixelSize: parent.parent.width * 0.04
@@ -95,7 +95,7 @@ Rectangle {
                 }
 
                 Button {
-                    text: "返回主菜单"
+                    text: qsTr("返回主菜单")
                     Layout.preferredWidth: parent.parent.width * 0.6
                     Layout.preferredHeight: parent.parent.height * 0.15
                     font.pixelSize: parent.parent.width * 0.04
@@ -106,7 +106,7 @@ Rectangle {
                 }
 
                 Button {
-                    text: "设置"
+                    text: qsTr("设置")
                     Layout.preferredWidth: parent.parent.width * 0.6
                     Layout.preferredHeight: parent.parent.height * 0.15
                     font.pixelSize: parent.parent.width * 0.04
@@ -116,7 +116,7 @@ Rectangle {
                 }
 
                 Button {
-                    text: "退出"
+                    text: qsTr("退出")
                     Layout.preferredWidth: parent.parent.width * 0.6
                     Layout.preferredHeight: parent.parent.height * 0.15
                     font.pixelSize: parent.parent.width * 0.04
@@ -209,26 +209,26 @@ Rectangle {
 
             Text {
                 id: gameStatus
-                text: root.isPaused ? "游戏暂停" : "游戏进行中"
+                text: root.isPaused ? qsTr("游戏暂停") : qsTr("游戏进行中")
                 font.pixelSize: parent.parent.height * 0.4
                 Layout.alignment: Qt.AlignCenter
             }
 
             Text {
                 id: scoreText
-                text: "分数: " + root.score
+                text: qsTr("分数: ") + root.score
                 font.pixelSize: parent.parent.height * 0.4
             }
 
             Text {
                 id: timeText
-                text: "时间：" + Math.floor(gameLogic.timeLeft / 60) + ":" + (gameLogic.timeLeft % 60).toString().padStart(2, "0")
+                text: qsTr("时间：") + Math.floor(gameLogic.timeLeft / 60) + ":" + (gameLogic.timeLeft % 60).toString().padStart(2, "0")
                 font.pixelSize: parent.parent.height * 0.4
                 Layout.alignment: Qt.AlignCenter
             }
 
             Button {
-                text: root.isPaused ? "继续" : "暂停"
+                text: root.isPaused ? qsTr("继续") : qsTr("暂停")
                 Layout.preferredWidth: parent.parent.width * 0.1
                 Layout.preferredHeight: parent.parent.height * 0.6
                 font.pixelSize: parent.parent.height * 0.3
@@ -239,7 +239,7 @@ Rectangle {
 
             Button {
                 id: hintButton
-                text: "提示"
+                text: qsTr("提示")
                 Layout.preferredWidth: parent.parent.width * 0.1
                 Layout.preferredHeight: parent.parent.height * 0.6
                 font.pixelSize: parent.parent.height * 0.3
@@ -247,7 +247,7 @@ Rectangle {
             }
 
             Button {
-                text: "退出"
+                text: qsTr("退出")
                 Layout.preferredWidth: parent.parent.width * 0.1
                 Layout.preferredHeight: parent.parent.height * 0.6
                 font.pixelSize: parent.parent.height * 0.3

@@ -18,33 +18,33 @@ Rectangle {
         spacing: 20 // 间距
 
         Text {
-            text: "游戏结束"
+            text: qsTr("游戏结束")
             font.pixelSize: 48
             Layout.alignment: Qt.AlignHCenter
         }
 
         Text {
-            text: "玩家: " + playerName
+            text: qsTr("玩家: ") + playerName
             font.pixelSize: 24
             Layout.alignment: Qt.AlignHCenter
         }
 
         Text {
-            text: "最终得分: " + finalScore
+            text: qsTr("最终得分: ") + finalScore
             font.pixelSize: 24
             Layout.alignment: Qt.AlignHCenter
         }
 
         Text {
             id: rankText
-            text: "当前排名: " + rank
+            text: qsTr("当前排名: ") + rank
             font.pixelSize: 24
             Layout.alignment: Qt.AlignHCenter
             visible: finalScore > 0
         }
 
         MyButton {
-            text: "再来一局"
+            text: qsTr("再来一局")
             onClicked: {
                 settings.addScoreToLeaderboard(playerName, finalScore);
                 root.restartGame();
@@ -52,7 +52,7 @@ Rectangle {
         }
 
         MyButton {
-            text: "返回菜单"
+            text: qsTr("返回菜单")
             onClicked: {
                 settings.addScoreToLeaderboard(playerName, finalScore);
                 root.returnToMenu();
