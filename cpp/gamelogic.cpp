@@ -455,7 +455,7 @@ void GameLogic::generateSolution() {
     }
 
     // 获取当前难度下的图案数量
-    int patternCount = getPatternCount();
+    int patternCount = settings->getBlockTypes();
     
     // 计算每种图案需要的对数 (总需要的方块数除以图案种数)
     int totalCells = (ROWS - 2) * (COLS - 2);
@@ -534,10 +534,4 @@ void GameLogic::endGame() {
         isGameRunning = false;
         emit gameEnded();
     }
-}
-
-void GameLogic::addScore(const QString &name, int score) {
-    currentScore += score;
-    emit scoreChanged(currentScore);
-    addScoreToLeaderboard(name, currentScore);
 }

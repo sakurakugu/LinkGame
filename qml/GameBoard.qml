@@ -24,7 +24,43 @@ Rectangle {
     signal exitGameRequested // 退出游戏信号
     signal pauseStateChanged(bool paused)
     signal soundStateChanged(bool enabled)
-    
+
+    // 定时器
+    Timer {
+        id: gameTimer
+        interval: 1000
+        running: PageState === Page.Playing && !gameLoader.item.isPaused
+        repeat: true
+        onTriggered: {
+            timeLeft--;
+            if (timeLeft <= 0) {
+                PageState = Page.GameOver;
+            }
+        }
+    }
+
+    // 检查游戏是否结束的计时器
+    Timer {
+        id: checkGameOverTimer
+        interval: 500 // 每0.5秒检查一次
+        repeat: true
+        running: PageState === Page.Playing
+        onTriggered: {
+            if (gameLogic.isGameOver()) {
+                gameTimer.stop();
+                PageState = Page.GameOver;
+            }
+        }
+    }
+
+    // 监听游戏时间变化
+    Connections {
+        target: gameLogic
+        function onGameTimeChanged() {
+            timeLeft = gameLogic.getGameTime();
+        }
+    }
+
     // 暂停页面
     Rectangle {
         id: pauseOverlay
@@ -35,9 +71,9 @@ Rectangle {
 
         MouseArea {
             anchors.fill: parent
-            onClicked: {
-                // 阻止点击事件传递到下层
-            }
+            onClicked:
+            // 阻止点击事件传递到下层
+            {}
         }
 
         Rectangle {
@@ -58,8 +94,8 @@ Rectangle {
                     Layout.preferredHeight: parent.parent.height * 0.15
                     font.pixelSize: parent.parent.width * 0.04
                     onClicked: {
-                        root.isPaused = false
-                        root.pauseStateChanged(false)
+                        root.isPaused = false;
+                        root.pauseStateChanged(false);
                     }
                 }
 
@@ -69,10 +105,10 @@ Rectangle {
                     Layout.preferredHeight: parent.parent.height * 0.15
                     font.pixelSize: parent.parent.width * 0.04
                     onClicked: {
-                        root.resetRequested()
-                        root.resetAllCell()
-                        root.isPaused = false
-                        root.pauseStateChanged(false)
+                        root.resetRequested();
+                        root.resetAllCell();
+                        root.isPaused = false;
+                        root.pauseStateChanged(false);
                     }
                 }
 
@@ -82,9 +118,9 @@ Rectangle {
                     Layout.preferredHeight: parent.parent.height * 0.15
                     font.pixelSize: parent.parent.width * 0.04
                     onClicked: {
-                        root.menuRequested()
-                        root.isPaused = false
-                        root.pauseStateChanged(false)
+                        root.menuRequested();
+                        root.isPaused = false;
+                        root.pauseStateChanged(false);
                     }
                 }
 
@@ -94,7 +130,7 @@ Rectangle {
                     Layout.preferredHeight: parent.parent.height * 0.15
                     font.pixelSize: parent.parent.width * 0.04
                     onClicked: {
-                        settingsLoader.active = true
+                        settingsLoader.active = true;
                     }
                 }
 
@@ -104,7 +140,7 @@ Rectangle {
                     Layout.preferredHeight: parent.parent.height * 0.15
                     font.pixelSize: parent.parent.width * 0.04
                     onClicked: {
-                        root.exitGameRequested()
+                        root.exitGameRequested();
                     }
                 }
             }
@@ -119,12 +155,12 @@ Rectangle {
         active: false
         z: 1000 // 确保设置界面在暂停页面之上
         onLoaded: {
-            item.closed.connect(function() {
-                settingsLoader.active = false
-            })
-            item.soundStateChanged.connect(function(enabled) {
-                root.isSoundEnabled = enabled
-            })
+            item.closed.connect(function () {
+                settingsLoader.active = false;
+            });
+            item.soundStateChanged.connect(function (enabled) {
+                root.isSoundEnabled = enabled;
+            });
         }
     }
 
@@ -137,7 +173,7 @@ Rectangle {
             muted: !root.isSoundEnabled
         }
     }
-    
+
     // 监听音量变化
     Connections {
         target: gameLogic
@@ -162,7 +198,7 @@ Rectangle {
             ctx.clearRect(0, 0, width, height);
             ctx.strokeStyle = "red";
             ctx.lineWidth = 3;
-            
+
             // 只有在提示模式下才使用虚线
             if (hintBlinkTimer.running) {
                 ctx.setLineDash([5, 5]); // 设置虚线样式
@@ -243,8 +279,8 @@ Rectangle {
                 Layout.preferredHeight: parent.parent.height * 0.6
                 font.pixelSize: parent.parent.height * 0.3
                 onClicked: {
-                    root.isPaused = !root.isPaused
-                    root.pauseStateChanged(root.isPaused)
+                    root.isPaused = !root.isPaused;
+                    root.pauseStateChanged(root.isPaused);
                 }
             }
 
@@ -255,64 +291,64 @@ Rectangle {
                 Layout.preferredHeight: parent.parent.height * 0.6
                 font.pixelSize: parent.parent.height * 0.3
                 onClicked: {
-                    var hint = gameLogic.getHint()
-                    console.log("Hint:", hint) // 添加调试输出
+                    var hint = gameLogic.getHint();
+                    console.log("Hint:", hint); // 添加调试输出
                     if (hint && hint.length > 0) {
                         // 高亮显示提示的方块
-                        var row1 = hint[0]
-                        var col1 = hint[1]
-                        var row2 = hint[2]
-                        var col2 = hint[3]
-                        var path = hint[4]
-                        
-                        console.log("Hint path:", path) // 添加调试输出
-                        
+                        var row1 = hint[0];
+                        var col1 = hint[1];
+                        var row2 = hint[2];
+                        var col2 = hint[3];
+                        var path = hint[4];
+
+                        console.log("Hint path:", path); // 添加调试输出
+
                         // 检查索引是否有效
-                        var index1 = row1 * gameLogic.cols() + col1
-                        var index2 = row2 * gameLogic.cols() + col2
-                        
+                        var index1 = row1 * gameLogic.cols() + col1;
+                        var index2 = row2 * gameLogic.cols() + col2;
+
                         // 高亮第一个方块
                         if (index1 >= 0 && index1 < grid.children.length) {
-                            var cell1 = grid.children[index1]
+                            var cell1 = grid.children[index1];
                             if (cell1) {
-                                cell1.highlighted = true
+                                cell1.highlighted = true;
                             }
                         }
-                        
+
                         // 高亮第二个方块
                         if (index2 >= 0 && index2 < grid.children.length) {
-                            var cell2 = grid.children[index2]
+                            var cell2 = grid.children[index2];
                             if (cell2) {
-                                cell2.highlighted = true
+                                cell2.highlighted = true;
                             }
                         }
-                        
+
                         // 显示连接路径
                         if (path && path.length > 0) {
-                            root.linkPath = []
+                            root.linkPath = [];
                             for (var i = 0; i < path.length; i += 2) {
-                                var pathRow = path[i]
-                                var pathCol = path[i + 1]
-                                var pathIndex = pathRow * gameLogic.cols() + pathCol
+                                var pathRow = path[i];
+                                var pathCol = path[i + 1];
+                                var pathIndex = pathRow * gameLogic.cols() + pathCol;
                                 if (pathIndex >= 0 && pathIndex < grid.children.length) {
-                                    var pathCell = grid.children[pathIndex]
+                                    var pathCell = grid.children[pathIndex];
                                     if (pathCell) {
                                         // 计算路径点的坐标
-                                        var cellSize = 50 + 4 // 单元格尺寸 + 间距
-                                        var x = pathCol * cellSize + cellSize / 2
-                                        var y = pathRow * cellSize + cellSize / 2
+                                        var cellSize = 50 + 4; // 单元格尺寸 + 间距
+                                        var x = pathCol * cellSize + cellSize / 2;
+                                        var y = pathRow * cellSize + cellSize / 2;
                                         root.linkPath.push({
                                             x: x,
                                             y: y
-                                        })
+                                        });
                                     }
                                 }
                             }
                             // 开始闪烁效果
-                            hintBlinkTimer.blinkCount = 0
-                            root.showingPath = true
-                            hintBlinkTimer.start()
-                            linkCanvas.requestPaint()
+                            hintBlinkTimer.blinkCount = 0;
+                            root.showingPath = true;
+                            hintBlinkTimer.start();
+                            linkCanvas.requestPaint();
                         }
                     }
                 }
@@ -324,7 +360,7 @@ Rectangle {
                 Layout.preferredHeight: parent.parent.height * 0.6
                 font.pixelSize: parent.parent.height * 0.3
                 onClicked: {
-                    root.exitGameRequested()
+                    root.exitGameRequested();
                 }
             }
         }
@@ -384,7 +420,7 @@ Rectangle {
                         if (grid.getCell(index) === 0) {
                             return;
                         }
-                        
+
                         let r = Math.floor(index / gameLogic.cols());
                         let c = index % gameLogic.cols();
                         clickSound.stop();
@@ -522,59 +558,58 @@ Rectangle {
     }
 
     // 键盘事件处理
-    Keys.onPressed: function(event) {
+    Keys.onPressed: function (event) {
         if (event.key === Qt.Key_Escape) {
-            root.isPaused = !root.isPaused
-            root.pauseStateChanged(root.isPaused)
+            root.isPaused = !root.isPaused;
+            root.pauseStateChanged(root.isPaused);
         } else if (!root.isPaused && !root.showingPath) {
             // 方向键控制
-            let newRow = root.selectedRow
-            let newCol = root.selectedCol
-            
+            let newRow = root.selectedRow;
+            let newCol = root.selectedCol;
+
             switch (event.key) {
-                case Qt.Key_Left:
-                    newCol = Math.max(1, root.selectedCol - 1)
-                    break
-                case Qt.Key_Right:
-                    newCol = Math.min(gameLogic.cols() - 2, root.selectedCol + 1)
-                    break
-                case Qt.Key_Up:
-                    newRow = Math.max(1, root.selectedRow - 1)
-                    break
-                case Qt.Key_Down:
-                    newRow = Math.min(gameLogic.rows() - 2, root.selectedRow + 1)
-                    break
-                case Qt.Key_Space:
-                    // 空格键选择方块
-                    if (newRow >= 0 && newCol >= 0) {
-                        let index = newRow * gameLogic.cols() + newCol
-                        let cell = grid.children[index]
-                        if (cell && cell.MouseArea) {
-                            cell.MouseArea.clicked()
-                        }
-                    }
-                    break
-            }
-            
-            // 如果位置有效且不是外圈格子，更新选中位置
-            if (newRow >= 1 && newRow < gameLogic.rows() - 1 &&
-                newCol >= 1 && newCol < gameLogic.cols() - 1) {
-                // 取消之前选中的方块
-                if (root.selectedRow >= 0 && root.selectedCol >= 0) {
-                    let oldIndex = root.selectedRow * gameLogic.cols() + root.selectedCol
-                    let oldCell = grid.children[oldIndex]
-                    if (oldCell) {
-                        oldCell.color = "skyblue"
+            case Qt.Key_Left:
+                newCol = Math.max(1, root.selectedCol - 1);
+                break;
+            case Qt.Key_Right:
+                newCol = Math.min(gameLogic.cols() - 2, root.selectedCol + 1);
+                break;
+            case Qt.Key_Up:
+                newRow = Math.max(1, root.selectedRow - 1);
+                break;
+            case Qt.Key_Down:
+                newRow = Math.min(gameLogic.rows() - 2, root.selectedRow + 1);
+                break;
+            case Qt.Key_Space:
+                // 空格键选择方块
+                if (newRow >= 0 && newCol >= 0) {
+                    let index = newRow * gameLogic.cols() + newCol;
+                    let cell = grid.children[index];
+                    if (cell && cell.MouseArea) {
+                        cell.MouseArea.clicked();
                     }
                 }
-                
+                break;
+            }
+
+            // 如果位置有效且不是外圈格子，更新选中位置
+            if (newRow >= 1 && newRow < gameLogic.rows() - 1 && newCol >= 1 && newCol < gameLogic.cols() - 1) {
+                // 取消之前选中的方块
+                if (root.selectedRow >= 0 && root.selectedCol >= 0) {
+                    let oldIndex = root.selectedRow * gameLogic.cols() + root.selectedCol;
+                    let oldCell = grid.children[oldIndex];
+                    if (oldCell) {
+                        oldCell.color = "skyblue";
+                    }
+                }
+
                 // 选中新的方块
-                root.selectedRow = newRow
-                root.selectedCol = newCol
-                let newIndex = newRow * gameLogic.cols() + newCol
-                let newCell = grid.children[newIndex]
+                root.selectedRow = newRow;
+                root.selectedCol = newCol;
+                let newIndex = newRow * gameLogic.cols() + newCol;
+                let newCell = grid.children[newIndex];
                 if (newCell) {
-                    newCell.color = "blue"
+                    newCell.color = "blue";
                 }
             }
         }
@@ -594,10 +629,10 @@ Rectangle {
         onTriggered: {
             // 取消所有高亮
             for (var i = 0; i < grid.children.length; ++i) {
-                var cell = grid.children[i]
+                var cell = grid.children[i];
                 if (cell) {
-                    cell.highlighted = false
-                    cell.pathHighlighted = false
+                    cell.highlighted = false;
+                    cell.pathHighlighted = false;
                 }
             }
         }

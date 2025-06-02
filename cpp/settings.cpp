@@ -8,10 +8,10 @@ Settings::Settings(QObject *parent) : QObject{parent}, window(nullptr) {
     configManager.loadConfig(config);
 
     // 使用定时器延迟初始化窗口
-    QTimer::singleShot(100, this, &Settings::initializeWindow);
+    QTimer::singleShot(100, this, &Settings::initWindow);
 }
 
-void Settings::initializeWindow() {
+void Settings::initWindow() {
     if (window) {
         return; // 如果已经初始化过，直接返回
     }
@@ -29,7 +29,7 @@ void Settings::initializeWindow() {
     if (!window) {
         qWarning() << "无法获取 QQuickWindow 实例，将在下一次尝试";
         // 如果还是获取不到，再次尝试
-        QTimer::singleShot(500, this, &Settings::initializeWindow);
+        QTimer::singleShot(500, this, &Settings::initWindow);
     }
 }
 
@@ -128,7 +128,7 @@ void Settings::setVolume(double volume) {
 void Settings::resizeWindow(int width, int height) {
     if (!window) {
         qWarning() << "resizeWindow: window 为空，尝试重新初始化窗口";
-        initializeWindow();
+        initWindow();
         if (!window) {
             qWarning() << "resizeWindow: 无法获取窗口，操作取消";
             return;
@@ -278,7 +278,15 @@ void Settings::setBlockCount(int count) {
 }
 
 int Settings::getBlockTypes() const {
-    return config.blockTypes;
+    QString difficulty = getDifficulty();
+    if (difficulty == "easy") {
+        return DefaultValues::block_types_easy;
+    } else if (difficulty == "medium") {
+        return DefaultValues::block_types_medium;
+    } else if (difficulty == "hard") {
+        return DefaultValues::block_types_hard;
+    }
+    return DefaultValues::block_types;
 }
 
 void Settings::setBlockTypes(int types) {
@@ -331,4 +339,18 @@ QStringList Settings::getWindowSizeModel() const {
           << QString("%1x%2").arg(logicalToPhysical(1024)).arg(logicalToPhysical(768))
           << QString("%1x%2").arg(logicalToPhysical(800)).arg(logicalToPhysical(600));
     return model;
+}
+
+int Settings::getWindowWidth() const {
+    if (window) {
+        return window->width();
+    }
+    return config.screenWidth;
+}
+
+int Settings::getWindowHeight() const {
+    if (window) {
+        return window->height();
+    }
+    return config.screenHeight;
 }

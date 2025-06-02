@@ -24,7 +24,7 @@ class Settings : public QObject {
     ~Settings();
 
     // 初始化窗口
-    Q_INVOKABLE void initializeWindow();
+    Q_INVOKABLE void initWindow();
 
     // 玩家名称相关
     Q_INVOKABLE QString getPlayerName() const;           // 获取玩家名称
@@ -61,6 +61,8 @@ class Settings : public QObject {
     Q_INVOKABLE void setBorderless(bool borderless);                // 设置无边框
     Q_INVOKABLE void resizeWindow(int width, int height);           // 调整窗口大小
     Q_INVOKABLE void updateWindowSize();                            // 更新窗口大小
+    Q_INVOKABLE int getWindowWidth() const;                         // 获取窗口宽度
+    Q_INVOKABLE int getWindowHeight() const;                        // 获取窗口高度
 
     // 物理屏幕大小相关
     Q_INVOKABLE QPair<int, int> getPhysicalScreenSize() const;  // 获取物理屏幕大小

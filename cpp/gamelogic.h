@@ -30,12 +30,6 @@ class GameLogic : public QObject {
     explicit GameLogic(QObject *parent = nullptr);
     ~GameLogic();
 
-    // 难度相关常量
-    static const int EASY_PATTERNS = 4;   // 简单难度：4种图案
-    static const int MEDIUM_PATTERNS = 8; // 普通难度：8种图案
-    static const int HARD_PATTERNS = 12;  // 困难难度：12种图案
-    static const int TOTAL_PATTERNS = 20; // 总图案数量
-
     // 提示相关的结构体
     struct HintStep {
         int row1, col1;    // 第一个方块的位置
@@ -51,10 +45,6 @@ class GameLogic : public QObject {
     }
     Q_INVOKABLE int getCell(int row, int col) const;      // 获取单元格的值
     Q_INVOKABLE bool isOuterCell(int row, int col) const; // 判断是否是外圈格子
-    Q_INVOKABLE int getPatternCount() const;              // 获取当前难度的图案数量
-    Q_INVOKABLE int getTotalPatterns() const {
-        return TOTAL_PATTERNS;
-    } // 获取总图案数量
     Q_INVOKABLE void resetGame();                                         // 重置游戏
     Q_INVOKABLE bool canLink(int r1, int c1, int r2, int c2) const;       // 检查两个单元格是否可以连接
     Q_INVOKABLE void removeLink(int r1, int c1, int r2, int c2);          // 移除连接的两个方块
