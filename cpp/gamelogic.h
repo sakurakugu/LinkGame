@@ -63,23 +63,6 @@ class GameLogic : public QObject {
     Q_INVOKABLE QVariantList getHint();                                   // 获取提示
     Q_INVOKABLE QVector<QPoint> findPath(int row1, int col1, int row2, int col2); // 寻找最少弯折的路径
 
-    // 用户名相关
-    Q_INVOKABLE QString getPlayerName() const;           // 获取玩家名称
-    Q_INVOKABLE void setPlayerName(const QString &name); // 设置玩家名称
-
-    // 排行榜相关
-    Q_INVOKABLE QVariantList getLeaderboard() const;                        // 获取排行榜
-    Q_INVOKABLE void addScoreToLeaderboard(const QString &name, int score); // 添加分数到排行榜
-    Q_INVOKABLE void addScore(const QString &name, int score);              // 添加分数
-
-    // 设置相关
-    Q_INVOKABLE QString getDifficulty() const;                              // 获取难度
-    Q_INVOKABLE void setDifficulty(const QString &difficulty);              // 设置难度
-    Q_INVOKABLE int getGameTime() const;                                    // 获取游戏时间
-    Q_INVOKABLE void setGameTime(int seconds);                              // 设置游戏时间
-    Q_INVOKABLE double getVolume() const;                                   // 获取音量
-    Q_INVOKABLE void setVolume(double volume);                              // 设置音量
-
     // 游戏管理相关
     void startGame();  // 开始游戏
     void pauseGame();  // 暂停游戏

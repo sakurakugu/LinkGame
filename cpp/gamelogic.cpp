@@ -136,100 +136,6 @@ void GameLogic::removeLink(int r1, int c1, int r2, int c2) {
 }
 
 /**
- * @brief 获取玩家名称
- * @return 玩家名称
- */
-QString GameLogic::getPlayerName() const {
-    return settings->getPlayerName();
-}
-
-/**
- * @brief 设置玩家名称
- * @param name 玩家名称
- */
-void GameLogic::setPlayerName(const QString &name) {
-    if (settings->getPlayerName() != name) {
-        settings->setPlayerName(name);
-        emit playerNameChanged();
-    }
-}
-
-/**
- * @brief 获取排行榜
- * @return 排行榜列表
- */
-QVariantList GameLogic::getLeaderboard() const {
-    return settings->getLeaderboard();
-}
-
-/**
- * @brief 添加分数到排行榜
- * @param name 玩家名称
- * @param score 分数
- */
-void GameLogic::addScoreToLeaderboard(const QString &name, int score) {
-    settings->addScoreToLeaderboard(name, score);
-    emit leaderboardChanged();
-}
-
-/**
- * @brief 获取难度
- * @return 难度
- */
-QString GameLogic::getDifficulty() const {
-    return settings->getDifficulty();
-}
-
-/**
- * @brief 设置难度
- * @param difficulty 难度
- */
-void GameLogic::setDifficulty(const QString &difficulty) {
-    if (settings->getDifficulty() != difficulty) {
-        settings->setDifficulty(difficulty);
-        emit difficultyChanged();
-    }
-}
-
-/**
- * @brief 获取游戏时间
- * @return 游戏时间（秒）
- */
-int GameLogic::getGameTime() const {
-    return settings->getGameTime();
-}
-
-/**
- * @brief 设置游戏时间
- * @param seconds 游戏时间（秒）
- */
-void GameLogic::setGameTime(int seconds) {
-    if (settings->getGameTime() != seconds) {
-        settings->setGameTime(seconds);
-        emit gameTimeChanged();
-    }
-}
-
-/**
- * @brief 获取音量
- * @return 音量（0.0-1.0）
- */
-double GameLogic::getVolume() const {
-    return settings->getVolume();
-}
-
-/**
- * @brief 设置音量
- * @param volume 音量（0.0-1.0）
- */
-void GameLogic::setVolume(double volume) {
-    if (settings->getVolume() != volume) {
-        settings->setVolume(volume);
-        emit volumeChanged();
-    }
-}
-
-/**
  * @brief 检查游戏是否结束
  * @return 如果游戏结束返回true，否则返回false
  */
@@ -326,21 +232,6 @@ QVariantList GameLogic::getLinkPath(int r1, int c1, int r2, int c2) {
     }
 
     return path;
-}
-
-/**
- * @brief 获取模式数量
- * @return 模式数量
- */
-int GameLogic::getPatternCount() const {
-    if (settings->getDifficulty() == "简单") {
-        return EASY_PATTERNS;
-    } else if (settings->getDifficulty() == "普通") {
-        return MEDIUM_PATTERNS;
-    } else if (settings->getDifficulty() == "困难") {
-        return HARD_PATTERNS;
-    }
-    return MEDIUM_PATTERNS; // 默认返回普通难度
 }
 
 /**

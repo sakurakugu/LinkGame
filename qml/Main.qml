@@ -198,27 +198,6 @@ Window {
         }
     }
 
-    // 用户名输入界面
-    Loader {
-        id: playerNameLoader
-        anchors.fill: parent
-        source: "PlayerNameInput.qml"
-        active: gameState === 4  // GameState.NameInput
-        onLoaded: {
-            item.confirmed.connect(function (name) {
-                gameLogic.setPlayerName(name);
-                playerName = name;
-                gameLogic.resetGame(); // 重置游戏
-                score = 0;
-                timeLeft = gameLogic.getGameTime();
-                gameState = gameStateEnum.Playing;
-            });
-            item.canceled.connect(function () {
-                gameState = gameStateEnum.Menu;
-            });
-        }
-    }
-
     // 主页面
     Component {
         id: menuComponent
