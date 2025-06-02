@@ -7,7 +7,7 @@ Rectangle {
     // 可自定义的属性
     property string text: "按钮"
     property color normalColor: "#5ca9fb" // 正常状态颜色
-    property color hoverColor: "#9dc8f7" // 悬停状态颜色
+    property color hoverColor: "#b0d3f8" // 悬停状态颜色
     property color pressedColor: "#4a90e2" // 按下状态颜色
     property int fontSize: 16 // 默认字体大小
     property int buttonWidth: 200 // 默认宽度

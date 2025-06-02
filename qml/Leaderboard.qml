@@ -40,7 +40,7 @@ Rectangle {
                 id: leaderboardView
                 anchors.fill: parent
                 anchors.margins: 10
-                model: gameLogic.getLeaderboard()
+                model: settings.getLeaderboard()
                 clip: true
 
                 header: RowLayout {
@@ -50,24 +50,24 @@ Rectangle {
 
                     Text {
                         text: "排名"
-                        font.pixelSize: 18
+                        font.pixelSize: parent.parent.width * 0.03
                         font.bold: true
-                        Layout.preferredWidth: 80
+                        Layout.preferredWidth: parent.width * 0.2
                         horizontalAlignment: Text.AlignHCenter
                     }
 
                     Text {
                         text: "玩家"
-                        font.pixelSize: 18
+                        font.pixelSize: parent.parent.width * 0.03
                         font.bold: true
                         Layout.fillWidth: true
                     }
 
                     Text {
                         text: "分数"
-                        font.pixelSize: 18
+                        font.pixelSize: parent.parent.width * 0.03
                         font.bold: true
-                        Layout.preferredWidth: 100
+                        Layout.preferredWidth: parent.width * 0.2
                         horizontalAlignment: Text.AlignHCenter
                     }
                 }
@@ -85,22 +85,41 @@ Rectangle {
 
                         Text {
                             text: (index + 1) + "."
-                            font.pixelSize: 16
-                            Layout.preferredWidth: 80
+                            font.pixelSize: parent.parent.width * 0.03
+                            Layout.preferredWidth: parent.width * 0.2
                             horizontalAlignment: Text.AlignHCenter
                         }
 
                         Text {
                             text: modelData.name
-                            font.pixelSize: 16
+                            font.pixelSize: parent.parent.width * 0.03
                             Layout.fillWidth: true
                         }
 
                         Text {
                             text: modelData.score
-                            font.pixelSize: 16
-                            Layout.preferredWidth: 100
+                            font.pixelSize: parent.parent.width * 0.03
+                            Layout.preferredWidth: parent.width * 0.2
                             horizontalAlignment: Text.AlignHCenter
+                        }
+                    }
+
+                    MouseArea {
+                        id: mouseArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        onHoveredChanged: {
+                            if (mouseArea.containsMouse) {
+                                parent.color = "#e0e0e0";
+                            } else {
+                                parent.color = index % 2 === 0 ? "#f9f9f9" : "white";
+                            }
+                        }
+                    }
+
+                    Behavior on color {
+                        ColorAnimation {
+                            duration: 200
                         }
                     }
                 }

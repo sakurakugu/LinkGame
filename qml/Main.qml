@@ -132,7 +132,7 @@ Window {
                     buttonWidth: parent.parent.width * 0.25
                     buttonHeight: parent.parent.height * 0.08
                     normalColor: "#f35c4b"
-                    hoverColor: "#fa8b8b"
+                    hoverColor: "#fda0a0"
                     pressedColor: "#ec3030"
 
                     onClicked: {
