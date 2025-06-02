@@ -1,8 +1,8 @@
 #include "settings.h"
+
 #include <QDebug>
 #include <QTimer>
 #include <algorithm>
-
 Settings::Settings(QObject *parent) : QObject{parent}, window(nullptr) {
     // 加载配置
     configManager.loadConfig(config);
@@ -380,6 +380,18 @@ void Settings::setTheme(const QString &theme) {
     if (config.theme != theme) {
         config.theme = theme;
         emit themeChanged();
+        saveConfig();
+    }
+}
+
+QString Settings::getLanguage() const {
+    return config.language;
+}
+
+void Settings::setLanguage(const QString &lang) {
+    if (config.language != lang) {
+        config.language = lang;
+        emit languageChanged();
         saveConfig();
     }
 }

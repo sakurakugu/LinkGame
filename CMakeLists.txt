@@ -27,6 +27,8 @@ set(PROJECT_SOURCES
     cpp/config.h
     cpp/settings.cpp
     cpp/settings.h
+    cpp/language.cpp
+    cpp/language.h
 )
 
 set(MYQML_COMPONENTS

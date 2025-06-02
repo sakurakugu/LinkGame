@@ -345,6 +345,25 @@ Rectangle {
                     }
                 }
 
+                // 添加语言切换选项
+                RowLayout {
+                    Layout.fillWidth: true
+                    spacing: parent.parent.width * 0.02
+
+                    Text {
+                        text: qsTr("语言:")
+                        font.pixelSize: parent.parent.parent.width * 0.02
+                    }
+                    ComboBox {
+                        id: languageCombo
+                        model: ["简体中文", "English"]
+                        currentIndex: settings.getLanguage() === "zh_CN" ? 0 : 1
+                        onCurrentIndexChanged: {
+                            settings.setLanguage(currentIndex === 0 ? "zh_CN" : "en")
+                        }
+                    }
+                }
+
                 // 添加窗口大小变化监听
                 Connections {
                     target: settings

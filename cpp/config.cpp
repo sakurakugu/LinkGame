@@ -24,6 +24,7 @@ void Config::initConfig(config &config) {
     config.blockCount = DefaultValues::block_count;     // 默认方块数量
     config.blockTypes = DefaultValues::block_types;     // 默认方块种类数
     config.theme = DefaultValues::theme;                // 默认主题为浅色
+    config.language = DefaultValues::language;          // 默认语言为中文
     config.leaderboard.clear();                         // 清空排行榜
 }
 
@@ -83,6 +84,11 @@ void Config::loadConfig(config &config) {
             } else {
                 config.theme = DefaultValues::theme;
             }
+            if (settings.contains("language")) {
+                config.language = QString::fromStdString(toml::find<std::string>(settings, "language"));
+            } else {
+                config.language = DefaultValues::language;
+            }
         } else {
             config.difficulty = DefaultValues::difficulty;
             config.gameTime = DefaultValues::game_time;
@@ -90,6 +96,7 @@ void Config::loadConfig(config &config) {
             config.blockCount = DefaultValues::block_count;
             config.blockTypes = DefaultValues::block_types;
             config.theme = DefaultValues::theme;
+            config.language = DefaultValues::language;
         }
 
         // 读取排行榜
@@ -144,6 +151,7 @@ void Config::saveConfig(const config &config) {
         data["settings"]["block_count"] = config.blockCount;
         data["settings"]["block_types"] = config.blockTypes;
         data["settings"]["theme"] = config.theme.toStdString();
+        data["settings"]["language"] = config.language.toStdString();
 
         // 保存排行榜
         data["leaderboard"].comments().push_back(" 玩家排行榜");

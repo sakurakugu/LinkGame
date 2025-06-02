@@ -7,30 +7,42 @@
 
 #include "cpp/gamelogic.h" // 游戏逻辑类
 #include "cpp/settings.h"
+#include "cpp/language.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
     app.setWindowIcon(QIcon(":/image/icon.png")); // 设置窗口图标
 
-    // 创建翻译器
-    QTranslator translator;
-    // 加载翻译文件
-    if (!translator.load(":/qt/qml/Translated/i18n/qml_zh_CN.qm")) {
-        qWarning() << "无法加载翻译文件";
-    }
-    // 安装翻译器
-    app.installTranslator(&translator);
-
     QQmlApplicationEngine engine;
 
+    // // 创建翻译器
+    // QTranslator translator;
+    // // 加载翻译文件
+    // if (!translator.load(":/qt/qml/Translated/i18n/qml_zh_CN.qm")) {
+    //     qWarning() << "无法加载翻译文件";
+    // }
+    // // 安装翻译器
+    // app.installTranslator(&translator);
+
+
     auto context = engine.rootContext(); // 获取根全局对象
-    GameLogic logic; // 创建游戏逻辑对象
-    context->setContextProperty("gameLogic", &logic); // 将游戏逻辑对象暴露给 QML
+    // 创建并注册Language
+    Language language;
+    context->setContextProperty("language", &language);
 
     // 创建并注册Settings
     Settings settings;
     context->setContextProperty("settings", &settings);
+
+    // 连接语言设置变化信号
+    QObject::connect(&settings, &Settings::languageChanged, [&language, &settings]() {
+        language.setCurrentLanguage(settings.getLanguage());
+    });
+
+    // 创建并注册GameLogic
+    GameLogic logic; // 创建游戏逻辑对象
+    context->setContextProperty("gameLogic", &logic); // 将游戏逻辑对象暴露给 QML
 
     QObject::connect(
         &engine,

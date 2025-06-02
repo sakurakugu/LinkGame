@@ -14,6 +14,7 @@ struct DefaultValues {
     static constexpr int block_count = 48;    // 默认方块数量
     static constexpr int block_types = 8;     // 默认方块种类数
     static constexpr const char *theme = "light"; // 默认主题为浅色
+    static constexpr const char *language = "zh_CN"; // 默认语言为中文
 
     static constexpr int block_types_easy = 4;   // 简单难度：4种图案
     static constexpr int block_types_medium = 8; // 普通难度：8种图案
