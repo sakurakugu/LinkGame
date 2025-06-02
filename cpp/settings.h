@@ -3,17 +3,18 @@
 
 #include "config.h"
 
+#include <QDebug>
 #include <QGuiApplication>
 #include <QObject>
 #include <QPair>
 #include <QQuickWindow>
 #include <QScreen>
 #include <QString>
+#include <QStringList>
+#include <QTimer>
 #include <QVariantList>
 #include <QVariantMap>
-#include <QDebug>
 #include <algorithm>
-#include <QTimer>
 
 class Settings : public QObject {
     Q_OBJECT
@@ -46,10 +47,10 @@ class Settings : public QObject {
     Q_INVOKABLE void setVolume(double volume); // 设置音量
 
     // 方块相关
-    Q_INVOKABLE int getBlockCount() const;        // 获取方块数量
-    Q_INVOKABLE void setBlockCount(int count);    // 设置方块数量
-    Q_INVOKABLE int getBlockTypes() const;        // 获取方块种类数
-    Q_INVOKABLE void setBlockTypes(int types);    // 设置方块种类数
+    Q_INVOKABLE int getBlockCount() const;     // 获取方块数量
+    Q_INVOKABLE void setBlockCount(int count); // 设置方块数量
+    Q_INVOKABLE int getBlockTypes() const;     // 获取方块种类数
+    Q_INVOKABLE void setBlockTypes(int types); // 设置方块种类数
 
     // 窗口管理相关
     Q_INVOKABLE QString getScreenSize() const;             // 获取当前屏幕大小
@@ -61,14 +62,19 @@ class Settings : public QObject {
     Q_INVOKABLE void resizeWindow(int width, int height);  // 调整窗口大小
     Q_INVOKABLE void updateWindowSize();                   // 更新窗口大小
 
+    // 物理屏幕大小相关
+    Q_INVOKABLE QPair<int, int> getPhysicalScreenSize() const; // 获取物理屏幕大小
+    Q_INVOKABLE QStringList getWindowSizeModel() const;        // 获取窗口大小模型
+    Q_INVOKABLE QPair<int, int> getAvailableScreenSize() const; // 获取可用屏幕大小（不包括任务栏等系统区域）
+
     // 配置相关
     Q_INVOKABLE void saveConfig(); // 保存配置
 
   signals:
-    Q_SIGNAL void leaderboardChanged(); // 排行榜变化信号
-    Q_SIGNAL void gameTimeChanged();    // 游戏时间变化信号
-    Q_SIGNAL void volumeChanged();      // 音量变化信号
-    Q_SIGNAL void windowSizeChanged();  // 窗口大小变化信号
+    Q_SIGNAL void leaderboardChanged();   // 排行榜变化信号
+    Q_SIGNAL void gameTimeChanged();      // 游戏时间变化信号
+    Q_SIGNAL void volumeChanged();        // 音量变化信号
+    Q_SIGNAL void windowSizeChanged();    // 窗口大小变化信号
     Q_SIGNAL void blockSettingsChanged(); // 方块设置变化信号
     Q_SIGNAL void windowStateChanged();   // 窗口状态变化信号
 

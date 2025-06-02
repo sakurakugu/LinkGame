@@ -6,9 +6,9 @@ Rectangle {
     id: root
     color: "#f0f0f0"
     focus: true // 确保可以接收键盘事件
-    
+
     // 定义信号
-    signal closed()
+    signal closed
     signal timeChanged(int seconds)
     signal soundStateChanged(bool enabled)
 
@@ -294,25 +294,29 @@ Rectangle {
                     }
                     ComboBox {
                         id: windowSizeCombo
-                        model: ["800x600", "1024x768", "1280x720", "1920x1080", "全屏", "无边框全屏"]
+                        model: settings.getWindowSizeModel() // 从C++端获取窗口大小模型
                         Layout.fillWidth: true
                         font.pixelSize: parent.parent.parent.width * 0.02
                         currentIndex: {
-                            let currentSize = settings.getScreenSize();
-                            if (currentSize.startsWith("全屏")) return 4;
-                            if (currentSize.startsWith("无边框")) return 5;
-                            return model.indexOf(currentSize);
+                            let currentSize = settings.getScreenSize(); // 获取当前屏幕大小
+                            if (currentSize.startsWith("全屏")) // 如果当前屏幕大小以"全屏"开头
+                                return 0;
+                            if (currentSize.startsWith("无边框")) // 如果当前屏幕大小以"无边框"开头
+                                return 1;
+                            return model.indexOf(currentSize); // 返回当前屏幕大小在模型中的索引
                         }
                         onActivated: {
-                            if (currentIndex === 4) {
-                                settings.setFullscreen(true);
-                            } else if (currentIndex === 5) {
-                                settings.setBorderless(true);
+                            if (currentIndex === 0) {
+                                // 如果当前索引为0
+                                settings.setFullscreen(true); // 设置全屏
+                            } else if (currentIndex === 1) {
+                                // 如果当前索引为1
+                                settings.setBorderless(true); // 设置无边框
                             } else {
-                                let size = model[currentIndex].split("x");
-                                settings.setFullscreen(false);
-                                settings.setBorderless(false);
-                                settings.resizeWindow(parseInt(size[0]), parseInt(size[1]));
+                                let size = model[currentIndex].split("x"); // 将当前屏幕大小按"x"分割成数组
+                                settings.setFullscreen(false); // 设置非全屏
+                                settings.setBorderless(false); // 设置非无边框
+                                settings.resizeWindow(parseInt(size[0]), parseInt(size[1])); // 调整窗口大小
                             }
                         }
                     }
