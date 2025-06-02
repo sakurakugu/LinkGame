@@ -354,3 +354,14 @@ int Settings::getWindowHeight() const {
     }
     return config.screenHeight;
 }
+
+bool Settings::getSoundState() const {
+    return config.soundState;
+}
+
+void Settings::setSoundState(bool state) {
+    if (config.soundState != state) {
+        config.soundState = state;
+        saveConfig();
+    }
+}

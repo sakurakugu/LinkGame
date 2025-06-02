@@ -32,6 +32,7 @@ class Config : public QObject {
         QString difficulty;           // 难度
         int gameTime;                 // 游戏时间
         double volume;                // 音量
+        bool soundState;              // 声音状态
         int screenWidth;              // 屏幕宽度
         int screenHeight;             // 屏幕高度
         bool fullscreen;              // 是否全屏

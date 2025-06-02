@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "./components"
 
 Rectangle {
     id: root
@@ -8,6 +9,10 @@ Rectangle {
     focus: true // 确保可以接收键盘事件
 
     signal closed
+
+    Component.onCompleted: {
+        root.forceActiveFocus(); // 确保键盘事件处理程序获得焦点
+    }
 
     // 添加键盘事件处理
     Keys.onPressed: function (event) {
@@ -65,24 +70,12 @@ Rectangle {
 
         }
 
-
-        Button {
-            text: "返回"
-            Layout.preferredWidth: parent.width * 0.2 // 使用父容器宽度的20%
-            Layout.preferredHeight: parent.height * 0.08 // 使用父容器高度的8%
+        MyButton {
+            id: backButton
+            width: parent.width * 0.2
+            height: parent.height * 0.08
             Layout.alignment: Qt.AlignHCenter
-            font.pixelSize: parent.parent.width * 0.02 // 使用窗口宽度的2%作为字体大小
-            background: Rectangle {
-                color: parent.pressed ? "#4a90e2" : "#5ca9fb"
-                radius: 10
-            }
-            contentItem: Text {
-                text: parent.text
-                font: parent.font
-                color: "white"
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-            }
+            text: "返回"
             onClicked: root.closed()
         }
     }

@@ -16,6 +16,7 @@ void Config::initConfig(config &config) {
     config.difficulty = DefaultValues::difficulty;
     config.gameTime = DefaultValues::game_time;         // 默认游戏时间为3分钟
     config.volume = DefaultValues::volume;              // 默认音量为80%
+    config.soundState = DefaultValues::sound_state;      // 默认声音状态为开启
     config.screenWidth = DefaultValues::screen_width;   // 默认窗口宽度
     config.screenHeight = DefaultValues::screen_height; // 默认窗口高度
     config.fullscreen = DefaultValues::fullscreen;      // 默认不全屏
@@ -60,6 +61,11 @@ void Config::loadConfig(config &config) {
                 config.volume = qBound(0.0, config.volume, 1.0); // 确保音量在合法范围内
             } else {
                 config.volume = DefaultValues::volume;
+            }
+            if (settings.contains("sound_state")) {
+                config.soundState = toml::find<bool>(settings, "sound_state");
+            } else {
+                config.soundState = DefaultValues::sound_state;
             }
             if (settings.contains("block_count")) {
                 config.blockCount = toml::find<int>(settings, "block_count");
@@ -127,6 +133,7 @@ void Config::saveConfig(const config &config) {
         data["settings"]["difficulty"] = config.difficulty.toStdString();
         data["settings"]["game_time"] = config.gameTime;
         data["settings"]["volume"] = config.volume;
+        data["settings"]["sound_state"] = config.soundState;
         data["settings"]["block_count"] = config.blockCount;
         data["settings"]["block_types"] = config.blockTypes;
 

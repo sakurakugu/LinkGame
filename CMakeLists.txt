@@ -36,6 +36,7 @@ set(MYQML_FILES
     qml/GameBoard.qml
     qml/Leaderboard.qml
     qml/Cell.qml
+    qml/components/MyButton.qml
 )
 
 set(MYPRIVATE

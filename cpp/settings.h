@@ -42,9 +42,11 @@ class Settings : public QObject {
     Q_INVOKABLE int getGameTime() const;       // 获取游戏时间
     Q_INVOKABLE void setGameTime(int seconds); // 设置游戏时间
 
-    // 音量相关
+    // 声音相关
     Q_INVOKABLE double getVolume() const;      // 获取音量
     Q_INVOKABLE void setVolume(double volume); // 设置音量
+    Q_INVOKABLE bool getSoundState() const; // 获取声音状态
+    Q_INVOKABLE void setSoundState(bool state); // 设置声音状态
 
     // 方块相关
     Q_INVOKABLE int getBlockCount() const;     // 获取方块数量
