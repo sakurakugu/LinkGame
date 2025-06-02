@@ -13,7 +13,7 @@ Rectangle {
     property var linkPath: [] // 存储连接路径的点
     property bool showingPath: false // 是否正在显示路径
     property int score: 0 // 当前分数
-    property bool isPaused: gameLogic.isPaused() // 是否暂停
+    property bool isPaused: gameLogic.isPaused // 是否暂停
 
     signal returnToMenu // 返回主菜单信号
     signal closed // 退出游戏信号
@@ -29,13 +29,15 @@ Rectangle {
         function onTimeLeftChanged(time) {
             if (time <= 0) {
                 gameLogic.endGame();
-                PageState = Page.GameOver;
+                gameLogic.resetGame();
+                root.closed();
             }
         }
         // 监听游戏完成信号
         function onGameCompleted() {
             gameLogic.endGame();
-            PageState = Page.GameOver;
+            gameLogic.resetGame();
+            root.closed();
         }
         // 监听暂停状态变化
         function onPauseStateChanged(paused) {
@@ -241,8 +243,7 @@ Rectangle {
                 Layout.preferredWidth: parent.parent.width * 0.1
                 Layout.preferredHeight: parent.parent.height * 0.6
                 font.pixelSize: parent.parent.height * 0.3
-                onClicked: {
-                }
+                onClicked: {}
             }
 
             Button {
