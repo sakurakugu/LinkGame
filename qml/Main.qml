@@ -37,11 +37,16 @@ Window {
 
     // 游戏状态枚举
     readonly property var page: {
-        "Menu": 0,       // 主菜单
-        "Playing": 1,    // 游戏中
-        "GameOver": 2,   // 游戏结束
-        "Leaderboard": 3,// 排行榜
-        "Settings": 4,   // 设置
+        "Menu": 0       // 主菜单
+        ,
+        "Playing": 1    // 游戏中
+        ,
+        "GameOver": 2   // 游戏结束
+        ,
+        "Leaderboard": 3// 排行榜
+        ,
+        "Settings": 4   // 设置
+        ,
         "Help": 5        // 帮助
     }
 
@@ -73,110 +78,63 @@ Window {
                 anchors.topMargin: parent.height * 0.2 // 与标题保持一定距离
                 spacing: parent.height * 0.03 // 使用窗口高度的3%作为按钮间距
 
-                Button {
+                MyButton {
                     text: qsTr("开始游戏")
-                    font.pixelSize: parent.parent.width * 0.03
-                    Layout.preferredWidth: parent.parent.width * 0.25
-                    Layout.preferredHeight: parent.parent.height * 0.08
-                    background: Rectangle {
-                        color: parent.hovered ? "#4a90e2" : "#5ca9fb"
-                        radius: 10
-                    }
-                    contentItem: Text {
-                        text: parent.text
-                        font: parent.font
-                        color: "white"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
+                    fontSize: parent.parent.width * 0.03
+                    buttonWidth: parent.parent.width * 0.25
+                    buttonHeight: parent.parent.height * 0.08
+
                     onClicked: {
                         console.log("点击-主页面-开始游戏");
                         pageState = page.Playing;
                     }
                 }
 
-                Button {
+                MyButton {
                     text: qsTr("排行榜")
-                    font.pixelSize: parent.parent.width * 0.03
-                    Layout.preferredWidth: parent.parent.width * 0.25
-                    Layout.preferredHeight: parent.parent.height * 0.08
-                    background: Rectangle {
-                        color: parent.hovered ? "#4a90e2" : "#5ca9fb"
-                        radius: 10
-                    }
-                    contentItem: Text {
-                        text: parent.text
-                        font: parent.font
-                        color: "white"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
+                    fontSize: parent.parent.width * 0.03
+                    buttonWidth: parent.parent.width * 0.25
+                    buttonHeight: parent.parent.height * 0.08
+
                     onClicked: {
                         console.log("点击-主页面-排行榜");
                         pageState = page.Leaderboard;
                     }
                 }
 
-                Button {
+                MyButton {
                     text: qsTr("设置")
-                    font.pixelSize: parent.parent.width * 0.03
-                    Layout.preferredWidth: parent.parent.width * 0.25
-                    Layout.preferredHeight: parent.parent.height * 0.08
-                    background: Rectangle {
-                        color: parent.hovered ? "#4a90e2" : "#5ca9fb"
-                        radius: 10
-                    }
-                    contentItem: Text {
-                        text: parent.text
-                        font: parent.font
-                        color: "white"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
+                    fontSize: parent.parent.width * 0.03
+                    buttonWidth: parent.parent.width * 0.25
+                    buttonHeight: parent.parent.height * 0.08
+
                     onClicked: {
                         console.log("点击-主页面-设置");
                         pageState = page.Settings;
                     }
                 }
 
-                Button {
+                MyButton {
                     text: qsTr("游戏帮助")
-                    font.pixelSize: parent.parent.width * 0.03
-                    Layout.preferredWidth: parent.parent.width * 0.25
-                    Layout.preferredHeight: parent.parent.height * 0.08
-                    background: Rectangle {
-                        color: parent.hovered ? "#4a90e2" : "#5ca9fb"
-                        radius: 10
-                    }
-                    contentItem: Text {
-                        text: parent.text
-                        font: parent.font
-                        color: "white"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
+                    fontSize: parent.parent.width * 0.03
+                    buttonWidth: parent.parent.width * 0.25
+                    buttonHeight: parent.parent.height * 0.08
+
                     onClicked: {
                         console.log("点击-主页面-游戏帮助");
                         pageState = page.Help;
                     }
                 }
 
-                Button {
+                MyButton {
                     text: qsTr("退出游戏")
-                    font.pixelSize: parent.parent.width * 0.03
-                    Layout.preferredWidth: parent.parent.width * 0.25
-                    Layout.preferredHeight: parent.parent.height * 0.08
-                    background: Rectangle {
-                        color: parent.hovered ? "#e74c3c" : "#ff6b6b"
-                        radius: 10
-                    }
-                    contentItem: Text {
-                        text: parent.text
-                        font: parent.font
-                        color: "white"
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
+                    fontSize: parent.parent.width * 0.03
+                    buttonWidth: parent.parent.width * 0.25
+                    buttonHeight: parent.parent.height * 0.08
+                    normalColor: "#f35c4b"
+                    hoverColor: "#fa8b8b"
+                    pressedColor: "#ec3030"
+
                     onClicked: {
                         console.log("点击-主页面-退出游戏");
                         Qt.quit();

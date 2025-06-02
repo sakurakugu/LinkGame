@@ -47,35 +47,18 @@ Rectangle {
             Text {
                 width: parent.width
                 wrapMode: Text.WordWrap
-                text: "<h2>游戏规则</h2>" +
-                        "<p>1. 点击两个相同的方块</p>" +
-                        "<p>2. 如果两个方块可以用不超过三条直线连接，它们就会消失</p>" +
-                        "<p>3. 消除所有方块即可获胜</p>" +
-                        "<p>4. 游戏有时间限制，请在时间内完成</p>" +
-                        "<h2>操作说明</h2>" +
-                        "<p>- 点击方块选择</p>" +
-                        "<p>- 再次点击取消选择</p>" +
-                        "<p>- 点击'提示'按钮获取帮助</p>" +
-                        "<p>- 游戏结束后可以查看得分</p>" +
-                        "<h2>快捷键</h2>" +
-                        "<p>- ESC：暂停游戏/返回</p>" +
-                        "<p>- 方向键：移动选择</p>" +
-                        "<p>- 空格键：选择方块</p>" +
-                        "<h2>作者</h2>" +
-                        "<p>- 潘彦玮</p>" +
-                        "<p>- 谢智行</p>"
+                text: "<h2>游戏规则</h2>" + "<p>1. 点击两个相同的方块</p>" + "<p>2. 如果两个方块可以用不超过三条直线连接，它们就会消失</p>" + "<p>3. 消除所有方块即可获胜</p>" + "<p>4. 游戏有时间限制，请在时间内完成</p>" + "<h2>操作说明</h2>" + "<p>- 点击方块选择</p>" + "<p>- 再次点击取消选择</p>" + "<p>- 点击'提示'按钮获取帮助</p>" + "<p>- 游戏结束后可以查看得分</p>" + "<h2>快捷键</h2>" + "<p>- ESC：暂停游戏/返回</p>" + "<p>- 方向键：移动选择</p>" + "<p>- 空格键：选择方块</p>" + "<h2>作者</h2>" + "<p>- 潘彦玮</p>" + "<p>- 谢智行</p>"
                 font.pixelSize: parent.parent.parent.width * 0.02
                 textFormat: Text.RichText
             }
-
         }
 
         MyButton {
-            id: backButton
-            width: parent.width * 0.2
-            height: parent.height * 0.08
-            Layout.alignment: Qt.AlignHCenter
             text: "返回"
+            Layout.alignment: Qt.AlignHCenter
+            buttonWidth: parent.width * 0.15
+            buttonHeight: parent.height * 0.08
+            fontSize: width * 0.2
             onClicked: root.closed()
         }
     }

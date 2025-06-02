@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import "./components"
 
 Rectangle {
     id: root
@@ -324,15 +325,13 @@ Rectangle {
                     }
                 }
 
-                Button {
+                MyButton {
                     text: "确定"
                     Layout.alignment: Qt.AlignHCenter
-                    Layout.preferredWidth: parent.parent.width * 0.2 // 使用窗口宽度的20%作为按钮宽度
-                    Layout.preferredHeight: parent.parent.height * 0.08 // 使用窗口高度的8%作为按钮高度
-                    font.pixelSize: parent.parent.width * 0.02 // 使用窗口宽度的2%作为字体大小
-                    onClicked: {
-                        root.closed();
-                    }
+                    buttonWidth: parent.width * 0.15
+                    buttonHeight: parent.height * 0.08
+                    fontSize: width * 0.2
+                    onClicked: root.closed()
                 }
             }
         }
