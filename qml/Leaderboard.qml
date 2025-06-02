@@ -138,9 +138,9 @@ Rectangle {
 
     // 监听排行榜变化
     Connections {
-        target: gameLogic
+        target: settings
         function onLeaderboardChanged() {
-            leaderboardView.model = gameLogic.getLeaderboard();
+            leaderboardView.model = settings.getLeaderboard();
         }
     }
 }

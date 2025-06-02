@@ -43,9 +43,9 @@ class Settings : public QObject {
     Q_INVOKABLE void setGameTime(int seconds); // 设置游戏时间
 
     // 声音相关
-    Q_INVOKABLE double getVolume() const;      // 获取音量
-    Q_INVOKABLE void setVolume(double volume); // 设置音量
-    Q_INVOKABLE bool getSoundState() const; // 获取声音状态
+    Q_INVOKABLE double getVolume() const;       // 获取音量
+    Q_INVOKABLE void setVolume(double volume);  // 设置音量
+    Q_INVOKABLE bool getSoundState() const;     // 获取声音状态
     Q_INVOKABLE void setSoundState(bool state); // 设置声音状态
 
     // 方块相关
@@ -55,21 +55,21 @@ class Settings : public QObject {
     Q_INVOKABLE void setBlockTypes(int types); // 设置方块种类数
 
     // 窗口管理相关
-    Q_INVOKABLE QString getScreenSize() const;                      // 获取当前屏幕大小
-    Q_INVOKABLE void setScreenSize(int width, int height);          // 设置屏幕大小
-    Q_INVOKABLE bool isFullscreen() const;                          // 获取是否全屏
-    Q_INVOKABLE void setFullscreen(bool fullscreen);                // 设置全屏
-    Q_INVOKABLE bool isBorderless() const;                          // 获取是否无边框
-    Q_INVOKABLE void setBorderless(bool borderless);                // 设置无边框
-    Q_INVOKABLE void resizeWindow(int width, int height);           // 调整窗口大小
-    Q_INVOKABLE void updateWindowSize();                            // 更新窗口大小
-    Q_INVOKABLE int getWindowWidth() const;                         // 获取窗口宽度
-    Q_INVOKABLE int getWindowHeight() const;                        // 获取窗口高度
+    Q_INVOKABLE QString getScreenSize() const;             // 获取当前屏幕大小
+    Q_INVOKABLE void setScreenSize(int width, int height); // 设置屏幕大小
+    Q_INVOKABLE bool isFullscreen() const;                 // 获取是否全屏
+    Q_INVOKABLE void setFullscreen(bool fullscreen);       // 设置全屏
+    Q_INVOKABLE bool isBorderless() const;                 // 获取是否无边框
+    Q_INVOKABLE void setBorderless(bool borderless);       // 设置无边框
+    Q_INVOKABLE void resizeWindow(int width, int height);  // 调整窗口大小
+    Q_INVOKABLE void updateWindowSize();                   // 更新窗口大小
+    Q_INVOKABLE int getWindowWidth() const;                // 获取窗口宽度
+    Q_INVOKABLE int getWindowHeight() const;               // 获取窗口高度
 
     // 物理屏幕大小相关
-    Q_INVOKABLE QPair<int, int> getPhysicalScreenSize() const;  // 获取物理屏幕大小
-    Q_INVOKABLE QStringList getWindowSizeModel() const;         // 获取窗口大小模型
-    Q_INVOKABLE QPair<int, int> getAvailableScreenSize() const; // 获取可用屏幕大小（不包括任务栏等系统区域）
+    Q_INVOKABLE QPair<int, int> getPhysicalScreenSize() const;      // 获取物理屏幕大小
+    Q_INVOKABLE QStringList getWindowSizeModel() const;             // 获取窗口大小模型
+    Q_INVOKABLE QPair<int, int> getAvailableScreenSize() const;     // 获取可用屏幕大小（不包括任务栏等系统区域）
     QPair<int, int> logicalToPhysical(int width, int height) const; // 逻辑像素转物理像素(× 缩放倍数 dpr)
     int logicalToPhysical(int number) const;                        // 逻辑像素转物理像素(× 缩放倍数 dpr)
 
