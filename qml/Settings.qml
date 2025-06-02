@@ -10,8 +10,6 @@ Rectangle {
 
     // 定义信号
     signal closed
-    signal timeChanged(int seconds)
-    signal soundStateChanged(bool enabled)
 
     // 从GameLogic获取当前设置
     property string username: settings.getPlayerName()
@@ -20,7 +18,7 @@ Rectangle {
     property double volume: settings.getVolume()
     property int blockCount: settings.getBlockCount()
     property int blockTypes: settings.getBlockTypes()
-    property bool isSoundEnabled: true
+    property bool isSoundEnabled: settings.getSoundState()
 
     // 添加键盘事件处理
     Keys.onPressed: function (event) {
@@ -238,8 +236,7 @@ Rectangle {
                         checked: root.isSoundEnabled
                         font.pixelSize: parent.parent.parent.width * 0.02
                         onCheckedChanged: {
-                            root.isSoundEnabled = checked;
-                            root.soundStateChanged(checked);
+                            settings.setSoundState(checked);
                         }
                     }
 

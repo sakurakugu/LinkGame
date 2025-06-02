@@ -359,9 +359,15 @@ bool Settings::getSoundState() const {
     return config.soundState;
 }
 
+/**
+ * @brief 设置音效状态
+ * @param state 音效状态
+ * @return 音效状态
+ */
 void Settings::setSoundState(bool state) {
     if (config.soundState != state) {
         config.soundState = state;
         saveConfig();
+        emit soundStateChanged(state);
     }
 }

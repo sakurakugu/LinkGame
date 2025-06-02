@@ -28,6 +28,11 @@ set(PROJECT_SOURCES
     cpp/settings.h
 )
 
+set(MYQML_COMPONENTS
+    qml/components/Cell.qml
+    qml/components/MyButton.qml
+)
+
 set(MYQML_FILES
     qml/Main.qml
     qml/Help.qml
@@ -35,9 +40,10 @@ set(MYQML_FILES
     qml/GameOver.qml
     qml/GameBoard.qml
     qml/Leaderboard.qml
-    qml/Cell.qml
-    qml/components/MyButton.qml
+    ${MYQML_COMPONENTS}
 )
+
+
 
 set(MYPRIVATE
     Qt6::Quick

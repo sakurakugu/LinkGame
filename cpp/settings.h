@@ -77,12 +77,13 @@ class Settings : public QObject {
     Q_INVOKABLE void saveConfig(); // 保存配置
 
   signals:
-    Q_SIGNAL void leaderboardChanged();   // 排行榜变化信号
-    Q_SIGNAL void gameTimeChanged();      // 游戏时间变化信号
-    Q_SIGNAL void volumeChanged();        // 音量变化信号
-    Q_SIGNAL void windowSizeChanged();    // 窗口大小变化信号
-    Q_SIGNAL void blockSettingsChanged(); // 方块设置变化信号
-    Q_SIGNAL void windowStateChanged();   // 窗口状态变化信号
+    Q_SIGNAL void leaderboardChanged();            // 排行榜变化信号
+    Q_SIGNAL void gameTimeChanged();               // 游戏时间变化信号
+    Q_SIGNAL void volumeChanged();                 // 音量变化信号
+    Q_SIGNAL void soundStateChanged(bool enabled); // 音效状态变化信号
+    Q_SIGNAL void windowSizeChanged();             // 窗口大小变化信号
+    Q_SIGNAL void blockSettingsChanged();          // 方块设置变化信号
+    Q_SIGNAL void windowStateChanged();            // 窗口状态变化信号
 
   private:
     Config::config config; // 配置

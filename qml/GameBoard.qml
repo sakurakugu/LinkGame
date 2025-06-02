@@ -13,51 +13,33 @@ Rectangle {
     property var linkPath: [] // 存储连接路径的点
     property bool showingPath: false // 是否正在显示路径
     property int score: 0 // 当前分数
-    property bool isPaused: false // 是否暂停
-    property bool isSoundEnabled: true // 是否开启音效
+    property bool isPaused: gameLogic.isPaused() // 是否暂停
 
-    signal resetRequested // 重置游戏信号
+    signal gameReset // 重置游戏信号
     signal returnToMenu // 返回主菜单信号
     signal scoreUpdated(int newScore) // 分数变化信号
-    signal hintRequested // 提示信号
-    signal resetAllCell
+    signal gameHint // 提示信号
+    signal resetAllCell // 重置所有方块信号
     signal closed // 退出游戏信号
-    signal pauseStateChanged(bool paused)
-    signal soundStateChanged(bool enabled)
+    signal pauseStateChanged(bool paused) // 暂停状态变化信号
+    signal soundStateChanged(bool enabled) // 音效状态变化信号
 
-    // 定时器
-    Timer {
-        id: gameTimer
-        interval: 1000
-        running: PageState === Page.Playing && !gameLoader.item.isPaused
-        repeat: true
-        onTriggered: {
-            timeLeft--;
-            if (timeLeft <= 0) {
-                PageState = Page.GameOver;
-            }
-        }
-    }
-
-    // 检查游戏是否结束的计时器
-    Timer {
-        id: checkGameOverTimer
-        interval: 500 // 每0.5秒检查一次
-        repeat: true
-        running: PageState === Page.Playing
-        onTriggered: {
-            if (gameLogic.isGameOver()) {
-                gameTimer.stop();
-                PageState = Page.GameOver;
-            }
-        }
-    }
 
     // 监听游戏时间变化
     Connections {
         target: gameLogic
-        function onGameTimeChanged() {
-            timeLeft = gameLogic.getGameTime();
+        function onTimeLeftChanged(time) {
+            if (time <= 0) {
+                PageState = Page.GameOver;
+            }
+        }
+    }
+
+    // 监听暂停状态变化
+    Connections {
+        target: gameLogic
+        function onPauseStateChanged(paused) {
+            root.isPaused = paused;
         }
     }
 
@@ -94,8 +76,7 @@ Rectangle {
                     Layout.preferredHeight: parent.parent.height * 0.15
                     font.pixelSize: parent.parent.width * 0.04
                     onClicked: {
-                        root.isPaused = false;
-                        root.pauseStateChanged(false);
+                        gameLogic.setPaused(false);
                     }
                 }
 
@@ -105,10 +86,9 @@ Rectangle {
                     Layout.preferredHeight: parent.parent.height * 0.15
                     font.pixelSize: parent.parent.width * 0.04
                     onClicked: {
-                        root.resetRequested();
+                        gameLogic.setPaused(false);
+                        root.gameReset();
                         root.resetAllCell();
-                        root.isPaused = false;
-                        root.pauseStateChanged(false);
                     }
                 }
 
@@ -118,9 +98,8 @@ Rectangle {
                     Layout.preferredHeight: parent.parent.height * 0.15
                     font.pixelSize: parent.parent.width * 0.04
                     onClicked: {
+                        gameLogic.setPaused(false);
                         root.returnToMenu();
-                        root.isPaused = false;
-                        root.pauseStateChanged(false);
                     }
                 }
 
@@ -158,9 +137,6 @@ Rectangle {
             item.closed.connect(function () {
                 settingsLoader.active = false;
             });
-            item.soundStateChanged.connect(function (enabled) {
-                root.isSoundEnabled = enabled;
-            });
         }
     }
 
@@ -169,17 +145,20 @@ Rectangle {
         id: clickSound
         source: "qrc:/qt/qml/LinkGame/music/sound_effect.mp3"
         audioOutput: AudioOutput {
-            volume: root.isSoundEnabled ? gameLogic.getVolume() : 0
-            muted: !root.isSoundEnabled
+            volume: settings.getVolume()
+            muted: !settings.getSoundState() // 如果音效关闭，则静音
         }
     }
 
     // 监听音量变化
     Connections {
-        target: gameLogic
+        target: settings
         function onVolumeChanged() {
             // 当音量变化时更新音频输出
-            clickSound.audioOutput.volume = gameLogic.getVolume();
+            clickSound.audioOutput.volume = settings.getVolume();
+        }
+        function onSoundStateChanged(enabled) {
+            clickSound.audioOutput.muted = !enabled;
         }
     }
 
@@ -268,7 +247,7 @@ Rectangle {
 
             Text {
                 id: timeText
-                text: "时间：" + Math.floor(timeLeft / 60) + ":" + (timeLeft % 60).toString().padStart(2, "0")
+                text: "时间：" + Math.floor(gameLogic.timeLeft / 60) + ":" + (gameLogic.timeLeft % 60).toString().padStart(2, "0")
                 font.pixelSize: parent.parent.height * 0.4
                 Layout.alignment: Qt.AlignCenter
             }
@@ -279,8 +258,7 @@ Rectangle {
                 Layout.preferredHeight: parent.parent.height * 0.6
                 font.pixelSize: parent.parent.height * 0.3
                 onClicked: {
-                    root.isPaused = !root.isPaused;
-                    root.pauseStateChanged(root.isPaused);
+                    gameLogic.setPaused(!root.isPaused);
                 }
             }
 
@@ -560,8 +538,7 @@ Rectangle {
     // 键盘事件处理
     Keys.onPressed: function (event) {
         if (event.key === Qt.Key_Escape) {
-            root.isPaused = !root.isPaused;
-            root.pauseStateChanged(root.isPaused);
+            gameLogic.setPaused(!root.isPaused);
         } else if (!root.isPaused && !root.showingPath) {
             // 方向键控制
             let newRow = root.selectedRow;

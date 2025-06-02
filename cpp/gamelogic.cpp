@@ -3,9 +3,13 @@
 #include <QRandomGenerator>
 #include <algorithm>
 
-GameLogic::GameLogic(QObject *parent) : QObject{parent}, isGameRunning(false), currentScore(0) {
+GameLogic::GameLogic(QObject *parent) : QObject{parent}, isGameRunning(false), currentScore(0), timeLeft_(0), isPaused_(false) {
     // 创建设置管理器
     settings = new Settings(this);
+
+    // 创建游戏计时器
+    gameTimer_ = new QTimer(this);
+    connect(gameTimer_, &QTimer::timeout, this, &GameLogic::updateTimer);
 
     // 创建游戏网格
     createGrid();
@@ -13,6 +17,7 @@ GameLogic::GameLogic(QObject *parent) : QObject{parent}, isGameRunning(false), c
 
 GameLogic::~GameLogic() {
     delete settings;
+    delete gameTimer_;
 }
 
 /**
@@ -508,14 +513,20 @@ void GameLogic::startGame() {
     if (!isGameRunning) {
         isGameRunning = true;
         currentScore = 0;
+        timeLeft_ = settings->getGameTime();
+        isPaused_ = false;
+        gameTimer_->start(1000); // 每秒更新一次
         emit gameStarted();
         emit scoreChanged(currentScore);
+        emit timeLeftChanged(timeLeft_);
+        emit pauseStateChanged(isPaused_);
     }
 }
 
 void GameLogic::pauseGame() {
     if (isGameRunning) {
         isGameRunning = false;
+        gameTimer_->stop();
         emit gamePaused();
     }
 }
@@ -523,6 +534,7 @@ void GameLogic::pauseGame() {
 void GameLogic::resumeGame() {
     if (!isGameRunning) {
         isGameRunning = true;
+        gameTimer_->start();
         emit gameResumed();
     }
 }
@@ -530,7 +542,21 @@ void GameLogic::resumeGame() {
 void GameLogic::endGame() {
     if (isGameRunning) {
         isGameRunning = false;
+        gameTimer_->stop();
         emit gameEnded();
+    }
+}
+
+
+
+void GameLogic::updateTimer() {
+    if (timeLeft_ > 0) {
+        timeLeft_--;
+        emit timeLeftChanged(timeLeft_);
+        
+        if (timeLeft_ <= 0) {
+            endGame();
+        }
     }
 }
 
@@ -545,4 +571,24 @@ QString GameLogic::getRank(const QString &playerName, int score) const {
     // 获取玩家排名
     // 这里需要根据实际情况实现获取玩家排名的功能
     return "未上榜";
+}
+
+int GameLogic::timeLeft() const {
+    return timeLeft_;
+}
+
+bool GameLogic::isPaused() const {
+    return isPaused_;
+}
+
+void GameLogic::setPaused(bool paused) {
+    if (isPaused_ != paused) {
+        isPaused_ = paused;
+        if (paused) {
+            gameTimer_->stop();
+        } else {
+            gameTimer_->start();
+        }
+        emit pauseStateChanged(isPaused_);
+    }
 }
