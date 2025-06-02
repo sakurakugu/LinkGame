@@ -1,12 +1,12 @@
 #include "gamelogic.h"
-#include <QRandomGenerator>
 #include <QDebug>
+#include <QRandomGenerator>
 #include <algorithm>
 
 GameLogic::GameLogic(QObject *parent) : QObject{parent}, isGameRunning(false), currentScore(0) {
     // 创建设置管理器
     settings = new Settings(this);
-    
+
     // 创建游戏网格
     createGrid();
 }
@@ -338,14 +338,14 @@ QVariantList GameLogic::getHint() {
 
 QVector<QPoint> GameLogic::findPath(int row1, int col1, int row2, int col2) {
     QVector<QPoint> path;
-    
+
     // 检查是否可以直接连接（直线）
     if (canConnectDirectly(row1, col1, row2, col2)) {
         path.append(QPoint(row1, col1));
         path.append(QPoint(row2, col2));
         return path;
     }
-    
+
     // 检查是否可以通过一个拐点连接
     QPoint corner = findOneCornerPath(row1, col1, row2, col2);
     if (corner.x() != -1) {
@@ -354,7 +354,7 @@ QVector<QPoint> GameLogic::findPath(int row1, int col1, int row2, int col2) {
         path.append(QPoint(row2, col2));
         return path;
     }
-    
+
     // 检查是否可以通过两个拐点连接
     QPair<QPoint, QPoint> corners = findTwoCornerPath(row1, col1, row2, col2);
     if (corners.first.x() != -1) {
@@ -364,7 +364,7 @@ QVector<QPoint> GameLogic::findPath(int row1, int col1, int row2, int col2) {
         path.append(QPoint(row2, col2));
         return path;
     }
-    
+
     return path;
 }
 
@@ -374,69 +374,67 @@ bool GameLogic::canConnectDirectly(int row1, int col1, int row2, int col2) {
         int minCol = qMin(col1, col2);
         int maxCol = qMax(col1, col2);
         for (int col = minCol + 1; col < maxCol; col++) {
-            if (grid[row1][col] != 0) return false;
+            if (grid[row1][col] != 0)
+                return false;
         }
         return true;
     }
-    
+
     // 检查是否在同一列
     if (col1 == col2) {
         int minRow = qMin(row1, row2);
         int maxRow = qMax(row1, row2);
         for (int row = minRow + 1; row < maxRow; row++) {
-            if (grid[row][col1] != 0) return false;
+            if (grid[row][col1] != 0)
+                return false;
         }
         return true;
     }
-    
+
     return false;
 }
 
 QPoint GameLogic::findOneCornerPath(int row1, int col1, int row2, int col2) {
     // 尝试水平-垂直连接
     QPoint corner1(col2, row1);
-    if (canConnectDirectly(row1, col1, row1, col2) && 
-        canConnectDirectly(row1, col2, row2, col2)) {
+    if (canConnectDirectly(row1, col1, row1, col2) && canConnectDirectly(row1, col2, row2, col2)) {
         return corner1;
     }
-    
+
     // 尝试垂直-水平连接
     QPoint corner2(col1, row2);
-    if (canConnectDirectly(row1, col1, row2, col1) && 
-        canConnectDirectly(row2, col1, row2, col2)) {
+    if (canConnectDirectly(row1, col1, row2, col1) && canConnectDirectly(row2, col1, row2, col2)) {
         return corner2;
     }
-    
+
     return QPoint(-1, -1);
 }
 
 QPair<QPoint, QPoint> GameLogic::findTwoCornerPath(int row1, int col1, int row2, int col2) {
     // 尝试所有可能的两拐点路径
     QVector<QPair<QPoint, QPoint>> possiblePaths;
-    
+
     // 水平-垂直-水平
     QPoint corner1(col1, row2);
     QPoint corner2(col2, row2);
-    if (canConnectDirectly(row1, col1, row1, col1) && 
-        canConnectDirectly(row1, col1, row2, col1) && 
+    if (canConnectDirectly(row1, col1, row1, col1) && canConnectDirectly(row1, col1, row2, col1) &&
         canConnectDirectly(row2, col1, row2, col2)) {
         possiblePaths.append(qMakePair(corner1, corner2));
     }
-    
+
     // 垂直-水平-垂直
     QPoint corner3(col2, row1);
     QPoint corner4(col2, row2);
-    if (canConnectDirectly(row1, col1, row1, col2) && 
-        canConnectDirectly(row1, col2, row2, col2) && 
+    if (canConnectDirectly(row1, col1, row1, col2) && canConnectDirectly(row1, col2, row2, col2) &&
         canConnectDirectly(row2, col2, row2, col2)) {
         possiblePaths.append(qMakePair(corner3, corner4));
     }
-    
+
     // 选择最短路径
     if (!possiblePaths.isEmpty()) {
         return possiblePaths.first();
     }
-    
+
     return qMakePair(QPoint(-1, -1), QPoint(-1, -1));
 }
 
@@ -450,13 +448,13 @@ void GameLogic::generateSolution() {
     for (int i = 0; i < ROWS; ++i) {
         grid[i].resize(COLS);
         for (int j = 0; j < COLS; ++j) {
-            grid[i][j] = 0;  // 初始化所有格子为0
+            grid[i][j] = 0; // 初始化所有格子为0
         }
     }
 
     // 获取当前难度下的图案数量
     int patternCount = settings->getBlockTypes();
-    
+
     // 计算每种图案需要的对数 (总需要的方块数除以图案种数)
     int totalCells = (ROWS - 2) * (COLS - 2);
     int pairsPerPattern = totalCells / (2 * patternCount);
@@ -471,7 +469,7 @@ void GameLogic::generateSolution() {
 
     // 随机打乱位置列表
     std::random_shuffle(positions.begin(), positions.end());
-    
+
     // 分配图案到格子中
     int posIndex = 0;
     for (int pattern = 1; pattern <= patternCount; ++pattern) {
@@ -534,4 +532,17 @@ void GameLogic::endGame() {
         isGameRunning = false;
         emit gameEnded();
     }
+}
+
+void GameLogic::addScoreToLeaderboard(const QString &playerName, int score) {
+    // 添加分数到排行榜
+    // 这里需要根据实际情况实现添加分数到排行榜的功能
+    // 例如，可以将分数存储在本地文件或数据库中
+    // 这里暂时不实现具体功能
+}
+
+QString GameLogic::getRank(const QString &playerName, int score) const {
+    // 获取玩家排名
+    // 这里需要根据实际情况实现获取玩家排名的功能
+    return "未上榜";
 }

@@ -1,6 +1,7 @@
 #ifndef GAMELOGIC_H
 #define GAMELOGIC_H
 
+#include "settings.h"
 #include <QDebug>
 #include <QDir>
 #include <QFile>
@@ -22,7 +23,6 @@
 #include <fstream>
 #include <iostream>
 #include <toml.hpp>
-#include "settings.h"
 
 class GameLogic : public QObject {
     Q_OBJECT
@@ -43,15 +43,17 @@ class GameLogic : public QObject {
     Q_INVOKABLE int rows() const {
         return ROWS;
     }
-    Q_INVOKABLE int getCell(int row, int col) const;      // 获取单元格的值
-    Q_INVOKABLE bool isOuterCell(int row, int col) const; // 判断是否是外圈格子
-    Q_INVOKABLE void resetGame();                                         // 重置游戏
-    Q_INVOKABLE bool canLink(int r1, int c1, int r2, int c2) const;       // 检查两个单元格是否可以连接
-    Q_INVOKABLE void removeLink(int r1, int c1, int r2, int c2);          // 移除连接的两个方块
-    Q_INVOKABLE QVariantList getLinkPath(int r1, int c1, int r2, int c2); // 获取连接路径
-    Q_INVOKABLE bool isGameOver() const;                                  // 检查游戏是否结束
-    Q_INVOKABLE QVariantList getHint();                                   // 获取提示
+    Q_INVOKABLE int getCell(int row, int col) const;                              // 获取单元格的值
+    Q_INVOKABLE bool isOuterCell(int row, int col) const;                         // 判断是否是外圈格子
+    Q_INVOKABLE void resetGame();                                                 // 重置游戏
+    Q_INVOKABLE bool canLink(int r1, int c1, int r2, int c2) const;               // 检查两个单元格是否可以连接
+    Q_INVOKABLE void removeLink(int r1, int c1, int r2, int c2);                  // 移除连接的两个方块
+    Q_INVOKABLE QVariantList getLinkPath(int r1, int c1, int r2, int c2);         // 获取连接路径
+    Q_INVOKABLE bool isGameOver() const;                                          // 检查游戏是否结束
+    Q_INVOKABLE QVariantList getHint();                                           // 获取提示
     Q_INVOKABLE QVector<QPoint> findPath(int row1, int col1, int row2, int col2); // 寻找最少弯折的路径
+    Q_INVOKABLE QString getRank(const QString &playerName, int score) const;      // 获取排名
+    Q_INVOKABLE void addScoreToLeaderboard(const QString &playerName, int score); // 添加分数到排行榜
 
     // 游戏管理相关
     void startGame();  // 开始游戏
@@ -67,11 +69,11 @@ class GameLogic : public QObject {
     Q_SIGNAL void gameTimeChanged();             // 当游戏时间改变时发出信号
     Q_SIGNAL void volumeChanged();               // 当音量改变时发出信号
     Q_SIGNAL void hintAvailable(bool available); // 提示可用信号
-    Q_SIGNAL void gameStarted();           // 游戏开始信号
-    Q_SIGNAL void gamePaused();            // 游戏暂停信号
-    Q_SIGNAL void gameResumed();           // 游戏恢复信号
-    Q_SIGNAL void gameEnded();             // 游戏结束信号
-    Q_SIGNAL void scoreChanged(int score); // 分数变化信号
+    Q_SIGNAL void gameStarted();                 // 游戏开始信号
+    Q_SIGNAL void gamePaused();                  // 游戏暂停信号
+    Q_SIGNAL void gameResumed();                 // 游戏恢复信号
+    Q_SIGNAL void gameEnded();                   // 游戏结束信号
+    Q_SIGNAL void scoreChanged(int score);       // 分数变化信号
 
   private:
     int ROWS = 8;                // 行数
@@ -84,7 +86,7 @@ class GameLogic : public QObject {
     QVector<HintStep> solutionSteps; // 存储解决方案步骤
     int currentStep;                 // 当前步骤索引
 
-    Settings* settings; // 设置管理器
+    Settings *settings; // 设置管理器
 
     Config::config config;
     bool m_customLeaderboardEnabled = true;

@@ -186,38 +186,6 @@ Window {
         }
     }
 
-    // 游戏主界面
-    Loader {
-        id: gameLoader
-        anchors.fill: parent
-        source: "GameBoard.qml"
-        active: pageState === 1  // GameState.Playing
-        onLoaded: {
-            item.resetRequested.connect(function () {
-                gameLogic.resetGame();
-                score = 0;
-                timeLeft = gameLogic.getGameTime();
-            });
-            item.menuRequested.connect(function () {
-                pageState = 0;  // GameState.Menu
-                // 不重置时间，只是暂停游戏
-            });
-            item.exitGameRequested.connect(function () {
-                pageState = 2;  // GameState.GameOver
-            });
-            item.scoreUpdated.connect(function (newScore) {
-                root.score = newScore;
-            });
-            item.pauseStateChanged.connect(function (paused) {
-                if (paused) {
-                    gameTimer.stop();
-                } else {
-                    gameTimer.start();
-                }
-            });
-        }
-    }
-
     // 开始菜单界面
     Loader {
         id: menuLoader
@@ -226,12 +194,36 @@ Window {
         sourceComponent: menuComponent
     }
 
+    // 游戏主界面
+    Loader {
+        id: gameLoader
+        anchors.fill: parent
+        source: "GameBoard.qml"
+        active: pageState === page.Playing
+        onLoaded: {
+            item.returnToMenu.connect(function () {
+                pageState = page.Menu;
+            });
+            item.closed.connect(function () {
+                pageState = page.GameOver;
+            });
+        }
+    }
+
     // 游戏结束界面
     Loader {
         id: endLoader
         anchors.fill: parent
         source: "GameOver.qml"
         active: pageState === page.GameOver
+        onLoaded: {
+            item.restartGame.connect(function () {
+                pageState = page.Playing;
+            });
+            item.returnToMenu.connect(function () {
+                pageState = page.Menu;
+            });
+        }
     }
 
     // 排行榜界面

@@ -17,11 +17,11 @@ Rectangle {
     property bool isSoundEnabled: true // 是否开启音效
 
     signal resetRequested // 重置游戏信号
-    signal menuRequested // 返回主菜单信号
+    signal returnToMenu // 返回主菜单信号
     signal scoreUpdated(int newScore) // 分数变化信号
     signal hintRequested // 提示信号
     signal resetAllCell
-    signal exitGameRequested // 退出游戏信号
+    signal closed // 退出游戏信号
     signal pauseStateChanged(bool paused)
     signal soundStateChanged(bool enabled)
 
@@ -118,7 +118,7 @@ Rectangle {
                     Layout.preferredHeight: parent.parent.height * 0.15
                     font.pixelSize: parent.parent.width * 0.04
                     onClicked: {
-                        root.menuRequested();
+                        root.returnToMenu();
                         root.isPaused = false;
                         root.pauseStateChanged(false);
                     }
@@ -140,7 +140,7 @@ Rectangle {
                     Layout.preferredHeight: parent.parent.height * 0.15
                     font.pixelSize: parent.parent.width * 0.04
                     onClicked: {
-                        root.exitGameRequested();
+                        root.closed();
                     }
                 }
             }
@@ -360,7 +360,7 @@ Rectangle {
                 Layout.preferredHeight: parent.parent.height * 0.6
                 font.pixelSize: parent.parent.height * 0.3
                 onClicked: {
-                    root.exitGameRequested();
+                    root.closed();
                 }
             }
         }
