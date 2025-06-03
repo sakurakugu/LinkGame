@@ -1,7 +1,4 @@
 #include "gamelogic.h"
-#include <QDebug>
-#include <QRandomGenerator>
-#include <algorithm>
 
 GameLogic::GameLogic(Settings *settingsManager, QObject *parent)
     : QObject{parent}, isGameRunning(false), currentScore(0), timeLeft_(0), isPaused_(false) {

@@ -1,11 +1,7 @@
 #include "language.h"
-#include <QDebug>
 
-const QList<QPair<QString, QString>> Language::languageList = {
-    {"zh_CN", "简体中文"},
-    {"en", "English"},
-    {"ja", "日本語"}
-};
+// 使用 DefaultValues 中的语言列表
+const QList<QPair<QString, QString>> Language::languageList = DefaultValues::languageList;
 
 Language::Language(QObject *parent) : QObject(parent), currentLanguage_("zh_CN") {
     // 初始化时加载默认语言

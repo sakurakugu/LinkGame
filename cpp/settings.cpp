@@ -1,9 +1,5 @@
 #include "settings.h"
 
-#include <QDebug>
-#include <QTimer>
-#include <algorithm>
-
 Settings::Settings(QObject *parent) : QObject{parent}, window(nullptr) {
     // 加载配置
     configManager.loadConfig(config);
@@ -364,14 +360,22 @@ QStringList Settings::getWindowSizeModel() const {
     QPair<int, int> physicalSize = getPhysicalScreenSize();
     QPair<int, int> availableSize = getAvailableScreenSize();
 
-    // 添加预设的分辨率
+    // 始终添加全屏和无边框全屏选项
     model << tr("全屏 (%1x%2)").arg(physicalSize.first).arg(physicalSize.second)
           << tr("无边框全屏 (%1x%2)").arg(physicalSize.first).arg(physicalSize.second)
-          << QString("%1x%2").arg(availableSize.first).arg(availableSize.second)
-          << QString("%1x%2").arg(logicalToPhysical(1920)).arg(logicalToPhysical(1080))
-          << QString("%1x%2").arg(logicalToPhysical(1280)).arg(logicalToPhysical(720))
-          << QString("%1x%2").arg(logicalToPhysical(1024)).arg(logicalToPhysical(768))
-          << QString("%1x%2").arg(logicalToPhysical(800)).arg(logicalToPhysical(600));
+          << QString("%1x%2").arg(availableSize.first).arg(availableSize.second);
+    
+    // 使用 DefaultValues 中的预设分辨率列表
+    for (const auto &resolution : DefaultValues::presetResolutions) {
+        int width = logicalToPhysical(resolution.first);
+        int height = logicalToPhysical(resolution.second);
+        
+        // 检查分辨率是否小于或等于屏幕物理尺寸
+        if (width <= physicalSize.first && height <= physicalSize.second) {
+            model << QString("%1x%2").arg(width).arg(height);
+        }
+    }
+    
     return model;
 }
 

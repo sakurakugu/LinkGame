@@ -36,6 +36,7 @@ int main(int argc, char *argv[]) {
     GameLogic logic(&settings);                       // 创建游戏逻辑对象，使用已经创建的settings
     context->setContextProperty("gameLogic", &logic); // 将游戏逻辑对象暴露给 QML
 
+    // 连接游戏逻辑(C++)的信号到 QML
     QObject::connect(
         &engine, &QQmlApplicationEngine::objectCreationFailed, &app, []() { QCoreApplication::exit(-1); },
         Qt::QueuedConnection);

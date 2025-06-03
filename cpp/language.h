@@ -1,15 +1,18 @@
 #ifndef LANGUAGE_H
 #define LANGUAGE_H
 
+#include "default_value.h"
+
+#include <QDebug>
+#include <QGuiApplication>
 #include <QObject>
 #include <QTranslator>
-#include <QGuiApplication>
 
 class Language : public QObject {
     Q_OBJECT
     Q_PROPERTY(QString currentLanguage READ currentLanguage WRITE setCurrentLanguage NOTIFY languageChanged)
 
-public:
+  public:
     explicit Language(QObject *parent = nullptr);
     ~Language();
 
@@ -18,10 +21,10 @@ public:
 
     static const QList<QPair<QString, QString>> languageList;
 
-signals:
+  signals:
     void languageChanged();
 
-private:
+  private:
     QString currentLanguage_;
     QTranslator translator_;
     void loadTranslation(const QString &language);

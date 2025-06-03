@@ -3,6 +3,7 @@
 
 #include "config.h"
 #include "language.h"
+#include "default_value.h"
 
 #include <QDebug>
 #include <QGuiApplication>
