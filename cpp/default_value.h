@@ -20,6 +20,14 @@ struct DefaultValues {
     static constexpr int block_types_medium = 8; // 普通难度：8种图案
     static constexpr int block_types_hard = 12;  // 困难难度：12种图案
     static constexpr int block_types_total = 20; // 总图案数量
+
+    static constexpr int block_count_easy = 24;   // 简单难度：24个方块
+    static constexpr int block_count_medium = 48; // 普通难度：48个方块
+    static constexpr int block_count_hard = 72;   // 困难难度：72个方块
+
+    static constexpr int game_time_easy = 120;   // 简单难度：120秒
+    static constexpr int game_time_medium = 180; // 普通难度：180秒
+    static constexpr int game_time_hard = 240;   // 困难难度：240秒
 };
 
 #endif // DEFAULT_VALUE_H

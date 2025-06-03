@@ -101,7 +101,15 @@ void Settings::setDifficulty(const QString &difficulty) {
 }
 
 int Settings::getGameTime() const {
-    return config.gameTime;
+    QString difficulty = getDifficulty();
+    if (difficulty == "简单") {
+        return DefaultValues::game_time_easy;
+    } else if (difficulty == "普通") {
+        return DefaultValues::game_time_medium;
+    } else if (difficulty == "困难") {
+        return DefaultValues::game_time_hard;
+    }
+    return config.gameTime; // 自定义难度
 }
 
 void Settings::setGameTime(int seconds) {
@@ -267,7 +275,15 @@ void Settings::saveConfig() {
 }
 
 int Settings::getBlockCount() const {
-    return config.blockCount;
+    QString difficulty = getDifficulty();
+    if (difficulty == "简单") {
+        return DefaultValues::block_count_easy;
+    } else if (difficulty == "普通") {
+        return DefaultValues::block_count_medium;
+    } else if (difficulty == "困难") {
+        return DefaultValues::block_count_hard;
+    }
+    return config.blockCount; // 自定义难度
 }
 
 void Settings::setBlockCount(int count) {
@@ -276,18 +292,19 @@ void Settings::setBlockCount(int count) {
         emit blockSettingsChanged();
         saveConfig();
     }
+
 }
 
 int Settings::getBlockTypes() const {
     QString difficulty = getDifficulty();
-    if (difficulty == "easy") {
+    if (difficulty == "简单") {
         return DefaultValues::block_types_easy;
-    } else if (difficulty == "medium") {
+    } else if (difficulty == "普通") {
         return DefaultValues::block_types_medium;
-    } else if (difficulty == "hard") {
+    } else if (difficulty == "困难") {
         return DefaultValues::block_types_hard;
     }
-    return DefaultValues::block_types;
+    return config.blockTypes; // 自定义难度
 }
 
 void Settings::setBlockTypes(int types) {

@@ -110,32 +110,48 @@ Rectangle {
                         text: qsTr("简单")
                         checked: root.difficulty === "简单"
                         font.pixelSize: parent.parent.parent.parent.width * 0.02
-                        onCheckedChanged: if (checked)
-                            settings.setDifficulty("简单")
+                        onCheckedChanged: if (checked) {
+                            settings.setDifficulty("简单");
+                            customTimeField.text = settings.getGameTime();
+                            blockCountField.text = settings.getBlockCount();
+                            blockTypesField.text = settings.getBlockTypes();
+                        }
                     }
                     RadioButton {
                         id: mediumRadio
                         text: qsTr("普通")
                         checked: root.difficulty === "普通"
                         font.pixelSize: parent.parent.parent.parent.width * 0.02
-                        onCheckedChanged: if (checked)
-                            settings.setDifficulty("普通")
+                        onCheckedChanged: if (checked) {
+                            settings.setDifficulty("普通");
+                            customTimeField.text = settings.getGameTime();
+                            blockCountField.text = settings.getBlockCount();
+                            blockTypesField.text = settings.getBlockTypes();
+                        }
                     }
                     RadioButton {
                         id: hardRadio
                         text: qsTr("困难")
                         checked: root.difficulty === "困难"
                         font.pixelSize: parent.parent.parent.parent.width * 0.02
-                        onCheckedChanged: if (checked)
-                            settings.setDifficulty("困难")
+                        onCheckedChanged: if (checked) {
+                            settings.setDifficulty("困难");
+                            customTimeField.text = settings.getGameTime();
+                            blockCountField.text = settings.getBlockCount();
+                            blockTypesField.text = settings.getBlockTypes();
+                        }
                     }
                     RadioButton {
                         id: customRadio
                         text: qsTr("自定义")
                         checked: root.difficulty === "自定义"
                         font.pixelSize: parent.parent.parent.parent.width * 0.02
-                        onCheckedChanged: if (checked)
-                            settings.setDifficulty("自定义")
+                        onCheckedChanged: if (checked) {
+                            settings.setDifficulty("自定义");
+                            customTimeField.text = settings.getGameTime();
+                            blockCountField.text = settings.getBlockCount();
+                            blockTypesField.text = settings.getBlockTypes();
+                        }
                     }
                 }
             }
@@ -218,6 +234,11 @@ Rectangle {
                             }
                             onTextChanged: {
                                 if (text !== "" && customRadio.checked) {
+                                    if (parseInt(text) > 20) {
+                                        text = "20";
+                                    } else if (parseInt(text) < 1) {
+                                        text = "1";
+                                    }
                                     settings.setBlockTypes(parseInt(text));
                                 }
                             }
