@@ -179,7 +179,7 @@
     <message>
         <location filename="../qml/Settings.qml" line="49"/>
         <source>游戏设置</source>
-        <translation type="unfinished"></translation>
+        <translation>Game Settings</translation>
     </message>
     <message>
         <location filename="../qml/Settings.qml" line="59"/>

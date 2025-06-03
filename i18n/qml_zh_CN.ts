@@ -7,7 +7,7 @@
         <location filename="../qml/GameBoard.qml" line="76"/>
         <location filename="../qml/GameBoard.qml" line="231"/>
         <source>继续</source>
-        <translation type="unfinished"></translation>
+        <translation>继续</translation>
     </message>
     <message>
         <location filename="../qml/GameBoard.qml" line="86"/>

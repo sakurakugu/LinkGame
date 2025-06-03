@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QTimer>
 #include <algorithm>
+
 Settings::Settings(QObject *parent) : QObject{parent}, window(nullptr) {
     // 加载配置
     configManager.loadConfig(config);
@@ -395,3 +396,44 @@ void Settings::setLanguage(const QString &lang) {
         saveConfig();
     }
 }
+
+QString Settings::getSystemLanguage() const {
+    return QLocale::system().name();
+}
+
+QStringList Settings::getLanguageDisplayNameList() const {
+    QStringList languageDisplayNameList;
+    for (const auto &language : Language::languageList) {
+        languageDisplayNameList << language.second;
+    }
+    return languageDisplayNameList;
+}
+
+int Settings::getLanguageIndex() const {
+    QString language = getLanguage();
+    for (int i = 0; i < getLanguageDisplayNameList().size(); i++) {
+        if (getLanguageDisplayNameList()[i] == language) {
+            return i;
+        }
+    }
+    return 0;
+}
+
+QString Settings::getLanguageDisplayName(const QString &lang) const {
+    for (const auto &language : Language::languageList) {
+        if (language.first == lang) {
+            return language.second;
+        }
+    }
+    return "";
+}
+
+QString Settings::getLanguageCode(const QString &displayName) const {
+    for (const auto &language : Language::languageList) {
+        if (language.second == displayName) {
+            return language.first;
+        }
+    }
+    return "";
+}
+

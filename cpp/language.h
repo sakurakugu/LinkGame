@@ -16,6 +16,8 @@ public:
     QString currentLanguage() const;
     void setCurrentLanguage(const QString &language);
 
+    static const QList<QPair<QString, QString>> languageList;
+
 signals:
     void languageChanged();
 

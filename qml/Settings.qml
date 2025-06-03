@@ -356,10 +356,12 @@ Rectangle {
                     }
                     ComboBox {
                         id: languageCombo
-                        model: ["简体中文", "English"]
-                        currentIndex: settings.getLanguage() === "zh_CN" ? 0 : 1
+                        model: settings.getLanguageDisplayNameList()
+                        currentIndex: settings.getLanguageIndex()
                         onCurrentIndexChanged: {
-                            settings.setLanguage(currentIndex === 0 ? "zh_CN" : "en")
+                            let displayName = model[currentIndex]
+                            let langCode = settings.getLanguageCode(displayName)
+                            settings.setLanguage(langCode)
                         }
                     }
                 }
