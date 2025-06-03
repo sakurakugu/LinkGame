@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="zh_CN">
+<TS version="2.1" language="ja_JP">
 <context>
     <name>GameBoard</name>
     <message>
         <location filename="../qml/GameBoard.qml" line="107"/>
         <location filename="../qml/GameBoard.qml" line="263"/>
         <source>继续</source>
-        <translation>继续</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../qml/GameBoard.qml" line="117"/>

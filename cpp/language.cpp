@@ -3,7 +3,8 @@
 
 const QList<QPair<QString, QString>> Language::languageList = {
     {"zh_CN", "简体中文"},
-    {"en", "English"}
+    {"en", "English"},
+    {"ja", "日本語"}
 };
 
 Language::Language(QObject *parent) : QObject(parent), currentLanguage_("zh_CN") {
