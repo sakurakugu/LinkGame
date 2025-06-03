@@ -32,6 +32,7 @@ class GameLogic : public QObject {
 
   public:
     explicit GameLogic(QObject *parent = nullptr);
+    explicit GameLogic(Settings *settingsManager, QObject *parent = nullptr);
     ~GameLogic();
 
     // 提示相关的结构体
@@ -47,14 +48,14 @@ class GameLogic : public QObject {
     Q_INVOKABLE int rows() const {
         return ROWS;
     }
-    Q_INVOKABLE int getCell(int row, int col) const;                              // 获取单元格的值
-    Q_INVOKABLE bool isOuterCell(int row, int col) const;                         // 判断是否是外圈格子
-    Q_INVOKABLE void resetGame();                                                 // 重置游戏
-    Q_INVOKABLE bool canLink(int r1, int c1, int r2, int c2) const;               // 检查两个单元格是否可以连接
-    Q_INVOKABLE void removeLink(int r1, int c1, int r2, int c2);                  // 移除连接的两个方块
-    Q_INVOKABLE QVariantList getLinkPath(int r1, int c1, int r2, int c2);         // 获取连接路径
-    Q_INVOKABLE bool isGameOver() const;                                          // 检查游戏是否结束
-    Q_INVOKABLE QString getRank(const QString &playerName, int score) const;      // 获取排名
+    Q_INVOKABLE int getCell(int row, int col) const;                         // 获取单元格的值
+    Q_INVOKABLE bool isOuterCell(int row, int col) const;                    // 判断是否是外圈格子
+    Q_INVOKABLE void resetGame();                                            // 重置游戏
+    Q_INVOKABLE bool canLink(int r1, int c1, int r2, int c2) const;          // 检查两个单元格是否可以连接
+    Q_INVOKABLE void removeLink(int r1, int c1, int r2, int c2);             // 移除连接的两个方块
+    Q_INVOKABLE QVariantList getLinkPath(int r1, int c1, int r2, int c2);    // 获取连接路径
+    Q_INVOKABLE bool isGameOver() const;                                     // 检查游戏是否结束
+    Q_INVOKABLE QString getRank(const QString &playerName, int score) const; // 获取排名
 
     // 游戏管理相关
     Q_INVOKABLE void startGame();  // 开始游戏
@@ -107,13 +108,13 @@ class GameLogic : public QObject {
     int timeLeft_;      // 剩余时间
     bool isPaused_;     // 是否暂停
 
-    void createGrid();                                                               // 生成游戏网格
-    void generateSolution();                                                         // 生成解决方案
-    bool isValidPosition(int row, int col) const;                                    // 检查位置是否有效
-    QVector<QPair<int, int>> getValidPositions() const;                              // 获取所有有效位置
-    bool hasValidMove() const;                                                       // 检查是否有有效移动
-    QVector<HintStep> findSolution();                                                // 寻找解决方案
-    void updateTimer();                                                              // 更新计时器
+    void createGrid();                                  // 生成游戏网格
+    void generateSolution();                            // 生成解决方案
+    bool isValidPosition(int row, int col) const;       // 检查位置是否有效
+    QVector<QPair<int, int>> getValidPositions() const; // 获取所有有效位置
+    bool hasValidMove() const;                          // 检查是否有有效移动
+    QVector<HintStep> findSolution();                   // 寻找解决方案
+    void updateTimer();                                 // 更新计时器
 };
 
 #endif // GAMELOGIC_H

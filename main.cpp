@@ -19,8 +19,8 @@ int main(int argc, char *argv[])
     auto context = engine.rootContext(); // 获取根全局对象
     // 创建并注册Language
     Language language;
-    context->setContextProperty("language", &language);
-
+    context->setContextProperty("language", &language);  
+      
     // 创建并注册Settings
     Settings settings;
     context->setContextProperty("settings", &settings);
@@ -30,8 +30,8 @@ int main(int argc, char *argv[])
         language.setCurrentLanguage(settings.getLanguage());
     });
 
-    // 创建并注册GameLogic
-    GameLogic logic; // 创建游戏逻辑对象
+    // 创建并注册GameLogic，传入已创建的Settings实例
+    GameLogic logic(&settings); // 创建游戏逻辑对象，使用已经创建的settings
     context->setContextProperty("gameLogic", &logic); // 将游戏逻辑对象暴露给 QML
 
     QObject::connect(

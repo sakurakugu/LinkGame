@@ -5,7 +5,7 @@
 
 GameLogic::GameLogic(QObject *parent)
     : QObject{parent}, isGameRunning(false), currentScore(0), timeLeft_(0), isPaused_(false) {
-    // 创建设置管理器
+    // 创建设置管理器（将在main函数中被替换）
     settings = new Settings(this);
 
     // 创建游戏计时器
@@ -16,8 +16,25 @@ GameLogic::GameLogic(QObject *parent)
     createGrid();
 }
 
+GameLogic::GameLogic(Settings *settingsManager, QObject *parent)
+    : QObject{parent}, isGameRunning(false), currentScore(0), timeLeft_(0), isPaused_(false) {
+    // 使用外部提供的设置管理器
+    settings = settingsManager;
+
+    // 创建游戏计时器
+    gameTimer_ = new QTimer(this);
+    connect(gameTimer_, &QTimer::timeout, this, &GameLogic::updateTimer);
+
+    // 创建游戏网格
+    createGrid();
+}
+
 GameLogic::~GameLogic() {
-    delete settings;
+    // 只有在constructor中创建了settings时才需要删除
+    // 如果是从外部传入的，不应该在这里删除
+    if (settings && settings->parent() == this) {
+        delete settings;
+    }
     delete gameTimer_;
 }
 
