@@ -18,12 +18,16 @@ Window {
     flags: isFullScreen ? (Qt.Window | Qt.FramelessWindowHint) : Qt.Window
     property bool isFullScreen: false
     property bool exitDialogVisible: false // 控制退出确认对话框的可见性
-
     // 主题管理器
+    color: currentTheme ? currentTheme.backgroundColor : "#f0f0f0" // 应用主题背景色
     property ThemeManager themeManager: ThemeManager {
         id: themeManager
     }
     property QtObject currentTheme: null
+    property string currentThemeName: settings.getTheme() // 存储当前主题名称
+    
+    // 设置一个全局的主题对象，可供各个页面访问
+    property alias globalTheme: root.currentTheme
 
     // 窗口初始化完成后执行
     Component.onCompleted: {
@@ -37,7 +41,8 @@ Window {
             isFullScreen = settings.isFullscreen();
 
             // 加载当前主题
-            currentTheme = themeManager.loadTheme(settings.getTheme());
+            console.log("Main窗口初始化，加载主题:", currentThemeName);
+            currentTheme = themeManager.loadTheme(currentThemeName);
         });
         // root.forceActiveFocus(); // 确保键盘事件处理程序获得焦点
     }
@@ -57,18 +62,10 @@ Window {
     Connections {
         target: settings
         function onThemeChanged() {
-            console.log("主题变化检测到:", settings.getTheme())
+            currentThemeName = settings.getTheme();
+            console.log("Main - 主题变化检测到:", currentThemeName);
             // 更新当前主题
-            currentTheme = themeManager.loadTheme(settings.getTheme());
-        }
-    }
-
-    // 添加主题变化监听
-    Connections {
-        target: settings
-        function onThemeChanged() {
-            // 更新当前主题
-            currentTheme = themeManager.loadTheme(settings.getTheme());
+            currentTheme = themeManager.loadTheme(currentThemeName);
         }
     }
 
@@ -117,22 +114,21 @@ Window {
 
     // 主页面
     Component {
-        id: menuComponent
+        id: menuComponent        
         // 背景
         Rectangle {
-            color: "#f0f0f0"
+            color: currentTheme ? currentTheme.backgroundColor : "#f0f0f0"
             // 标题
             Text {
                 id: titleText
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
                 anchors.topMargin: parent.height * 0.10  // 使用窗口高度的10%作为上边距
-                anchors.bottomMargin: parent.height * 0.10
-
+                anchors.bottomMargin: parent.height * 0.10                
                 text: qsTr("连连看小游戏")
                 font.pixelSize: parent.width * 0.06 // 使用窗口宽度的6%作为字体大小
                 font.bold: true
-                color: "#333333"
+                color: root.currentTheme ? root.currentTheme.textColor : "#333333"
             }
 
             // 按钮布局
@@ -391,8 +387,8 @@ Window {
                     }
 
                     contentItem: Text {
-                        text: parent.text
-                        color: "#333333"
+                        text: parent.text                        
+                        color: root.currentTheme ? root.currentTheme.textColor : "#333333"
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
                     }

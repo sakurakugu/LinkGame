@@ -2,16 +2,42 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "./components"
+import "./theme"
 
 Rectangle {
     id: root
-    color: "#f0f0f0"
+    color: currentTheme ? currentTheme.backgroundColor : "#f0f0f0"
     focus: true // 确保可以接收键盘事件
+
+    // 主题管理器
+    property ThemeManager themeManager: ThemeManager {
+        id: themeManager
+    }
+    property QtObject currentTheme: null
+    property string theme: settings.getTheme()
+
+    // 监听主题变化
+    onThemeChanged: {
+        console.log("Leaderboard主题变化:", theme);
+        currentTheme = themeManager.loadTheme(theme);
+    }
 
     signal closed
 
     Component.onCompleted: {
+        console.log("Leaderboard初始化，当前主题:", theme);
+        currentTheme = themeManager.loadTheme(theme); // 加载当前主题
         root.forceActiveFocus(); // 确保键盘事件处理程序获得焦点
+    }
+    
+    // 添加主题变化监听
+    Connections {
+        target: settings
+        function onThemeChanged() {
+            theme = settings.getTheme();
+            console.log("Leaderboard主题变化检测到:", theme);
+            currentTheme = themeManager.loadTheme(theme);
+        }
     }
 
     // 添加键盘事件处理
@@ -24,19 +50,19 @@ Rectangle {
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 20
-        spacing: 20
-
+        spacing: 20        
         Text {
             text: qsTr("排行榜")
             font.pixelSize: 36
+            color: currentTheme ? currentTheme.textColor : "#333333"
             Layout.alignment: Qt.AlignHCenter
         }
 
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: "white"
-            border.color: "#cccccc"
+            color: currentTheme ? currentTheme.secondaryBackgroundColor : "white"
+            border.color: currentTheme ? currentTheme.borderColor : "#cccccc"
             border.width: 1
             radius: 5
 

@@ -2,23 +2,48 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QtMultimedia
+import "./theme"
 
 Rectangle {
     id: root
-    color: "#f0f0f0"
+    color: currentTheme ? currentTheme.backgroundColor : "#f0f0f0"
     focus: true // 确保可以接收键盘事件
+
+    // 主题管理器
+    property ThemeManager themeManager: ThemeManager {
+        id: themeManager
+    }
+    property QtObject currentTheme: null
+    property string theme: settings.getTheme()
+
+    // 监听主题变化
+    onThemeChanged: {
+        console.log("GameBoard主题变化:", theme);
+        currentTheme = themeManager.loadTheme(theme);
+    }
 
     property int selectedRow: -1 // 选中的行
     property int selectedCol: -1 // 选中的列
     property var linkPath: [] // 存储连接路径的点
     property bool showingPath: false // 是否正在显示路径
     property int score: 0 // 当前分数
-    property bool isPaused: gameLogic.isPaused // 是否暂停
-
+    property bool isPaused: gameLogic.isPaused // 是否暂停    
     // 游戏加载完成后自动开始游戏
     Component.onCompleted: {
+        console.log("GameBoard初始化，当前主题:", theme);
+        currentTheme = themeManager.loadTheme(theme); // 加载当前主题
         root.forceActiveFocus(); // 确保键盘事件处理程序获得焦点
         gameLogic.startGame(); // 开始游戏计时
+    }
+    
+    // 监听主题变化
+    Connections {
+        target: settings
+        function onThemeChanged() {
+            theme = settings.getTheme();
+            console.log("GameBoard主题变化检测到:", theme);
+            currentTheme = themeManager.loadTheme(theme);
+        }
     }
 
     signal returnToMenu // 返回主菜单信号
@@ -64,13 +89,13 @@ Rectangle {
             onClicked:
             // 阻止点击事件传递到下层
             {}
-        }
-
+        }        
+        
         Rectangle {
             width: parent.width * 0.4
             height: parent.height * 0.4
             anchors.centerIn: parent
-            color: "#ffffff"
+            color: currentTheme ? currentTheme.secondaryBackgroundColor : "#ffffff"
             opacity: 0.9
             radius: 10
 
@@ -181,11 +206,10 @@ Rectangle {
 
         onPaint: {
             if (root.linkPath.length < 2) // 如果路径长度小于2，则不绘制
-                return;
-
-            var ctx = getContext("2d"); // 获取2D上下文
+                return;            
+                var ctx = getContext("2d"); // 获取2D上下文
             ctx.clearRect(0, 0, width, height); // 清除画布
-            ctx.strokeStyle = "#FF0000"; // 设置线条颜色为红色
+            ctx.strokeStyle = currentTheme ? currentTheme.connectionLineColor : "#FF0000"; // 设置线条颜色
             ctx.lineWidth = 3; // 设置线条宽度
 
             ctx.beginPath(); // 开始路径
@@ -199,24 +223,24 @@ Rectangle {
         }
     }
 
-    // 状态栏
-    Rectangle {
+    // 状态栏   
+     Rectangle {
         id: statusBar
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
         height: parent.height * 0.08
-        color: "#e0e0e0"
+        color: currentTheme ? currentTheme.secondaryBackgroundColor : "#e0e0e0"
         enabled: !root.isPaused
 
         RowLayout {
             anchors.centerIn: parent
-            spacing: parent.parent.width * 0.02
-
+            spacing: parent.parent.width * 0.02            
             Text {
                 id: gameStatus
                 text: root.isPaused ? qsTr("游戏暂停") : qsTr("游戏进行中")
                 font.pixelSize: parent.parent.height * 0.4
+                color: currentTheme ? currentTheme.textColor : "#333333"
                 Layout.alignment: Qt.AlignCenter
             }
 
@@ -224,12 +248,14 @@ Rectangle {
                 id: scoreText
                 text: qsTr("分数: ") + root.score
                 font.pixelSize: parent.parent.height * 0.4
+                color: currentTheme ? currentTheme.textColor : "#333333"
             }
 
             Text {
                 id: timeText
                 text: qsTr("时间：") + Math.floor(gameLogic.timeLeft / 60) + ":" + (gameLogic.timeLeft % 60).toString().padStart(2, "0")
                 font.pixelSize: parent.parent.height * 0.4
+                color: currentTheme ? currentTheme.textColor : "#333333"
                 Layout.alignment: Qt.AlignCenter
             }
 
@@ -281,15 +307,14 @@ Rectangle {
         }
 
         Repeater {
-            model: gameLogic.rows() * gameLogic.cols()
-
+            model: gameLogic.rows() * gameLogic.cols()            
             delegate: Rectangle {
                 id: cell
                 width: Math.min(parent.parent.width * 0.08, parent.parent.height * 0.08) // 使用窗口宽度和高度的8%作为方块大小
                 height: width // 保持方块为正方形
                 // visible: !grid.isOuterCell(index)
-                color: grid.getCell(index) === 0 ? "transparent" : "skyblue"
-                border.color: grid.getCell(index) === 0 ? "transparent" : "black"
+                color: grid.getCell(index) === 0 ? "transparent" : (currentTheme ? currentTheme.gameBoardBackgroundColor : "skyblue")
+                border.color: grid.getCell(index) === 0 ? "transparent" : (currentTheme ? currentTheme.blockBorderColor : "black")
 
                 property bool highlighted: false // 是否高亮
                 property bool pathHighlighted: false // 路径高亮
@@ -330,21 +355,21 @@ Rectangle {
                             console.log("选中: " + index + " -> (" + r + "," + c + ") = " + gameLogic.getCell(r, c));
                             if (root.selectedRow === -1 && root.selectedCol === -1) {
                                 root.selectedRow = r;
-                                root.selectedCol = c;
-                                cell.color = "blue";
+                                root.selectedCol = c;                                
+                                cell.color = currentTheme ? currentTheme.selectedBlockBorderColor : "blue";
                             } else if (root.selectedRow === r && root.selectedCol === c) {
                                 root.selectedRow = -1;
                                 root.selectedCol = -1;
-                                cell.color = "skyblue";
+                                cell.color = currentTheme ? currentTheme.gameBoardBackgroundColor : "skyblue";
                             } else if (gameLogic.canLink(root.selectedRow, root.selectedCol, r, c)) {
-                                cell.color = "blue";
+                                cell.color = currentTheme ? currentTheme.selectedBlockBorderColor : "blue";
                                 showLinkTimer.firstRow = root.selectedRow;
                                 showLinkTimer.firstCol = root.selectedCol;
                                 showLinkTimer.secondRow = r;
                                 showLinkTimer.secondCol = c;
                                 showLinkTimer.start();
-                            } else {
-                                cell.color = "blue";
+                            } else {                                
+                                cell.color = currentTheme ? currentTheme.selectedBlockBorderColor : "blue";
                                 resetColorTimer.firstRow = root.selectedRow;
                                 resetColorTimer.firstCol = root.selectedCol;
                                 resetColorTimer.secondRow = r;
@@ -356,10 +381,10 @@ Rectangle {
                 }
 
                 Connections {
-                    target: root
+                    target: root                    
                     function onResetAllCell() {
-                        cell.color = grid.getCell(index) === 0 ? "transparent" : "skyblue";
-                        cell.border.color = grid.getCell(index) === 0 ? "transparent" : "black";
+                        cell.color = grid.getCell(index) === 0 ? "transparent" : (currentTheme ? currentTheme.gameBoardBackgroundColor : "skyblue");
+                        cell.border.color = grid.getCell(index) === 0 ? "transparent" : (currentTheme ? currentTheme.blockBorderColor : "black");
                         image.source = grid.getCell(index) === 0 ? "" : "qrc:/qt/qml/LinkGame/image/fruits/" + grid.getCell(index) + ".svg";
                     }
                 }
@@ -495,8 +520,8 @@ Rectangle {
                 if (root.selectedRow >= 0 && root.selectedCol >= 0) {
                     let oldIndex = root.selectedRow * gameLogic.cols() + root.selectedCol;
                     let oldCell = grid.children[oldIndex];
-                    if (oldCell) {
-                        oldCell.color = "skyblue";
+                    if (oldCell) {                        
+                        oldCell.color = currentTheme ? currentTheme.gameBoardBackgroundColor : "skyblue";
                     }
                 }
 
@@ -506,7 +531,7 @@ Rectangle {
                 let newIndex = newRow * gameLogic.cols() + newCol;
                 let newCell = grid.children[newIndex];
                 if (newCell) {
-                    newCell.color = "blue";
+                    newCell.color = currentTheme ? currentTheme.selectedBlockBorderColor : "blue";
                 }
             }
         }
