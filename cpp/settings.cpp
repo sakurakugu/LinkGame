@@ -190,9 +190,9 @@ QString Settings::getScreenSize() const {
         int realHeight = qFloor(window->height() * dpr);
 
         if (window->flags() & Qt::FramelessWindowHint && window->windowState() & Qt::WindowFullScreen) {
-            return QString("无边框全屏 (%1x%2)").arg(realWidth).arg(realHeight);
+            return tr("无边框全屏 (%1x%2)").arg(realWidth).arg(realHeight);
         } else if (window->windowState() & Qt::WindowFullScreen) {
-            return QString("全屏 (%1x%2)").arg(realWidth).arg(realHeight);
+            return tr("全屏 (%1x%2)").arg(realWidth).arg(realHeight);
         } else {
             return QString("%1x%2").arg(realWidth).arg(realHeight);
         }
@@ -332,8 +332,8 @@ QStringList Settings::getWindowSizeModel() const {
     QPair<int, int> availableSize = getAvailableScreenSize();
 
     // 添加预设的分辨率
-    model << QString("全屏 (%1x%2)").arg(physicalSize.first).arg(physicalSize.second)
-          << QString("无边框全屏 (%1x%2)").arg(physicalSize.first).arg(physicalSize.second)
+    model << tr("全屏 (%1x%2)").arg(physicalSize.first).arg(physicalSize.second)
+          << tr("无边框全屏 (%1x%2)").arg(physicalSize.first).arg(physicalSize.second)
           << QString("%1x%2").arg(availableSize.first).arg(availableSize.second)
           << QString("%1x%2").arg(logicalToPhysical(1920)).arg(logicalToPhysical(1080))
           << QString("%1x%2").arg(logicalToPhysical(1280)).arg(logicalToPhysical(720))

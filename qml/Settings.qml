@@ -271,13 +271,21 @@ Rectangle {
                         id: windowSizeCombo
                         model: settings.getWindowSizeModel() // 从C++端获取窗口大小模型
                         Layout.fillWidth: true
-                        font.pixelSize: parent.parent.parent.width * 0.02
+                        font.pixelSize: parent.parent.parent.width * 0.02                        
                         currentIndex: {
-                            let currentSize = settings.getScreenSize(); // 获取当前屏幕大小
-                            if (currentSize.startsWith("全屏")) // 如果当前屏幕大小以"全屏"开头
+                            // 首先获取当前屏幕大小文本
+                            let currentSize = settings.getScreenSize();
+                            
+                            // 获取模型中的第一个和第二个选项用于比较
+                            let fullscreenOption = model[0];
+                            let borderlessFullscreenOption = model[1];
+                            
+                            // 比较当前屏幕大小与模型中的选项
+                            if (currentSize === fullscreenOption)
                                 return 0;
-                            if (currentSize.startsWith("无边框全屏")) // 如果当前屏幕大小以"无边框全屏"开头
+                            if (currentSize === borderlessFullscreenOption)
                                 return 1;
+                                
                             return model.indexOf(currentSize); // 返回当前屏幕大小在模型中的索引
                         }
                         onActivated: {
@@ -376,9 +384,14 @@ Rectangle {
                         windowSizeCombo.displayText = settings.getScreenSize();
                         // 更新当前选中的选项
                         let currentSize = settings.getScreenSize();
-                        if (currentSize.startsWith("全屏")) {
+                        
+                        // 获取模型中的第一个和第二个选项用于比较
+                        let fullscreenOption = windowSizeCombo.model[0];
+                        let borderlessFullscreenOption = windowSizeCombo.model[1];
+                        
+                        if (currentSize === fullscreenOption) {
                             windowSizeCombo.currentIndex = 0;
-                        } else if (currentSize.startsWith("无边框")) {
+                        } else if (currentSize === borderlessFullscreenOption) {
                             windowSizeCombo.currentIndex = 1;
                         } else {
                             windowSizeCombo.currentIndex = windowSizeCombo.model.indexOf(currentSize);

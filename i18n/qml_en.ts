@@ -161,7 +161,7 @@
     <message>
         <location filename="../qml/Main.qml" line="106"/>
         <source>设置</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Setting</translation>
     </message>
     <message>
         <location filename="../qml/Main.qml" line="118"/>
@@ -242,23 +242,40 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="312"/>
+        <location filename="../qml/Settings.qml" line="320"/>
         <source>主题:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="323"/>
+        <location filename="../qml/Settings.qml" line="331"/>
         <source>浅色</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="335"/>
+        <location filename="../qml/Settings.qml" line="343"/>
         <source>深色</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="369"/>
+        <location filename="../qml/Settings.qml" line="362"/>
+        <source>语言:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/Settings.qml" line="403"/>
         <source>确定</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../cpp/settings.cpp" line="193"/>
+        <location filename="../cpp/settings.cpp" line="336"/>
+        <source>无边框全屏 (%1x%2)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../cpp/settings.cpp" line="195"/>
+        <location filename="../cpp/settings.cpp" line="335"/>
+        <source>全屏 (%1x%2)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
