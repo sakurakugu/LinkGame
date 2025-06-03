@@ -34,6 +34,8 @@ void Config::initConfig(config &config) {
  * @param config 配置结构体
  */
 void Config::loadConfig(config &config) {
+    // 输出配置文件的绝对路径
+    qDebug() << "配置文件路径:" << QDir::currentPath() + "/config.toml";
     try {
         // 读取配置文件
         const auto data = toml::parse("./config.toml");

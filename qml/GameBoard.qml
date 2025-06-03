@@ -425,9 +425,9 @@ Rectangle {
         property int secondCol: -1        // 定时器触发时的处理函数
         onTriggered: {
             // 移除连通的方块并隐藏路径
-            gameLogic.removeLink(firstRow, firstCol, secondRow, secondCol);
-            // 更新分数（每消除一对方块加10分）
+            gameLogic.removeLink(firstRow, firstCol, secondRow, secondCol);            // 更新分数（每消除一对方块加10分）
             root.score += 10; // 增加分数
+            gameLogic.setScore(root.score); // 更新 gameLogic 中的分数
             root.scoreUpdated(root.score);  // 发送信号
             // 更改方块颜色
             root.resetAllCell(); // 重置

@@ -463,9 +463,47 @@ void GameLogic::updateTimer() {
 }
 
 QString GameLogic::getRank(const QString &playerName, int score) const {
-    // 获取玩家排名
-    // 这里需要根据实际情况实现获取玩家排名的功能
-    return "未上榜";
+    // 从 settings 中获取排行榜
+    QVariantList leaderboard = settings->getLeaderboard();
+    
+    // 如果分数为0或者排行榜为空，直接返回未上榜
+    if (score <= 0 || leaderboard.isEmpty()) {
+        return "未上榜";
+    }
+    
+    // 检查玩家是否在排行榜中
+    int rank = 1;
+    bool foundPlayer = false;
+
+    for (const QVariant &entryVar : leaderboard) {
+        QVariantMap entry = entryVar.toMap();
+        QString name = entry["name"].toString();
+        int playerScore = entry["score"].toInt();
+        
+        // 如果发现相同名字和相同或更高分数，表示玩家已经在排行榜中
+        if (name == playerName && playerScore >= score) {
+            foundPlayer = true;
+            break;
+        }
+        
+        // 如果当前分数小于排行榜中的分数，排名加1
+        if (score < playerScore) {
+            rank++;
+        }
+    }
+    
+    // 检查设置中是否允许加入排行榜
+    if (!settings->getJoinLeaderboard()) {
+        return "未启用排行";
+    }
+    
+    // 如果玩家不在排行榜中，且排名超过100，返回未上榜
+    if (!foundPlayer && rank > 100) {
+        return "未上榜";
+    }
+    
+    // 返回排名
+    return "第" + QString::number(rank) + "名";
 }
 
 int GameLogic::timeLeft() const {
@@ -490,4 +528,8 @@ void GameLogic::setPaused(bool paused) {
 
 int GameLogic::getScore() const {
     return currentScore;
+}
+
+void GameLogic::setScore(int score) {
+    currentScore = score;
 }
