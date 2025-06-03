@@ -456,9 +456,9 @@ QStringList Settings::getLanguageDisplayNameList() const {
 }
 
 int Settings::getLanguageIndex() const {
-    QString language = getLanguage();
-    for (int i = 0; i < getLanguageDisplayNameList().size(); i++) {
-        if (getLanguageDisplayNameList()[i] == language) {
+    QString languageCode = getLanguage();
+    for (int i = 0; i < Language::languageList.size(); i++) {
+        if (Language::languageList[i].first == languageCode) {
             return i;
         }
     }
