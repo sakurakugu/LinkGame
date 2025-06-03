@@ -35,7 +35,8 @@ void Config::initConfig(config &config) {
 void Config::loadConfig(config &config) {
     try {
         // 读取配置文件
-        const auto data = toml::parse("config.toml");
+        const auto data = toml::parse("./config.toml");
+        qDebug() << "加载配置文件成功";
 
         // 读取玩家名称
         if (data.contains("player")) {

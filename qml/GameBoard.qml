@@ -15,6 +15,11 @@ Rectangle {
     property int score: 0 // 当前分数
     property bool isPaused: gameLogic.isPaused // 是否暂停
 
+    // 游戏加载完成后自动开始游戏
+    Component.onCompleted: {
+        gameLogic.startGame(); // 开始游戏计时
+    }
+
     signal returnToMenu // 返回主菜单信号
     signal closed // 退出游戏信号
     signal scoreUpdated(int newScore) // 分数变化信号
@@ -222,7 +227,8 @@ Rectangle {
 
             Text {
                 id: timeText
-                text: qsTr("时间：") + Math.floor(gameLogic.timeLeft / 60) + ":" + (gameLogic.timeLeft % 60).toString().padStart(2, "0")
+                // text: qsTr("时间：") + Math.floor(gameLogic.timeLeft / 60) + ":" + (gameLogic.timeLeft % 60).toString().padStart(2, "0")
+                text: qsTr("时间：") + Math.floor(gameLogic.timeLeft / 60) + ":" + (gameLogic.timeLeft % 60 < 10 ? "0" + gameLogic.timeLeft % 60 : gameLogic.timeLeft % 60)
                 font.pixelSize: parent.parent.height * 0.4
                 Layout.alignment: Qt.AlignCenter
             }

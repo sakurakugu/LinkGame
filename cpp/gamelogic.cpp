@@ -414,6 +414,10 @@ void GameLogic::startGame() {
     }
 }
 
+/**
+ * @brief 暂停游戏
+ * @details 如果游戏正在运行，则暂停游戏并停止计时
+ */
 void GameLogic::pauseGame() {
     if (isGameRunning) {
         isGameRunning = false;
@@ -422,6 +426,10 @@ void GameLogic::pauseGame() {
     }
 }
 
+/**
+ * @brief 恢复游戏
+ * @details 如果游戏处于暂停状态，则恢复游戏并重新开始计时
+ */
 void GameLogic::resumeGame() {
     if (!isGameRunning) {
         isGameRunning = true;

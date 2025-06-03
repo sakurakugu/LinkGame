@@ -7,20 +7,28 @@ import "."  // 导入当前目录下的QML文件
 Window {
     /* 窗口与页面相关 */
     id: root
-    width: settings.getWindowWidth()
-    height: settings.getWindowHeight()
+    // 使用默认尺寸，避免访问settings方法时报错
+    width: 800
+    height: 600
     visible: true
     title: qsTr("连连看小游戏")
     minimumWidth: 800
     minimumHeight: 600
     flags: isFullScreen ? (Qt.Window | Qt.FramelessWindowHint) : Qt.Window
 
-    property bool isFullScreen: settings.isFullscreen()
+    property bool isFullScreen: false
 
     // 窗口初始化完成后执行
     Component.onCompleted: {
         // 初始化设置窗口
         settings.initWindow();
+        
+        // 设置窗口属性，延迟一下保证settings已正确初始化
+        Qt.callLater(function() {
+            width = settings.getWindowWidth();
+            height = settings.getWindowHeight();
+            isFullScreen = settings.isFullscreen();
+        });
     }
 
     // 窗口大小变化处理
