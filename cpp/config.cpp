@@ -14,18 +14,19 @@ void Config::initConfig(config &config) {
     // 设置默认配置
     config.playerName = DefaultValues::player_name;
     config.difficulty = DefaultValues::difficulty;
-    config.gameTime = DefaultValues::game_time;         // 默认游戏时间为3分钟
-    config.volume = DefaultValues::volume;              // 默认音量为80%
-    config.soundState = DefaultValues::sound_state;      // 默认声音状态为开启
-    config.screenWidth = DefaultValues::screen_width;   // 默认窗口宽度
-    config.screenHeight = DefaultValues::screen_height; // 默认窗口高度
-    config.fullscreen = DefaultValues::fullscreen;      // 默认不全屏
-    config.borderless = DefaultValues::borderless;      // 默认不无边框
-    config.blockCount = DefaultValues::block_count;     // 默认方块数量
-    config.blockTypes = DefaultValues::block_types;     // 默认方块种类数
-    config.theme = DefaultValues::theme;                // 默认主题为浅色
-    config.language = DefaultValues::language;          // 默认语言为中文
-    config.leaderboard.clear();                         // 清空排行榜
+    config.gameTime = DefaultValues::game_time;               // 默认游戏时间为3分钟
+    config.volume = DefaultValues::volume;                    // 默认音量为80%
+    config.soundState = DefaultValues::sound_state;           // 默认声音状态为开启
+    config.screenWidth = DefaultValues::screen_width;         // 默认窗口宽度
+    config.screenHeight = DefaultValues::screen_height;       // 默认窗口高度
+    config.fullscreen = DefaultValues::fullscreen;            // 默认不全屏
+    config.borderless = DefaultValues::borderless;            // 默认不无边框
+    config.blockCount = DefaultValues::block_count;           // 默认方块数量
+    config.blockTypes = DefaultValues::block_types;           // 默认方块种类数
+    config.joinLeaderboard = DefaultValues::join_leaderboard; // 默认加入排行榜
+    config.theme = DefaultValues::theme;                      // 默认主题为浅色
+    config.language = DefaultValues::language;                // 默认语言为中文
+    config.leaderboard.clear();                               // 清空排行榜
 }
 
 /**
@@ -79,6 +80,11 @@ void Config::loadConfig(config &config) {
                 config.blockTypes = toml::find<int>(settings, "block_types");
             } else {
                 config.blockTypes = DefaultValues::block_types;
+            }
+            if (settings.contains("join_leaderboard")) {
+                config.joinLeaderboard = toml::find<bool>(settings, "join_leaderboard");
+            } else {
+                config.joinLeaderboard = DefaultValues::join_leaderboard;
             }
             if (settings.contains("theme")) {
                 config.theme = QString::fromStdString(toml::find<std::string>(settings, "theme"));
@@ -151,6 +157,7 @@ void Config::saveConfig(const config &config) {
         data["settings"]["sound_state"] = config.soundState;
         data["settings"]["block_count"] = config.blockCount;
         data["settings"]["block_types"] = config.blockTypes;
+        data["settings"]["join_leaderboard"] = config.joinLeaderboard;
         data["settings"]["theme"] = config.theme.toStdString();
         data["settings"]["language"] = config.language.toStdString();
 

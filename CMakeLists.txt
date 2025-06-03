@@ -36,6 +36,13 @@ set(MYQML_COMPONENTS
     qml/components/MyButton.qml
 )
 
+set(MYQML_THEME
+    qml/theme/ThemeManager.qml
+    qml/theme/LightTheme.qml
+    qml/theme/DarkTheme.qml
+    qml/theme/PinkTheme.qml
+)
+
 set(MYQML_FILES
     qml/Main.qml
     qml/Help.qml
@@ -44,6 +51,7 @@ set(MYQML_FILES
     qml/GameBoard.qml
     qml/Leaderboard.qml
     ${MYQML_COMPONENTS}
+    ${MYQML_THEME}
 )
 
 

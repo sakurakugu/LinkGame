@@ -89,6 +89,23 @@ void Settings::addScoreToLeaderboard(const QString &name, int score) {
     saveConfig();              // 保存配置
 }
 
+bool Settings::getJoinLeaderboard() const {
+    QString difficulty = getDifficulty();
+    if (difficulty == "简单") {
+        return DefaultValues::join_leaderboard_easy;
+    } else if (difficulty == "普通") {
+        return DefaultValues::join_leaderboard_medium;
+    } else if (difficulty == "困难") {
+        return DefaultValues::join_leaderboard_hard;
+    }
+    return config.joinLeaderboard;
+}
+
+void Settings::setJoinLeaderboard(bool join) {
+    config.joinLeaderboard = join;
+    saveConfig();
+}
+
 QString Settings::getDifficulty() const {
     return config.difficulty;
 }
@@ -292,7 +309,6 @@ void Settings::setBlockCount(int count) {
         emit blockSettingsChanged();
         saveConfig();
     }
-
 }
 
 int Settings::getBlockTypes() const {
@@ -402,6 +418,19 @@ void Settings::setTheme(const QString &theme) {
     }
 }
 
+QStringList Settings::getThemeList() const {
+    // 返回所有可用的主题名称
+    return QStringList() << "Light" << "Dark" << "Pink";
+}
+
+int Settings::getThemeIndex() const {
+    // 获取当前主题的索引
+    QString currentTheme = getTheme();
+    QStringList themes = getThemeList();
+    int index = themes.indexOf(currentTheme);
+    return index != -1 ? index : 0; // 如果找不到当前主题，默认返回第一个
+}
+
 QString Settings::getLanguage() const {
     return config.language;
 }
@@ -453,4 +482,3 @@ QString Settings::getLanguageCode(const QString &displayName) const {
     }
     return "";
 }
-

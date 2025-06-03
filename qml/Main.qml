@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Window
 import "."  // 导入当前目录下的QML文件
+import "./theme" // 导入主题目录
 
 Window {
     /* 窗口与页面相关 */
@@ -18,6 +19,12 @@ Window {
     property bool isFullScreen: false
     property bool exitDialogVisible: false // 控制退出确认对话框的可见性
 
+    // 主题管理器
+    property ThemeManager themeManager: ThemeManager {
+        id: themeManager
+    }
+    property QtObject currentTheme: null
+
     // 窗口初始化完成后执行
     Component.onCompleted: {
         // 初始化主窗口
@@ -28,10 +35,12 @@ Window {
             width = settings.getWindowWidth();
             height = settings.getWindowHeight();
             isFullScreen = settings.isFullscreen();
+
+            // 加载当前主题
+            currentTheme = themeManager.loadTheme(settings.getTheme());
         });
         // root.forceActiveFocus(); // 确保键盘事件处理程序获得焦点
     }
-
     // 窗口大小变化处理
     onWidthChanged: {
         if (!isFullScreen) {
@@ -41,6 +50,15 @@ Window {
     onHeightChanged: {
         if (!isFullScreen) {
             settings.updateWindowSize();
+        }
+    }
+
+    // 添加主题变化监听
+    Connections {
+        target: settings
+        function onThemeChanged() {
+            // 更新当前主题
+            currentTheme = themeManager.loadTheme(settings.getTheme());
         }
     }
 

@@ -34,6 +34,8 @@ class Settings : public QObject {
     // 排行榜相关
     Q_INVOKABLE QVariantList getLeaderboard() const;                        // 获取排行榜
     Q_INVOKABLE void addScoreToLeaderboard(const QString &name, int score); // 添加分数到排行榜
+    Q_INVOKABLE bool getJoinLeaderboard() const;                            // 获取是否加入排行榜
+    Q_INVOKABLE void setJoinLeaderboard(bool join);                         // 设置是否加入排行榜
 
     // 难度相关
     Q_INVOKABLE QString getDifficulty() const;                 // 获取难度
@@ -58,6 +60,8 @@ class Settings : public QObject {
     // 主题相关
     Q_INVOKABLE QString getTheme() const;            // 获取主题
     Q_INVOKABLE void setTheme(const QString &theme); // 设置主题
+    Q_INVOKABLE QStringList getThemeList() const;    // 获取主题列表
+    Q_INVOKABLE int getThemeIndex() const;           // 获取当前主题索引
 
     // 语言相关
     Q_INVOKABLE QString getLanguage() const;                               // 获取当前语言
@@ -102,9 +106,9 @@ class Settings : public QObject {
     Q_SIGNAL void languageChanged();               // 语言变化信号
 
   private:
-    Config::config config;     // 配置
-    Config configManager;      // 配置管理器
-    QQuickWindow *window;      // 主窗口
+    Config::config config; // 配置
+    Config configManager;  // 配置管理器
+    QQuickWindow *window;  // 主窗口
 };
 
 #endif // SETTINGS_H

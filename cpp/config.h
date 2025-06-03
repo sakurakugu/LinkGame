@@ -39,6 +39,7 @@ class Config : public QObject {
         bool borderless;                       // 是否无边框
         int blockCount;                        // 方块数量
         int blockTypes;                        // 方块种类数
+        bool joinLeaderboard;                  // 是否加入排行榜
         QString theme;                         // 主题
         QString language;                      // 语言
     };

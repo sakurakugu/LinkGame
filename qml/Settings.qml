@@ -2,16 +2,18 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "./components"
+import "./theme"
 
 Rectangle {
     id: root
-    color: "#f0f0f0"
+    color: currentTheme ? currentTheme.backgroundColor : "#f0f0f0"
     focus: true // 确保可以接收键盘事件
 
     // 定义信号
     signal closed
 
     Component.onCompleted: {
+        currentTheme = themeManager.loadTheme(theme); // 加载当前主题
         root.forceActiveFocus(); // 确保键盘事件处理程序获得焦点
     }
 
@@ -22,8 +24,20 @@ Rectangle {
     property double volume: settings.getVolume()
     property int blockCount: settings.getBlockCount()
     property int blockTypes: settings.getBlockTypes()
+    property bool joinLeaderboard: settings.getJoinLeaderboard()
     property bool isSoundEnabled: settings.getSoundState()
     property string theme: settings.getTheme()
+
+    // 主题管理器
+    property ThemeManager themeManager: ThemeManager {
+        id: themeManager
+    }
+    property QtObject currentTheme: null
+
+    // 当主题变化时更新预览
+    onThemeChanged: {
+        currentTheme = themeManager.loadTheme(theme);
+    }
 
     // 添加键盘事件处理
     Keys.onPressed: function (event) {
@@ -66,10 +80,10 @@ Rectangle {
             anchors.top: parent.top
             anchors.topMargin: 20
             spacing: root.height * 0.05 // 使用窗口高度的5%作为间距
-
             Text {
                 text: qsTr("游戏设置")
                 font.pixelSize: parent.parent.width * 0.04 // 使用窗口宽度的4%作为字体大小
+                color: currentTheme ? currentTheme.textColor : "#333333"
                 Layout.alignment: Qt.AlignHCenter
             }
 
@@ -127,6 +141,7 @@ Rectangle {
                             customTimeField.text = settings.getGameTime();
                             blockCountField.text = settings.getBlockCount();
                             blockTypesField.text = settings.getBlockTypes();
+                            joinLeaderboardCheck.checked = settings.getJoinLeaderboard();
                         }
                     }
                     RadioButton {
@@ -139,6 +154,7 @@ Rectangle {
                             customTimeField.text = settings.getGameTime();
                             blockCountField.text = settings.getBlockCount();
                             blockTypesField.text = settings.getBlockTypes();
+                            joinLeaderboardCheck.checked = settings.getJoinLeaderboard();
                         }
                     }
                     RadioButton {
@@ -151,6 +167,7 @@ Rectangle {
                             customTimeField.text = settings.getGameTime();
                             blockCountField.text = settings.getBlockCount();
                             blockTypesField.text = settings.getBlockTypes();
+                            joinLeaderboardCheck.checked = settings.getJoinLeaderboard();
                         }
                     }
                 }
@@ -160,7 +177,9 @@ Rectangle {
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: parent.parent.height * 0.3 // 使用窗口高度的40%作为高度
-                color: "#f8f8f8"
+                color: currentTheme ? currentTheme.secondaryBackgroundColor : "#f8f8f8"
+                border.color: currentTheme ? currentTheme.borderColor : "#dddddd"
+                border.width: 1
                 radius: 5
 
                 ColumnLayout {
@@ -362,37 +381,82 @@ Rectangle {
                 Text {
                     text: qsTr("主题:")
                     font.pixelSize: parent.parent.parent.width * 0.02
-                    color: themeManager.getColor("text")
                 }
-
-                RowLayout {
+                ComboBox {
+                    id: themeCombo
+                    model: settings.getThemeList()
+                    currentIndex: settings.getThemeIndex()
                     Layout.fillWidth: true
-                    spacing: parent.parent.parent.width * 0.02
+                    font.pixelSize: parent.parent.parent.width * 0.02
+                    onCurrentIndexChanged: {
+                        let themeName = model[currentIndex];
+                        settings.setTheme(themeName);
+                    }
+                }
+            }
 
-                    RadioButton {
-                        id: lightThemeRadio
-                        text: qsTr("浅色")
-                        checked: root.theme === themeManager.LIGHT_THEME
+            // 添加主题预览区域
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.preferredHeight: parent.parent.height * 0.15
+                color: currentTheme ? currentTheme.secondaryBackgroundColor : "#f8f8f8"
+                border.color: currentTheme ? currentTheme.borderColor : "#dddddd"
+                border.width: 1
+                radius: 5
+
+                ColumnLayout {
+                    anchors.fill: parent
+                    anchors.margins: parent.parent.parent.width * 0.02
+                    spacing: 10
+
+                    Text {
+                        text: qsTr("主题预览")
+                        color: currentTheme ? currentTheme.textColor : "#333333"
                         font.pixelSize: parent.parent.parent.parent.width * 0.02
-                        onCheckedChanged: {
-                            if (checked) {
-                                console.warn("当前主题:", root.theme, themeManager.LIGHT_THEME);
-                                themeManager.toggleTheme();
+                        font.bold: true
+                    }
+
+                    RowLayout {
+                        spacing: 10
+
+                        Rectangle {
+                            width: 30
+                            height: 30
+                            color: currentTheme ? currentTheme.backgroundColor : "#f0f0f0"
+                            border.color: currentTheme ? currentTheme.borderColor : "#dddddd"
+                            border.width: 1
+                        }
+
+                        Rectangle {
+                            width: 30
+                            height: 30
+                            color: currentTheme ? currentTheme.accentColor : "#0078d7"
+                        }
+
+                        Button {
+                            text: qsTr("按钮示例")
+                            background: Rectangle {
+                                color: currentTheme ? currentTheme.buttonBackgroundColor : "#e0e0e0"
+                                border.color: currentTheme ? currentTheme.borderColor : "#dddddd"
+                                border.width: 1
+                            }
+                            contentItem: Text {
+                                text: parent.text
+                                color: currentTheme ? currentTheme.buttonTextColor : "#333333"
+                                horizontalAlignment: Text.AlignHCenter
+                                verticalAlignment: Text.AlignVCenter
                             }
                         }
                     }
-                    RadioButton {
-                        id: darkThemeRadio
-                        text: qsTr("深色")
-                        checked: root.theme === themeManager.DARK_THEME
-                        font.pixelSize: parent.parent.parent.parent.width * 0.02
-                        onCheckedChanged: {
-                            if (checked) {
-                                console.warn("当前主题:", root.theme, themeManager.LIGHT_THEME);
-                                themeManager.toggleTheme();
-                            }
-                        }
-                    }
+                }
+            }
+
+            // 添加主题变化监听
+            Connections {
+                target: settings
+                function onThemeChanged() {
+                    // 更新当前选中的主题
+                    themeCombo.currentIndex = settings.getThemeIndex();
                 }
             }
 
