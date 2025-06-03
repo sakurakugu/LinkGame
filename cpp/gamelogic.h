@@ -31,7 +31,6 @@ class GameLogic : public QObject {
     Q_PROPERTY(bool isPaused READ isPaused NOTIFY pauseStateChanged)
 
   public:
-    explicit GameLogic(QObject *parent = nullptr);
     explicit GameLogic(Settings *settingsManager, QObject *parent = nullptr);
     ~GameLogic();
 

@@ -15,20 +15,21 @@ Window {
     minimumWidth: 800
     minimumHeight: 600
     flags: isFullScreen ? (Qt.Window | Qt.FramelessWindowHint) : Qt.Window
-
     property bool isFullScreen: false
+    property bool exitDialogVisible: false // 控制退出确认对话框的可见性
 
     // 窗口初始化完成后执行
     Component.onCompleted: {
-        // 初始化设置窗口
+        // 初始化主窗口
         settings.initWindow();
-        
+
         // 设置窗口属性，延迟一下保证settings已正确初始化
-        Qt.callLater(function() {
+        Qt.callLater(function () {
             width = settings.getWindowWidth();
             height = settings.getWindowHeight();
             isFullScreen = settings.isFullscreen();
         });
+        // root.forceActiveFocus(); // 确保键盘事件处理程序获得焦点
     }
 
     // 窗口大小变化处理
@@ -40,6 +41,32 @@ Window {
     onHeightChanged: {
         if (!isFullScreen) {
             settings.updateWindowSize();
+        }
+    }
+
+    FocusScope {
+        anchors.fill: parent
+        focus: true
+
+        // 键盘事件处理
+        Keys.onPressed: function (event) {
+            // 检测ESC键
+            if (event.key === Qt.Key_Escape) {
+                if (!exitDialogVisible) {
+                    exitDialogVisible = true;  // 显示退出确认对话框
+                    event.accepted = true;     // 标记事件已处理
+                } else {
+                    exitDialogVisible = false; // 如果对话框已显示，则关闭对话框
+                    event.accepted = true;
+                }
+            } else
+            // 检测回车键，当退出对话框显示时
+            if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                if (exitDialogVisible) {
+                    Qt.quit();                 // 确认退出游戏
+                    event.accepted = true;
+                }
+            }
         }
     }
 
@@ -228,6 +255,132 @@ Window {
             item.closed.connect(function () {
                 pageState = page.Menu;
             });
+        }
+    }
+
+    // 退出确认对话框
+    Dialog {
+        id: exitConfirmDialog
+        anchors.centerIn: parent
+        width: parent.width * 0.4
+        height: parent.height * 0.25
+        modal: true
+        visible: exitDialogVisible
+        closePolicy: Dialog.NoAutoClose
+        focus: true
+
+        background: Rectangle {
+            color: "#ffffff"
+            border.color: "#cccccc"
+            border.width: 1
+            radius: 8
+        }
+
+        header: Rectangle {
+            color: "#f0f0f0"
+            height: 40
+            width: parent.width
+            radius: 8
+
+            Text {
+                anchors.centerIn: parent
+                text: qsTr("确认退出")
+                font.pixelSize: 16
+                font.bold: true
+            }
+        }
+
+        contentItem: FocusScope {
+            id: contentItem
+            anchors.fill: parent
+            focus: true
+
+            Keys.onPressed: function (event) {
+                console.log("Dialog Key pressed:", event.key); // 可调试输出
+                if (event.key === Qt.Key_Escape) {
+                    exitDialogVisible = false;
+                    event.accepted = true;
+                } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                    Qt.quit();
+                    event.accepted = true;
+                }
+            }
+
+            Text {
+                anchors.centerIn: parent
+                width: parent.width * 0.8
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+                text: qsTr("确定要退出游戏吗？")
+                font.pixelSize: 14
+            }
+        }
+
+        footer: Rectangle {
+            color: "transparent"
+            height: 60
+            width: parent.width
+
+            RowLayout {
+                anchors.centerIn: parent
+                spacing: 20
+
+                Button {
+                    text: qsTr("退出 (Enter)")
+                    Layout.preferredWidth: 100
+                    Layout.preferredHeight: 30
+
+                    onClicked: {
+                        Qt.quit();
+                    }
+
+                    background: Rectangle {
+                        color: parent.down ? "#ec3030" : (parent.hovered ? "#fda0a0" : "#f35c4b")
+                        radius: 4
+                    }
+
+                    contentItem: Text {
+                        text: parent.text
+                        color: "white"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+
+                Button {
+                    text: qsTr("取消 (Esc)")
+                    Layout.preferredWidth: 100
+                    Layout.preferredHeight: 30
+
+                    onClicked: {
+                        exitDialogVisible = false;
+                    }
+
+                    background: Rectangle {
+                        color: parent.down ? "#d0d0d0" : (parent.hovered ? "#e0e0e0" : "#f0f0f0")
+                        border.color: "#cccccc"
+                        radius: 4
+                    }
+
+                    contentItem: Text {
+                        text: parent.text
+                        color: "#333333"
+                        horizontalAlignment: Text.AlignHCenter
+                        verticalAlignment: Text.AlignVCenter
+                    }
+                }
+            }
+        }
+
+        // 当对话框关闭时重置焦点
+        onClosed: {
+            root.forceActiveFocus();
+        }
+
+        onVisibleChanged: {
+            if (visible) {
+                dialogContent.forceActiveFocus();
+            }
         }
     }
 }

@@ -17,6 +17,7 @@ Rectangle {
 
     // 游戏加载完成后自动开始游戏
     Component.onCompleted: {
+        root.forceActiveFocus(); // 确保键盘事件处理程序获得焦点
         gameLogic.startGame(); // 开始游戏计时
     }
 

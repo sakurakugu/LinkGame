@@ -11,6 +11,10 @@ Rectangle {
     // 定义信号
     signal closed
 
+    Component.onCompleted: {
+        root.forceActiveFocus(); // 确保键盘事件处理程序获得焦点
+    }
+
     // 从GameLogic获取当前设置
     property string username: settings.getPlayerName()
     property string difficulty: settings.getDifficulty()

@@ -10,6 +10,10 @@ Rectangle {
 
     signal closed
 
+    Component.onCompleted: {
+        root.forceActiveFocus(); // 确保键盘事件处理程序获得焦点
+    }
+
     // 添加键盘事件处理
     Keys.onPressed: function (event) {
         if (event.key === Qt.Key_Escape) {
