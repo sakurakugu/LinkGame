@@ -10,10 +10,13 @@ Rectangle {
     focus: true // 确保可以接收键盘事件
 
     // 定义信号
-    signal closed
-
+    signal closed    
+    
     Component.onCompleted: {
+        console.log("Settings初始化，当前主题: " + theme);
+        console.log("加载主题...");
         currentTheme = themeManager.loadTheme(theme); // 加载当前主题
+        console.log("是否成功加载主题: " + (currentTheme !== null));
         root.forceActiveFocus(); // 确保键盘事件处理程序获得焦点
     }
 
@@ -32,10 +35,9 @@ Rectangle {
     property ThemeManager themeManager: ThemeManager {
         id: themeManager
     }
-    property QtObject currentTheme: null
-
-    // 当主题变化时更新预览
+    property QtObject currentTheme: null    // 当主题变化时更新预览
     onThemeChanged: {
+        console.log("Settings主题变化:", theme);
         currentTheme = themeManager.loadTheme(theme);
     }
 
@@ -271,7 +273,7 @@ Rectangle {
                             font.pixelSize: parent.parent.parent.parent.width * 0.02
                         }
                         CheckBox {
-                            id: customLeaderboardCheck
+                            id: joinLeaderboardCheck
                             checked: true
                             enabled: customRadio.checked
                             font.pixelSize: parent.parent.parent.parent.width * 0.02

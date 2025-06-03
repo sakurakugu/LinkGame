@@ -52,6 +52,16 @@ Window {
             settings.updateWindowSize();
         }
     }
+    
+    // 主题变化监听
+    Connections {
+        target: settings
+        function onThemeChanged() {
+            console.log("主题变化检测到:", settings.getTheme())
+            // 更新当前主题
+            currentTheme = themeManager.loadTheme(settings.getTheme());
+        }
+    }
 
     // 添加主题变化监听
     Connections {
