@@ -6,9 +6,9 @@ Rectangle {
     id: root
     color: "#f0f0f0"
 
-    property int finalScore: settings.getScore()
+    property int finalScore: gameLogic.getScore()
     property string playerName: settings.getPlayerName()
-    property string rank: finalScore > 0 ? settings.getRank(playerName, finalScore) : "未上榜"
+    property string rank: finalScore > 0 ? gameLogic.getRank(playerName, finalScore) : "未上榜"
 
     signal restartGame
     signal returnToMenu

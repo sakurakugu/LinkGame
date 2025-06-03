@@ -228,8 +228,7 @@ Rectangle {
 
             Text {
                 id: timeText
-                // text: qsTr("时间：") + Math.floor(gameLogic.timeLeft / 60) + ":" + (gameLogic.timeLeft % 60).toString().padStart(2, "0")
-                text: qsTr("时间：") + Math.floor(gameLogic.timeLeft / 60) + ":" + (gameLogic.timeLeft % 60 < 10 ? "0" + gameLogic.timeLeft % 60 : gameLogic.timeLeft % 60)
+                text: qsTr("时间：") + Math.floor(gameLogic.timeLeft / 60) + ":" + (gameLogic.timeLeft % 60).toString().padStart(2, "0")
                 font.pixelSize: parent.parent.height * 0.4
                 Layout.alignment: Qt.AlignCenter
             }

@@ -137,7 +137,7 @@ void GameLogic::removeLink(int r1, int c1, int r2, int c2) {
         grid[r2][c2] = 0;
         // 发送信号，通知UI更新
         emit cellsChanged();
-        
+
         // 检查游戏是否结束
         if (isGameOver()) {
             isGameRunning = false;
@@ -297,12 +297,12 @@ bool GameLogic::hasValidMove() const {
  * @return 解决方案步骤列表
  */
 QVector<GameLogic::HintStep> GameLogic::findSolution() {
-    QVector<HintStep> solution; // 解决方案步骤列表
+    QVector<HintStep> solution;            // 解决方案步骤列表
     QVector<QVector<int>> tempGrid = grid; // 创建临时网格
 
     while (hasValidMove()) {
         auto positions = getValidPositions(); // 获取所有有效位置
-        bool found = false; // 是否找到解决方案
+        bool found = false;                   // 是否找到解决方案
 
         for (int i = 0; i < positions.size() && !found; ++i) {
             for (int j = i + 1; j < positions.size() && !found; ++j) {
@@ -318,7 +318,7 @@ QVector<GameLogic::HintStep> GameLogic::findSolution() {
                     step.row2 = r2;
                     step.col2 = c2;
                     step.path = getLinkPath(r1, c1, r2, c2); // 获取连接路径
-                    solution.append(step); // 添加步骤到解决方案列表
+                    solution.append(step);                   // 添加步骤到解决方案列表
 
                     // 移除这对方块
                     grid[r1][c1] = 0;
@@ -363,7 +363,11 @@ void GameLogic::generateSolution() {
     }
 
     // 随机打乱位置列表，使用C++11的梅森旋转算法（std::mt19937），random_device{}()生成随机种子
-    std::shuffle(positions.begin(), positions.end(), std::mt19937{std::random_device{}()});
+    auto seed = std::random_device{}();
+    std::shuffle(positions.begin(), positions.end(), std::mt19937(seed));
+    qDebug() << "种子：" << seed;
+
+    // std::shuffle(positions.begin(), positions.end(), std::mt19937{std::random_device{}()});
 
     // 分配图案到格子中
     int posIndex = 0;
@@ -441,7 +445,7 @@ void GameLogic::endGame() {
     if (isGameRunning) {
         isGameRunning = false;
         gameTimer_->stop();
-        timeLeft_ = 0;  // 确保时间归零
+        timeLeft_ = 0; // 确保时间归零
         emit timeLeftChanged(timeLeft_);
         emit gameEnded();
     }
@@ -482,4 +486,8 @@ void GameLogic::setPaused(bool paused) {
         }
         emit pauseStateChanged(isPaused_);
     }
+}
+
+int GameLogic::getScore() const {
+    return currentScore;
 }

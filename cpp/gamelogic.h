@@ -54,6 +54,7 @@ class GameLogic : public QObject {
     Q_INVOKABLE void removeLink(int r1, int c1, int r2, int c2);             // 移除连接的两个方块
     Q_INVOKABLE QVariantList getLinkPath(int r1, int c1, int r2, int c2);    // 获取连接路径
     Q_INVOKABLE bool isGameOver() const;                                     // 检查游戏是否结束
+    Q_INVOKABLE int getScore() const;                                        // 获取当前分数
     Q_INVOKABLE QString getRank(const QString &playerName, int score) const; // 获取排名
 
     // 游戏管理相关
