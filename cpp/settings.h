@@ -2,8 +2,8 @@
 #define SETTINGS_H
 
 #include "config.h"
-#include "language.h"
 #include "default_value.h"
+#include "language.h"
 
 #include <QDebug>
 #include <QGuiApplication>
@@ -33,10 +33,11 @@ class Settings : public QObject {
     Q_INVOKABLE void setPlayerName(const QString &name); // 设置玩家名称
 
     // 排行榜相关
-    Q_INVOKABLE QVariantList getLeaderboard() const;                        // 获取排行榜
-    Q_INVOKABLE void addScoreToLeaderboard(const QString &name, int score); // 添加分数到排行榜
-    Q_INVOKABLE bool getJoinLeaderboard() const;                            // 获取是否加入排行榜
-    Q_INVOKABLE void setJoinLeaderboard(bool join);                         // 设置是否加入排行榜
+    Q_INVOKABLE QVariantList getLeaderboard() const;                                      // 获取排行榜
+    Q_INVOKABLE QVariantList getLeaderboardByDifficulty(const QString &difficulty) const; // 获取指定难度的排行榜
+    Q_INVOKABLE void addScoreToLeaderboard(const QString &name, int score);               // 添加分数到排行榜
+    Q_INVOKABLE bool getJoinLeaderboard() const;                                          // 获取是否加入排行榜
+    Q_INVOKABLE void setJoinLeaderboard(bool join);                                       // 设置是否加入排行榜
 
     // 难度相关
     Q_INVOKABLE QString getDifficulty() const;                 // 获取难度

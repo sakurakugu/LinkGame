@@ -23,6 +23,7 @@ class Config : public QObject {
     struct LeaderboardEntry {
         QString name;
         int score;
+        QString difficulty; // 添加难度属性
     };
 
     // 配置结构体

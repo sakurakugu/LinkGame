@@ -46,29 +46,48 @@ void Settings::setPlayerName(const QString &name) {
     }
 }
 
-QVariantList Settings::getLeaderboard() const {
+QVariantList Settings::getLeaderboardByDifficulty(const QString &difficulty) const {
     QVariantList result;
+    
+    // 获取当前难度下的排行榜
     for (const auto &entry : config.leaderboard) {
         QVariantMap item;
         item["name"] = entry.name;
         item["score"] = entry.score;
-        result.append(item);
+        item["difficulty"] = entry.difficulty; // 添加难度属性
+        
+        // 如果未指定难度或难度匹配，则添加到结果中
+        if (difficulty.isEmpty() || entry.difficulty == difficulty) {
+            result.append(item);
+        }
     }
+    
     return result;
 }
 
+QVariantList Settings::getLeaderboard() const {
+    // 默认返回所有难度的排行榜
+    return getLeaderboardByDifficulty("");
+}
+
 void Settings::addScoreToLeaderboard(const QString &name, int score) {
+    QString currentDifficulty = getDifficulty();
+    
+    // 查找是否有同名同难度的记录
     auto it = std::find_if(config.leaderboard.begin(), config.leaderboard.end(),
-                           [&name](const Config::LeaderboardEntry &entry) { return entry.name == name; });
+                           [&name, &currentDifficulty](const Config::LeaderboardEntry &entry) { 
+                               return entry.name == name && entry.difficulty == currentDifficulty; 
+                           });
 
     if (it != config.leaderboard.end()) {
-        // 如果找到相同用户名，更新分数
+        // 如果找到相同用户名和难度，更新分数
         it->score = std::max(it->score, score); // 保留更高分数
     } else {
-        // 如果没有相同用户名，添加新的分数
+        // 如果没有相同用户名和难度，添加新的分数
         Config::LeaderboardEntry entry;
         entry.name = name;
         entry.score = score;
+        entry.difficulty = currentDifficulty;
         config.leaderboard.append(entry);
     }
 

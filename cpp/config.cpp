@@ -106,8 +106,8 @@ void Config::loadConfig(config &config) {
             config.blockTypes = DefaultValues::block_types;
             config.theme = DefaultValues::theme;
             config.language = DefaultValues::language;
-        }
-
+        }        
+        
         // 读取排行榜
         config.leaderboard.clear();
         if (data.contains("leaderboard") && toml::find(data, "leaderboard").contains("entries")) {
@@ -116,6 +116,14 @@ void Config::loadConfig(config &config) {
                 LeaderboardEntry leaderboardEntry;
                 leaderboardEntry.name = QString::fromStdString(toml::find<std::string>(entry, "name"));
                 leaderboardEntry.score = toml::find<int>(entry, "score");
+                
+                // 读取难度，如果没有则默认为普通
+                if (entry.contains("difficulty")) {
+                    leaderboardEntry.difficulty = QString::fromStdString(toml::find<std::string>(entry, "difficulty"));
+                } else {
+                    leaderboardEntry.difficulty = "普通";
+                }
+                
                 config.leaderboard.append(leaderboardEntry);
             }
         }
@@ -161,8 +169,8 @@ void Config::saveConfig(const config &config) {
         data["settings"]["block_types"] = config.blockTypes;
         data["settings"]["join_leaderboard"] = config.joinLeaderboard;
         data["settings"]["theme"] = config.theme.toStdString();
-        data["settings"]["language"] = config.language.toStdString();
-
+        data["settings"]["language"] = config.language.toStdString();        
+        
         // 保存排行榜
         data["leaderboard"].comments().push_back(" 玩家排行榜");
         std::vector<toml::value> leaderboard;
@@ -170,6 +178,7 @@ void Config::saveConfig(const config &config) {
             toml::value entryData;
             entryData["name"] = entry.name.toStdString();
             entryData["score"] = entry.score;
+            entryData["difficulty"] = entry.difficulty.toStdString();
             leaderboard.push_back(entryData);
         }
         data["leaderboard"]["entries"] = leaderboard;
