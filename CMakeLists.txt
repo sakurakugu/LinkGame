@@ -2,24 +2,22 @@ cmake_minimum_required(VERSION 3.16)
 
 project(LinkGame VERSION 0.1 LANGUAGES CXX)
 
+# 设置C++标准和其他编译选项
+set(CMAKE_CXX_STANDARD 17) # 明确指定C++标准
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(QT_QML_GENERATE_QMLLS_INI ON)
 set(CMAKE_AUTORCC ON) # 自动处理资源文件
 
-find_package(Qt6 REQUIRED COMPONENTS Quick)
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Qml LinguistTools) # 添加 国际化翻译 组件
-
-qt_standard_project_setup(REQUIRES 6.8)
-
-# 添加外部库 toml11
-include(FetchContent)
-FetchContent_Declare(
-  toml11
-  GIT_REPOSITORY https://github.com/ToruNiina/toml11.git
-  GIT_TAG        v4.4.0
+# 设置 待包含的 Qt 组件
+set(QT_COMPONENTS 
+    Core
+    Gui
+    Quick
+    Qml
+    LinguistTools
 )
-FetchContent_MakeAvailable(toml11)
 
+# 设置项目的源文件
 set(PROJECT_SOURCES
     cpp/gamelogic.cpp
     cpp/gamelogic.h
@@ -31,11 +29,13 @@ set(PROJECT_SOURCES
     cpp/language.h
 )
 
+# 设置 QML 文件的路径
 set(MYQML_COMPONENTS
     qml/components/Cell.qml
     qml/components/MyButton.qml
 )
 
+# 设置主题相关的 QML 文件
 set(MYQML_THEME
     qml/theme/ThemeManager.qml
     qml/theme/LightTheme.qml
@@ -43,6 +43,7 @@ set(MYQML_THEME
     qml/theme/PinkTheme.qml
 )
 
+# 设置 QML 文件的路径
 set(MYQML_FILES
     qml/Main.qml
     qml/Help.qml
@@ -54,13 +55,20 @@ set(MYQML_FILES
     ${MYQML_THEME}
 )
 
+# 设置国际化翻译文件的路径
+set(MYI18N_FILES
+    i18n/qml_en.ts
+    i18n/qml_zh_CN.ts
+    i18n/qml_ja.ts
+)
 
-
+# 设置私有库变量 MYPRIVATE, 储存需要链接的库
 set(MYPRIVATE
     Qt6::Quick
     toml11::toml11
 )
 
+# 设置资源文件的路径
 set(RESOURCES
     # 添加资源文件
     # 图标
@@ -88,6 +96,20 @@ set(RESOURCES
     music/sound_effect.mp3
 )
 
+# 查找所有需要的Qt组件
+find_package(Qt6 REQUIRED ${QT_COMPONENTS})
+
+qt_standard_project_setup(REQUIRES 6.8)
+
+# 添加外部库 toml11
+include(FetchContent)
+FetchContent_Declare(
+    toml11
+    GIT_REPOSITORY https://github.com/ToruNiina/toml11.git
+    GIT_TAG        v4.4.0
+)
+FetchContent_MakeAvailable(toml11)
+
 # 将文件添加到Qt_Creator的列表中
 qt_add_executable(appLinkGame
     main.cpp
@@ -95,27 +117,25 @@ qt_add_executable(appLinkGame
     "./image/icon.rc" # 添加图标资源
 )
 
+# 添加 QML 文件到项目中
 qt_add_qml_module(appLinkGame
-    URI LinkGame
-    VERSION 1.0
-    QML_FILES
-        SOURCES ${PROJECT_SOURCES}
-        QML_FILES ${MYQML_FILES}
-    RESOURCES
-        ${RESOURCES}
+URI LinkGame
+VERSION 1.0
+# QML_FILES
+QML_FILES ${MYQML_FILES}
+    SOURCES ${PROJECT_SOURCES}
+    RESOURCES ${RESOURCES}
 )
 
 # 国际化翻译
 qt_add_translations(appLinkGame
     # 最终路径：qrc:/qt/qml/Translated/i18n/qml_*.qm
     RESOURCE_PREFIX /qt/qml/Translated/i18n
-    TS_FILE_BASE qml
-    TS_FILE_DIR i18n
+    TS_FILES ${MYI18N_FILES}
 )
 
-# Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
-# If you are developing for iOS or macOS you should consider setting an
-# explicit, fixed bundle identifier manually though.
+# Qt 在 iOS 上会自动设置 MACOSX_BUNDLE_GUI_IDENTIFIER
+# 如果你正在为 iOS 或 macOS 开发，你应该考虑手动设置一个明确的、固定的 bundle 标识符。
 set_target_properties(appLinkGame PROPERTIES
 #    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.appLinkGame
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
@@ -124,10 +144,12 @@ set_target_properties(appLinkGame PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
+# 设置编译选项
 target_link_libraries(appLinkGame
     PRIVATE ${MYPRIVATE}
 )
 
+# 设置编译选项
 include(GNUInstallDirs)
 install(TARGETS appLinkGame
     BUNDLE DESTINATION .
