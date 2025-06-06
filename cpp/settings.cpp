@@ -322,7 +322,7 @@ int Settings::getBlockCount() const {
 void Settings::setBlockCount(int count) {
     if (config.blockCount != count) {
         config.blockCount = count;
-        emit blockSettingsChanged();
+        emit blockSettingsChanged(); // 发出方块设置变化信号
         saveConfig();
     }
 }
@@ -505,4 +505,14 @@ QString Settings::getLanguageCode(const QString &displayName) const {
         }
     }
     return "";
+}
+
+/**
+ * @brief 强制重新应用方块设置
+ * @details 用于在QML中手动强制刷新游戏布局
+ */
+void Settings::forceUpdateBlockSettings() {
+    qDebug() << "强制重新应用方块设置";
+    // 发出方块设置变化信号，触发游戏逻辑更新
+    emit blockSettingsChanged();
 }

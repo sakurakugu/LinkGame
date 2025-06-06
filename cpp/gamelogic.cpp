@@ -15,7 +15,7 @@ GameLogic::GameLogic(Settings *settingsManager, QObject *parent)
     // 创建游戏网格
     createGrid();
     
-    // 监听方块设置变化，更新行列数
+    // 监听方块设置变化，更新行列数（使用直接连接模式以确保立即执行）
     connect(settings, &Settings::blockSettingsChanged, this, [this]() {
         updateDimensions();
         resetGame();  // 重置游戏以应用新的行列数
@@ -491,7 +491,7 @@ void GameLogic::resetGame() {
     currentScore = 0;
     timeLeft_ = settings->getGameTime();
     isPaused_ = false;
-    gameTimer_->start(1000); // 每秒更新一次
+    gameTimer_->start(1000); // 再重启计时器
     createGrid(); // 重新生成游戏网格
     emit gameStarted();
     emit scoreChanged(currentScore);

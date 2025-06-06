@@ -20,13 +20,15 @@
 
 class Settings : public QObject {
     Q_OBJECT
-
   public:
     explicit Settings(QObject *parent = nullptr);
     ~Settings();
 
     // 初始化窗口
     Q_INVOKABLE void initWindow();
+    
+    // 强制重新应用方块设置
+    Q_INVOKABLE void forceUpdateBlockSettings();
 
     // 玩家名称相关
     Q_INVOKABLE QString getPlayerName() const;           // 获取玩家名称

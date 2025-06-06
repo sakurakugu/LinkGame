@@ -464,11 +464,14 @@ Rectangle {
                                         text = value.toString();
                                     }
                                     if (value < 16) value = 16;
-                                    if (value > 100) value = 100;
+                                    if (value > 100) value = 100;                                    
                                     if (value !== parseInt(text)) {
                                         text = value.toString();
                                     }
                                     settings.setBlockCount(value);
+                                    
+                                    // 立即强制更新，确保不需要重启就能应用新设置
+                                    settings.forceUpdateBlockSettings();
                                 }
                             }
                             
