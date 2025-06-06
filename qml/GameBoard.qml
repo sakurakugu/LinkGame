@@ -27,7 +27,7 @@ Rectangle {
     property var linkPath: [] // 存储连接路径的点
     property bool showingPath: false // 是否正在显示路径
     property int score: 0 // 当前分数
-    property bool isPaused: gameLogic.isPaused // 是否暂停    
+    property bool isPaused: gameLogic.isPaused // 是否暂停
     // 游戏加载完成后自动开始游戏
     Component.onCompleted: {
         console.log("GameBoard初始化，当前主题:", theme);
@@ -35,7 +35,7 @@ Rectangle {
         root.forceActiveFocus(); // 确保键盘事件处理程序获得焦点
         gameLogic.startGame(); // 开始游戏计时
     }
-    
+
     // 监听主题变化
     Connections {
         target: settings
@@ -89,8 +89,8 @@ Rectangle {
             onClicked:
             // 阻止点击事件传递到下层
             {}
-        }        
-        
+        }
+
         Rectangle {
             width: parent.width * 0.4
             height: parent.height * 0.4
@@ -206,8 +206,8 @@ Rectangle {
 
         onPaint: {
             if (root.linkPath.length < 2) // 如果路径长度小于2，则不绘制
-                return;            
-                var ctx = getContext("2d"); // 获取2D上下文
+                return;
+            var ctx = getContext("2d"); // 获取2D上下文
             ctx.clearRect(0, 0, width, height); // 清除画布
             ctx.strokeStyle = currentTheme ? currentTheme.connectionLineColor : "#FF0000"; // 设置线条颜色
             ctx.lineWidth = 3; // 设置线条宽度
@@ -223,8 +223,8 @@ Rectangle {
         }
     }
 
-    // 状态栏   
-     Rectangle {
+    // 状态栏
+    Rectangle {
         id: statusBar
         anchors.top: parent.top
         anchors.left: parent.left
@@ -235,7 +235,7 @@ Rectangle {
 
         RowLayout {
             anchors.centerIn: parent
-            spacing: parent.parent.width * 0.02            
+            spacing: parent.parent.width * 0.02
             Text {
                 id: gameStatus
                 text: root.isPaused ? qsTr("游戏暂停") : qsTr("游戏进行中")
@@ -278,13 +278,13 @@ Rectangle {
                 onClicked: {
                     // 获取提示
                     var hint = gameLogic.getHint();
-                    
+
                     // 检查提示是否有效
                     if (hint && hint.hasOwnProperty("row1")) {
                         // 播放点击音效
                         clickSound.stop();
                         clickSound.play();
-                        
+
                         // 重置之前的选择
                         if (root.selectedRow >= 0 && root.selectedCol >= 0) {
                             let oldIndex = root.selectedRow * gameLogic.cols() + root.selectedCol;
@@ -293,41 +293,47 @@ Rectangle {
                                 oldCell.color = currentTheme ? currentTheme.gameBoardBackgroundColor : "skyblue";
                             }
                         }
-                        
+
                         // 高亮显示第一个提示方块
                         let index1 = hint.row1 * gameLogic.cols() + hint.col1;
                         let cell1 = grid.children[index1];
                         if (cell1) {
-                            cell1.color = currentTheme ? currentTheme.selectedBlockBorderColor : "blue";
+                            // cell1.color = currentTheme ? currentTheme.selectedBlockBorderColor : "blue";
+                            cell1.color = "red";
                         }
-                        
+
                         // 高亮显示第二个提示方块
                         let index2 = hint.row2 * gameLogic.cols() + hint.col2;
                         let cell2 = grid.children[index2];
                         if (cell2) {
-                            cell2.color = currentTheme ? currentTheme.selectedBlockBorderColor : "blue";
+                            // cell2.color = currentTheme ? currentTheme.selectedBlockBorderColor : "blue";
+                            cell2.color = "red";
                         }
-                        
+
                         // 显示连接路径
                         root.linkPath = hint.path;
-                        
+
                         // 转换路径点坐标到Canvas坐标系统
                         for (var i = 0; i < root.linkPath.length; i++) {
-                            let cellSize = Math.min(parent.parent.width * 0.08, parent.parent.height * 0.08);
-                            let spacing = parent.width * 0.005;
+                            // 获取单元格大小和间距
+                            let cellSize = Math.min(grid.width / gameLogic.cols(), grid.height / gameLogic.rows());
+                            let spacing = grid.spacing * 0.005; // 使用实际的间距
                             let totalSize = cellSize + spacing;
-                            let x = root.linkPath[i].col * totalSize + cellSize / 2;
-                            let y = root.linkPath[i].row * totalSize + cellSize / 2;
+
+                            // 计算在Canvas上的坐标，要考虑单元格的中心位置
+                            // 修正偏移
+                            let x = root.linkPath[i].col * totalSize + totalSize / 2;
+                            let y = root.linkPath[i].row * totalSize + totalSize / 2;
                             root.linkPath[i] = {
                                 x: x,
                                 y: y
                             };
                         }
-                        
+
                         // 显示连接路径
                         root.showingPath = true;
                         linkCanvas.requestPaint();
-                        
+
                         // 设置定时器，几秒后隐藏提示
                         hintTimer.row1 = hint.row1;
                         hintTimer.col1 = hint.col1;
@@ -367,7 +373,7 @@ Rectangle {
         }
 
         Repeater {
-            model: gameLogic.rows() * gameLogic.cols()            
+            model: gameLogic.rows() * gameLogic.cols()
             delegate: Rectangle {
                 id: cell
                 width: Math.min(parent.parent.width * 0.08, parent.parent.height * 0.08) // 使用窗口宽度和高度的8%作为方块大小
@@ -415,7 +421,7 @@ Rectangle {
                             console.log("选中: " + index + " -> (" + r + "," + c + ") = " + gameLogic.getCell(r, c));
                             if (root.selectedRow === -1 && root.selectedCol === -1) {
                                 root.selectedRow = r;
-                                root.selectedCol = c;                                
+                                root.selectedCol = c;
                                 cell.color = currentTheme ? currentTheme.selectedBlockBorderColor : "blue";
                             } else if (root.selectedRow === r && root.selectedCol === c) {
                                 root.selectedRow = -1;
@@ -428,7 +434,7 @@ Rectangle {
                                 showLinkTimer.secondRow = r;
                                 showLinkTimer.secondCol = c;
                                 showLinkTimer.start();
-                            } else {                                
+                            } else {
                                 cell.color = currentTheme ? currentTheme.selectedBlockBorderColor : "blue";
                                 resetColorTimer.firstRow = root.selectedRow;
                                 resetColorTimer.firstCol = root.selectedCol;
@@ -441,7 +447,7 @@ Rectangle {
                 }
 
                 Connections {
-                    target: root                    
+                    target: root
                     function onResetAllCell() {
                         cell.color = grid.getCell(index) === 0 ? "transparent" : (currentTheme ? currentTheme.gameBoardBackgroundColor : "skyblue");
                         cell.border.color = grid.getCell(index) === 0 ? "transparent" : (currentTheme ? currentTheme.blockBorderColor : "black");
@@ -516,11 +522,15 @@ Rectangle {
 
             // 转换路径点坐标到Canvas坐标系统
             for (var i = 0; i < root.linkPath.length; i++) {
+                // 获取单元格大小和间距
                 let cellSize = Math.min(parent.parent.width * 0.08, parent.parent.height * 0.08); // 使用实际的方块大小
                 let spacing = parent.width * 0.005; // 使用实际的间距
                 let totalSize = cellSize + spacing;
+
+                // 计算在Canvas上的坐标，要考虑单元格的中心位置
                 let x = root.linkPath[i].col * totalSize + cellSize / 2;
                 let y = root.linkPath[i].row * totalSize + cellSize / 2;
+
                 root.linkPath[i] = {
                     x: x,
                     y: y
@@ -556,11 +566,11 @@ Rectangle {
             // 隐藏路径
             root.showingPath = false;
             linkCanvas.requestPaint();
-            
+
             // 重置选中状态
             root.selectedRow = -1;
             root.selectedCol = -1;
-            
+
             // 重置所有颜色
             root.resetAllCell();
         }
@@ -606,7 +616,7 @@ Rectangle {
                 if (root.selectedRow >= 0 && root.selectedCol >= 0) {
                     let oldIndex = root.selectedRow * gameLogic.cols() + root.selectedCol;
                     let oldCell = grid.children[oldIndex];
-                    if (oldCell) {                        
+                    if (oldCell) {
                         oldCell.color = currentTheme ? currentTheme.gameBoardBackgroundColor : "skyblue";
                     }
                 }
