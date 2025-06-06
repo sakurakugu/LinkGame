@@ -50,6 +50,10 @@ class Config : public QObject {
     void initConfig(config &config);       // 初始化配置
 
   private:
+    template <typename T> QString getTomlString(const T &tomlValue, const std::string &key,const QString &defaultValue); // 获取TOML中的字符串值
+    template <typename T> int getTomlInt(const T &tomlValue, const std::string &key, int defaultValue); // 获取TOML中的整数值
+    template <typename T> double getTomlDouble(const T &tomlValue, const std::string &key, double defaultValue); // 获取TOML中的双精度值
+    template <typename T> bool getTomlBool(const T &tomlValue, const std::string &key, bool defaultValue); // 获取TOML中的布尔值
 };
 
 #endif // CONFIG_H
