@@ -26,7 +26,7 @@
     </message>
     <message>
         <location filename="../qml/GameBoard.qml" line="150"/>
-        <location filename="../qml/GameBoard.qml" line="282"/>
+        <location filename="../qml/GameBoard.qml" line="348"/>
         <source>退出</source>
         <translation>Exit</translation>
     </message>
@@ -48,7 +48,7 @@
     <message>
         <location filename="../qml/GameBoard.qml" line="256"/>
         <source>时间：</source>
-        <translation>Time: </translation>
+        <translation>Time:</translation>
     </message>
     <message>
         <location filename="../qml/GameBoard.qml" line="263"/>
@@ -115,27 +115,67 @@
 <context>
     <name>Leaderboard</name>
     <message>
-        <location filename="../qml/Leaderboard.qml" line="55"/>
+        <location filename="../qml/Leaderboard.qml" line="66"/>
         <source>排行榜</source>
         <translation>Leaderboard</translation>
     </message>
     <message>
-        <location filename="../qml/Leaderboard.qml" line="82"/>
         <source>排行</source>
-        <translation>Ranking</translation>
+        <translation type="vanished">Ranking</translation>
     </message>
     <message>
-        <location filename="../qml/Leaderboard.qml" line="90"/>
+        <location filename="../qml/Leaderboard.qml" line="66"/>
+        <source>排行榜 - </source>
+        <translation>Leaderboard - </translation>
+    </message>
+    <message>
+        <location filename="../qml/Leaderboard.qml" line="79"/>
+        <source>难度:</source>
+        <translation>difficulty:</translation>
+    </message>
+    <message>
+        <location filename="../qml/Leaderboard.qml" line="86"/>
+        <source>全部</source>
+        <translation>All</translation>
+    </message>
+    <message>
+        <location filename="../qml/Leaderboard.qml" line="86"/>
+        <source>简单</source>
+        <translation>Simple</translation>
+    </message>
+    <message>
+        <location filename="../qml/Leaderboard.qml" line="86"/>
+        <location filename="../qml/Leaderboard.qml" line="232"/>
+        <source>普通</source>
+        <translation>Ordinary</translation>
+    </message>
+    <message>
+        <location filename="../qml/Leaderboard.qml" line="86"/>
+        <source>困难</source>
+        <translation>Difficult</translation>
+    </message>
+    <message>
+        <location filename="../qml/Leaderboard.qml" line="165"/>
+        <source>排名</source>
+        <translation>ranking</translation>
+    </message>
+    <message>
+        <location filename="../qml/Leaderboard.qml" line="173"/>
         <source>玩家</source>
         <translation>Player</translation>
     </message>
     <message>
-        <location filename="../qml/Leaderboard.qml" line="97"/>
+        <location filename="../qml/Leaderboard.qml" line="182"/>
+        <source>难度</source>
+        <translation>difficulty</translation>
+    </message>
+    <message>
+        <location filename="../qml/Leaderboard.qml" line="191"/>
         <source>分数</source>
         <translation>Score</translation>
     </message>
     <message>
-        <location filename="../qml/Leaderboard.qml" line="160"/>
+        <location filename="../qml/Leaderboard.qml" line="274"/>
         <source>返回</source>
         <translation>Back</translation>
     </message>
@@ -207,84 +247,109 @@
         <translation>Username:</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="176"/>
+        <location filename="../qml/Settings.qml" line="180"/>
+        <source>用户名只能包含字母、数字、下划线和汉字，长度1-20</source>
+        <translation>The username can only consist of letters, numbers, underscores and Chinese characters, and its length should be between 1 and 20 characters</translation>
+    </message>
+    <message>
+        <location filename="../qml/Settings.qml" line="191"/>
         <source>难度级别:</source>
         <translation>Difficulty level:</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="185"/>
+        <location filename="../qml/Settings.qml" line="200"/>
         <source>简单</source>
         <translation>Simple</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="227"/>
+        <location filename="../qml/Settings.qml" line="242"/>
         <source>普通</source>
         <translation>Ordinary</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="270"/>
+        <location filename="../qml/Settings.qml" line="285"/>
         <source>困难</source>
         <translation>Difficult</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="313"/>
+        <location filename="../qml/Settings.qml" line="328"/>
         <source>自定义</source>
         <translation>Customize</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="374"/>
+        <location filename="../qml/Settings.qml" line="389"/>
         <source>游戏时间(秒):</source>
-        <translation>Time(s)</translation>
+        <translation>Time(s):</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="412"/>
+        <location filename="../qml/Settings.qml" line="435"/>
+        <source>游戏时间必须是30-3600之间的整数</source>
+        <translation>The game time must be an integer within the range of 30 to 3600</translation>
+    </message>
+    <message>
+        <location filename="../qml/Settings.qml" line="444"/>
         <source>方块数量:</source>
         <translation>The number of blocks:</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="450"/>
+        <location filename="../qml/Settings.qml" line="495"/>
+        <source>方块数量必须是16-100之间的偶数</source>
+        <translation>The number of blocks must be an even number between 16 and 100</translation>
+    </message>
+    <message>
+        <location filename="../qml/Settings.qml" line="504"/>
         <source>方块种类:</source>
         <translation>The type of blocks:</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="493"/>
-        <source>参加排行榜</source>
-        <translation>Participate in Leaderboard:</translation>
+        <location filename="../qml/Settings.qml" line="555"/>
+        <source>方块种类数必须是1-20之间的整数，且不能超过方块数量的一半</source>
+        <translation>The number of block types must be an integer between 1 and 20, and it cannot exceed half of the total number of blocks</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="550"/>
+        <location filename="../qml/Settings.qml" line="565"/>
+        <source>参加排行榜</source>
+        <translation>Participate in Leaderboard</translation>
+    </message>
+    <message>
+        <location filename="../qml/Settings.qml" line="619"/>
+        <source>*自定义模式不能参加排行榜</source>
+        <translation>*The custom mode cannot participate in the ranking list</translation>
+    </message>
+    <message>
+        <location filename="../qml/Settings.qml" line="635"/>
         <source>音量:</source>
         <translation>Volume:</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="653"/>
+        <location filename="../qml/Settings.qml" line="738"/>
         <source>窗口大小:</source>
         <translation>Window Size:</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="725"/>
+        <location filename="../qml/Settings.qml" line="810"/>
         <source>主题:</source>
         <translation>Theme:</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="766"/>
+        <location filename="../qml/Settings.qml" line="851"/>
         <source>语言:</source>
         <translation>Language:</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="833"/>
+        <location filename="../qml/Settings.qml" line="918"/>
         <source>确定</source>
         <translation>Confirm</translation>
     </message>
     <message>
-        <location filename="../cpp/settings.cpp" line="218"/>
-        <location filename="../cpp/settings.cpp" line="369"/>
+        <location filename="../cpp/settings.cpp" line="234"/>
+        <location filename="../cpp/settings.cpp" line="385"/>
         <source>无边框全屏 (%1x%2)</source>
         <translation>Borderless Fullscreen (%1x%2)</translation>
     </message>
     <message>
-        <location filename="../cpp/settings.cpp" line="220"/>
-        <location filename="../cpp/settings.cpp" line="368"/>
+        <location filename="../cpp/settings.cpp" line="236"/>
+        <location filename="../cpp/settings.cpp" line="384"/>
         <source>全屏 (%1x%2)</source>
         <translation>Fullscreen (%1x%2)</translation>
     </message>
