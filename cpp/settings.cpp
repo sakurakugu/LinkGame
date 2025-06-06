@@ -18,13 +18,11 @@ void Settings::initWindow() {
     for (QWindow *w : windows) {
         window = qobject_cast<QQuickWindow *>(w);
         if (window) {
-            qDebug() << "成功获取 QQuickWindow 实例";
             break;
         }
     }
 
     if (!window) {
-        qWarning() << "无法获取 QQuickWindow 实例，将在下一次尝试";
         // 如果还是获取不到，再次尝试
         QTimer::singleShot(500, this, &Settings::initWindow);
     }

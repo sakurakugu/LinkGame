@@ -275,7 +275,67 @@ Rectangle {
                 Layout.preferredWidth: parent.parent.width * 0.1
                 Layout.preferredHeight: parent.parent.height * 0.6
                 font.pixelSize: parent.parent.height * 0.3
-                onClicked: {}
+                onClicked: {
+                    // 获取提示
+                    var hint = gameLogic.getHint();
+                    
+                    // 检查提示是否有效
+                    if (hint && hint.hasOwnProperty("row1")) {
+                        // 播放点击音效
+                        clickSound.stop();
+                        clickSound.play();
+                        
+                        // 重置之前的选择
+                        if (root.selectedRow >= 0 && root.selectedCol >= 0) {
+                            let oldIndex = root.selectedRow * gameLogic.cols() + root.selectedCol;
+                            let oldCell = grid.children[oldIndex];
+                            if (oldCell) {
+                                oldCell.color = currentTheme ? currentTheme.gameBoardBackgroundColor : "skyblue";
+                            }
+                        }
+                        
+                        // 高亮显示第一个提示方块
+                        let index1 = hint.row1 * gameLogic.cols() + hint.col1;
+                        let cell1 = grid.children[index1];
+                        if (cell1) {
+                            cell1.color = currentTheme ? currentTheme.selectedBlockBorderColor : "blue";
+                        }
+                        
+                        // 高亮显示第二个提示方块
+                        let index2 = hint.row2 * gameLogic.cols() + hint.col2;
+                        let cell2 = grid.children[index2];
+                        if (cell2) {
+                            cell2.color = currentTheme ? currentTheme.selectedBlockBorderColor : "blue";
+                        }
+                        
+                        // 显示连接路径
+                        root.linkPath = hint.path;
+                        
+                        // 转换路径点坐标到Canvas坐标系统
+                        for (var i = 0; i < root.linkPath.length; i++) {
+                            let cellSize = Math.min(parent.parent.width * 0.08, parent.parent.height * 0.08);
+                            let spacing = parent.width * 0.005;
+                            let totalSize = cellSize + spacing;
+                            let x = root.linkPath[i].col * totalSize + cellSize / 2;
+                            let y = root.linkPath[i].row * totalSize + cellSize / 2;
+                            root.linkPath[i] = {
+                                x: x,
+                                y: y
+                            };
+                        }
+                        
+                        // 显示连接路径
+                        root.showingPath = true;
+                        linkCanvas.requestPaint();
+                        
+                        // 设置定时器，几秒后隐藏提示
+                        hintTimer.row1 = hint.row1;
+                        hintTimer.col1 = hint.col1;
+                        hintTimer.row2 = hint.row2;
+                        hintTimer.col2 = hint.col2;
+                        hintTimer.start();
+                    }
+                }
             }
 
             Button {
@@ -477,6 +537,32 @@ Rectangle {
             pathTimer.secondRow = secondRow;
             pathTimer.secondCol = secondCol;
             pathTimer.start();
+        }
+    }
+
+    // 提示定时器，用于隐藏提示路径
+    Timer {
+        id: hintTimer
+        interval: 2000 // 2秒后隐藏提示
+        running: false
+        repeat: false
+        property int row1: -1
+        property int col1: -1
+        property int row2: -1
+        property int col2: -1
+
+        // 定时器触发时的处理函数
+        onTriggered: {
+            // 隐藏路径
+            root.showingPath = false;
+            linkCanvas.requestPaint();
+            
+            // 重置选中状态
+            root.selectedRow = -1;
+            root.selectedCol = -1;
+            
+            // 重置所有颜色
+            root.resetAllCell();
         }
     }
 

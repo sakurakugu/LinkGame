@@ -54,6 +54,7 @@ class GameLogic : public QObject {
     Q_INVOKABLE int getScore() const;                                        // 获取当前分数
     Q_INVOKABLE void setScore(int score);                                    // 设置当前分数
     Q_INVOKABLE QString getRank(const QString &playerName, int score) const; // 获取排名
+    Q_INVOKABLE QVariantMap getHint();                                       // 获取提示
 
     // 游戏管理相关
     Q_INVOKABLE void startGame();  // 开始游戏

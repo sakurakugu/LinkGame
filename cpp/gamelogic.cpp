@@ -572,3 +572,37 @@ int GameLogic::cols() const {
 int GameLogic::rows() const {
     return ROWS;
 }
+
+/**
+ * @brief 获取提示
+ * @details 获取一对可连接的方块和它们的连接路径
+ * @return 包含可连接方块信息的QVariantMap
+ */
+QVariantMap GameLogic::getHint() {
+    QVariantMap result;
+    
+    // 如果游戏暂停或者没有有效移动，返回空提示
+    if (isPaused_ || !hasValidMove()) {
+        return result;
+    }
+    
+    // 找到当前网格状态下的一个可行解
+    QVector<HintStep> currentSolution = findSolution();
+    
+    // 如果没有找到解决方案，返回空提示
+    if (currentSolution.isEmpty()) {
+        return result;
+    }
+    
+    // 获取第一个提示步骤
+    HintStep step = currentSolution.first();
+    
+    // 填充提示信息
+    result["row1"] = step.row1;
+    result["col1"] = step.col1;
+    result["row2"] = step.row2;
+    result["col2"] = step.col2;
+    result["path"] = step.path;
+    
+    return result;
+}
