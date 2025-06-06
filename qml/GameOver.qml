@@ -16,12 +16,12 @@ Rectangle {
 
     // 监听主题变化
     onThemeChanged: {
-        console.log("GameOver主题变化:", theme);
+        // console.log("GameOver主题变化:", theme);
         currentTheme = themeManager.loadTheme(theme);
     }
 
     Component.onCompleted: {
-        console.log("GameOver初始化，当前主题:", theme);
+        // console.log("GameOver初始化，当前主题:", theme);
         currentTheme = themeManager.loadTheme(theme); // 加载当前主题
         root.forceActiveFocus();
     }
@@ -31,7 +31,7 @@ Rectangle {
         target: settings
         function onThemeChanged() {
             theme = settings.getTheme();
-            console.log("GameOver主题变化检测到:", theme);
+            // console.log("GameOver主题变化检测到:", theme);
             currentTheme = themeManager.loadTheme(theme);
         }
     }
@@ -45,7 +45,7 @@ Rectangle {
 
     ColumnLayout {
         anchors.centerIn: parent
-        spacing: 20 // 间距        
+        spacing: 20 // 间距
         Text {
             text: qsTr("游戏结束")
             font.pixelSize: 48
@@ -80,6 +80,7 @@ Rectangle {
             text: qsTr("再来一局")
             onClicked: {
                 settings.addScoreToLeaderboard(playerName, finalScore);
+                gameLogic.resetGame();       // 重置游戏状态
                 root.restartGame();
             }
         }
@@ -88,6 +89,7 @@ Rectangle {
             text: qsTr("返回菜单")
             onClicked: {
                 settings.addScoreToLeaderboard(playerName, finalScore);
+                gameLogic.endGame();     // 结束当前游戏状态
                 root.returnToMenu();
             }
         }

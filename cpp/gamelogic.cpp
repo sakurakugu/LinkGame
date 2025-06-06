@@ -37,15 +37,6 @@ bool GameLogic::isOuterCell(int row, int col) const {
 }
 
 /**
- * @brief 重置游戏
- * @details 重新生成游戏网格，并通知QML更新
- */
-void GameLogic::resetGame() {
-    createGrid();
-    emit cellsChanged(); // 通知 QML 更新
-}
-
-/**
  * @brief 获取指定位置的方块
  * @param row 行
  * @param col 列
@@ -191,8 +182,7 @@ QVariantList GameLogic::getLinkPath(int r1, int c1, int r2, int c2) {
     for (int i = 0; i < 4; ++i) {
         int nr = r1 + dr[i];
         int nc = c1 + dc[i];
-        if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && 
-            (grid[nr][nc] == 0 || (nr == r2 && nc == c2))) {
+        if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && (grid[nr][nc] == 0 || (nr == r2 && nc == c2))) {
             queue.enqueue({nr, nc, i, 0});
             visited[nr][nc] = 0;
             parent[nr][nc] = QPoint(r1, c1);
@@ -230,7 +220,7 @@ QVariantList GameLogic::getLinkPath(int r1, int c1, int r2, int c2) {
                     found = true;
                     break;
                 }
-            }        
+            }
         }
     }
 
@@ -457,9 +447,27 @@ void GameLogic::endGame() {
         isGameRunning = false;
         gameTimer_->stop();
         timeLeft_ = 0; // 确保时间归零
+        createGrid(); // 重新生成游戏网格
         emit timeLeftChanged(timeLeft_);
         emit gameEnded();
     }
+}
+
+/**
+ * @brief 重置游戏
+ * @details 重置游戏状态，重新生成网格和解决方案
+ */
+void GameLogic::resetGame() {
+    isGameRunning = true;
+    currentScore = 0;
+    timeLeft_ = settings->getGameTime();
+    isPaused_ = false;
+    gameTimer_->start(1000); // 每秒更新一次
+    createGrid(); // 重新生成游戏网格
+    emit gameStarted();
+    emit scoreChanged(currentScore);
+    emit timeLeftChanged(timeLeft_);
+    emit pauseStateChanged(isPaused_);
 }
 
 /**
@@ -596,30 +604,30 @@ int GameLogic::rows() const {
  */
 QVariantMap GameLogic::getHint() {
     QVariantMap result;
-    
+
     // 如果游戏暂停或者没有有效移动，返回空提示
     if (isPaused_ || !hasValidMove()) {
         return result;
     }
-    
+
     // 找到当前网格状态下的一个可行解
     QVector<HintStep> currentSolution = findSolution();
-    
+
     // 如果没有找到解决方案，返回空提示
     if (currentSolution.isEmpty()) {
         return result;
     }
-    
+
     // 获取第一个提示步骤
     HintStep step = currentSolution.first();
-    
+
     // 填充提示信息
     result["row1"] = step.row1;
     result["col1"] = step.col1;
     result["row2"] = step.row2;
     result["col2"] = step.col2;
     result["path"] = step.path;
-    
+
     return result;
 }
 
@@ -634,7 +642,7 @@ QPair<int, int> GameLogic::getFactorPair(int n) const {
     for (int i = sqrtN; i >= 1; --i) {
         if (n % i == 0) {
             int j = n / i;
-            return {i, j};  // 返回尽可能接近的两个因子
+            return {i, j}; // 返回尽可能接近的两个因子
         }
     }
 

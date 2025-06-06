@@ -18,7 +18,7 @@ Rectangle {
 
     // 监听主题变化
     onThemeChanged: {
-        console.log("GameBoard主题变化:", theme);
+        // console.log("GameBoard主题变化:", theme);
         currentTheme = themeManager.loadTheme(theme);
     }
 
@@ -30,7 +30,7 @@ Rectangle {
     property bool isPaused: gameLogic.isPaused // 是否暂停
     // 游戏加载完成后自动开始游戏
     Component.onCompleted: {
-        console.log("GameBoard初始化，当前主题:", theme);
+        // console.log("GameBoard初始化，当前主题:", theme);
         currentTheme = themeManager.loadTheme(theme); // 加载当前主题
         root.forceActiveFocus(); // 确保键盘事件处理程序获得焦点
         gameLogic.startGame(); // 开始游戏计时
@@ -41,7 +41,7 @@ Rectangle {
         target: settings
         function onThemeChanged() {
             theme = settings.getTheme();
-            console.log("GameBoard主题变化检测到:", theme);
+            // console.log("GameBoard主题变化检测到:", theme);
             currentTheme = themeManager.loadTheme(theme);
         }
     }
@@ -60,14 +60,14 @@ Rectangle {
         function onTimeLeftChanged(time) {
             if (time <= 0) {
                 gameLogic.endGame();
-                gameLogic.resetGame();
+                gameLogic.resetGameGrid();
                 root.closed();
             }
         }
         // 监听游戏完成信号
         function onGameCompleted() {
             gameLogic.endGame();
-            gameLogic.resetGame();
+            gameLogic.resetGameGrid();
             root.closed();
         }
         // 监听暂停状态变化
@@ -119,7 +119,6 @@ Rectangle {
                     Layout.preferredHeight: parent.parent.height * 0.15
                     font.pixelSize: parent.parent.width * 0.04
                     onClicked: {
-                        gameLogic.setPaused(false);
                         gameLogic.resetGame();
                         root.resetAllCell();
                     }
@@ -131,7 +130,6 @@ Rectangle {
                     Layout.preferredHeight: parent.parent.height * 0.15
                     font.pixelSize: parent.parent.width * 0.04
                     onClicked: {
-                        gameLogic.setPaused(false);
                         root.returnToMenu();
                     }
                 }
@@ -153,7 +151,7 @@ Rectangle {
                     font.pixelSize: parent.parent.width * 0.04
                     onClicked: {
                         gameLogic.setPaused(false);
-                        gameLogic.resetGame();
+                        gameLogic.resetGameGrid();
                         root.closed();
                     }
                 }

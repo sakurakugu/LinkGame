@@ -46,7 +46,6 @@ class GameLogic : public QObject {
     Q_INVOKABLE int rows() const;                                            // 获取行数
     Q_INVOKABLE int getCell(int row, int col) const;                         // 获取单元格的值
     Q_INVOKABLE bool isOuterCell(int row, int col) const;                    // 判断是否是外圈格子
-    Q_INVOKABLE void resetGame();                                            // 重置游戏
     Q_INVOKABLE bool canLink(int r1, int c1, int r2, int c2) const;          // 检查两个单元格是否可以连接
     Q_INVOKABLE void removeLink(int r1, int c1, int r2, int c2);             // 移除连接的两个方块
     Q_INVOKABLE QVariantList getLinkPath(int r1, int c1, int r2, int c2);    // 获取连接路径，用于绘制路径
@@ -62,6 +61,7 @@ class GameLogic : public QObject {
     Q_INVOKABLE void pauseGame();  // 暂停游戏
     Q_INVOKABLE void resumeGame(); // 恢复游戏
     Q_INVOKABLE void endGame();    // 结束游戏
+    Q_INVOKABLE void resetGame();  // 重置游戏
 
     // 倒计时相关
     Q_INVOKABLE int timeLeft() const;
