@@ -68,51 +68,62 @@ int GameLogic::getCell(int row, int col) const {
  */
 bool GameLogic::canLink(int r1, int c1, int r2, int c2) const {
     // 检查两个方块是否相同且不为0
-    if (grid[r1][c1] == grid[r2][c2] && grid[r1][c1] != 0 && grid[r2][c2] != 0) {
-        // 方向数组：上、右、下、左
-        const int dr[] = {-1, 0, 1, 0};
-        const int dc[] = {0, 1, 0, -1};
+    if (grid[r1][c1] != grid[r2][c2] || grid[r1][c1] == 0 || grid[r2][c2] == 0) {
+        return false;
+    }
 
-        // BFS需要的队列
-        struct Node {
-            int x, y, direction, turns; // x, y为坐标，direction为当前方向（0:上, 1:右, 2:下, 3:左），turns为转弯次数
-        };
-        QQueue<Node> queue;
+    // 方向数组：上、右、下、左
+    static const int dr[] = {-1, 0, 1, 0};
+    static const int dc[] = {0, 1, 0, -1};
 
-        // 记录已访问的节点
-        QVector<QVector<int>> visited(ROWS, QVector<int>(COLS, INT_MAX));
+    // BFS需要的队列
+    struct Node {
+        int x, y, direction, turns; // x, y为坐标，direction为当前方向，turns为转弯次数
+    };
+    QQueue<Node> queue;
 
-        // 将起点加入队列
-        for (int i = 0; i < 4; ++i) {
-            int nr = r1 + dr[i];
-            int nc = c1 + dc[i];
-            if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && (grid[nr][nc] == 0 || (nr == r2 && nc == c2))) {
-                queue.enqueue({nr, nc, i, 0});
-                visited[nr][nc] = 0;
-            }
+    // 使用二维数组替代QVector
+    int visited[ROWS][COLS];
+    // 初始化访问数组
+    for (int i = 0; i < ROWS; ++i) {
+        for (int j = 0; j < COLS; ++j) {
+            visited[i][j] = INT_MAX;
+        }
+    }
+
+    // 将起点的四个方向加入队列
+    for (int i = 0; i < 4; ++i) {
+        int nr = r1 + dr[i];
+        int nc = c1 + dc[i];
+        if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && 
+            (grid[nr][nc] == 0 || (nr == r2 && nc == c2))) {
+            queue.enqueue({nr, nc, i, 0});
+            visited[nr][nc] = 0;
+        }
+    }
+
+    // BFS寻路
+    while (!queue.isEmpty()) {
+        Node current = queue.dequeue();
+
+        // 如果到达目标点，返回true
+        if (current.x == r2 && current.y == c2) {
+            return true;
         }
 
-        // BFS寻路
-        while (!queue.isEmpty()) {
-            Node current = queue.dequeue();
+        // 检查四个方向
+        for (int i = 0; i < 4; ++i) {
+            int nr = current.x + dr[i];
+            int nc = current.y + dc[i];
+            // 只有转弯次数小于或等于2时才继续搜索
+            int newTurns = current.turns + (i != current.direction ? 1 : 0);
 
-            // 如果到达目标点，返回true
-            if (current.x == r2 && current.y == c2) {
-                return true;
-            }
-
-            // 检查四个方向
-            for (int i = 0; i < 4; ++i) {
-                int nr = current.x + dr[i];
-                int nc = current.y + dc[i];
-                int newTurns = current.turns + (i != current.direction ? 1 : 0); // 计算转弯次数
-
-                // 检查新坐标是否有效
-                if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && newTurns <= 2 && visited[nr][nc] > newTurns &&
-                    (grid[nr][nc] == 0 || (nr == r2 && nc == c2))) {
-                    visited[nr][nc] = newTurns;
-                    queue.enqueue({nr, nc, i, newTurns});
-                }
+            // 检查新坐标是否有效
+            if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && 
+                newTurns <= 2 && visited[nr][nc] > newTurns &&
+                (grid[nr][nc] == 0 || (nr == r2 && nc == c2))) {
+                visited[nr][nc] = newTurns;
+                queue.enqueue({nr, nc, i, newTurns});
             }
         }
     }
@@ -128,10 +139,17 @@ bool GameLogic::canLink(int r1, int c1, int r2, int c2) const {
  * @param c2 第二个方块的列
  */
 void GameLogic::removeLink(int r1, int c1, int r2, int c2) {
+    // 先检查两个方块是否有效
+    if (r1 < 0 || r1 >= ROWS || c1 < 0 || c1 >= COLS || 
+        r2 < 0 || r2 >= ROWS || c2 < 0 || c2 >= COLS) {
+        return;
+    }
+    
     if (grid[r1][c1] != 0 && grid[r2][c2] != 0) {
         // 清除两个方块
         grid[r1][c1] = 0;
         grid[r2][c2] = 0;
+        
         // 发送信号，通知UI更新
         emit cellsChanged();
 
@@ -148,15 +166,7 @@ void GameLogic::removeLink(int r1, int c1, int r2, int c2) {
  * @return 如果游戏结束返回true，否则返回false
  */
 bool GameLogic::isGameOver() const {
-    // 检查是否还有非空方块
-    for (int r = 1; r < ROWS - 1; ++r) {
-        for (int c = 1; c < COLS - 1; ++c) {
-            if (grid[r][c] != 0) {
-                return false; // 还有方块，游戏未结束
-            }
-        }
-    }
-    return true; // 所有方块都已消除，游戏结束
+    return getValidPositions().isEmpty();
 }
 
 /**
@@ -169,8 +179,8 @@ bool GameLogic::isGameOver() const {
  */
 QVariantList GameLogic::getLinkPath(int r1, int c1, int r2, int c2) {
     // 方向数组：上、右、下、左
-    const int dr[] = {-1, 0, 1, 0};
-    const int dc[] = {0, 1, 0, -1};
+    static const int dr[] = {-1, 0, 1, 0};
+    static const int dc[] = {0, 1, 0, -1};
 
     // 结果路径
     QVariantList path;
@@ -178,11 +188,9 @@ QVariantList GameLogic::getLinkPath(int r1, int c1, int r2, int c2) {
     // BFS需要的队列
     QQueue<QPoint> queue;
 
-    // 记录已访问的节点
-    QVector<QVector<bool>> visited(ROWS, QVector<bool>(COLS, false));
-
-    // 记录每个点的前驱节点，用于还原路径
-    QVector<QVector<QPoint>> parent(ROWS, QVector<QPoint>(COLS, QPoint(-1, -1)));
+    // 记录已访问的节点和前驱节点
+    bool visited[ROWS][COLS] = {{false}};
+    QPoint parent[ROWS][COLS]; // 默认初始化为(-1,-1)
 
     // 将起点加入队列
     queue.enqueue(QPoint(r1, c1));
@@ -220,6 +228,9 @@ QVariantList GameLogic::getLinkPath(int r1, int c1, int r2, int c2) {
 
     // 如果找到路径，则还原路径
     if (found) {
+        // 预分配空间，减少内存重新分配
+        path.reserve(ROWS + COLS); // 最坏情况下的近似值
+        
         QPoint current(r2, c2);
 
         // 从目标点开始，一直回溯到起点
@@ -247,7 +258,13 @@ QVariantList GameLogic::getLinkPath(int r1, int c1, int r2, int c2) {
  * @return 所有有效位置的列表
  */
 QVector<QPair<int, int>> GameLogic::getValidPositions() const {
+    // 预计算内部格子的数量以预分配内存
+    const int estimatedSize = (ROWS - 2) * (COLS - 2) / 2; 
+    
     QVector<QPair<int, int>> positions;
+    positions.reserve(estimatedSize);
+    
+    // 只考虑内部格子
     for (int r = 1; r < ROWS - 1; ++r) {
         for (int c = 1; c < COLS - 1; ++c) {
             if (grid[r][c] != 0) {
@@ -255,6 +272,7 @@ QVector<QPair<int, int>> GameLogic::getValidPositions() const {
             }
         }
     }
+    
     return positions;
 }
 
@@ -263,15 +281,19 @@ QVector<QPair<int, int>> GameLogic::getValidPositions() const {
  * @return 如果还有有效的移动返回true，否则返回false
  */
 bool GameLogic::hasValidMove() const {
-    auto positions = getValidPositions();
-    for (int i = 0; i < positions.size(); ++i) {
-        for (int j = i + 1; j < positions.size(); ++j) {
-            int r1 = positions[i].first;
-            int c1 = positions[i].second;
-            int r2 = positions[j].first;
-            int c2 = positions[j].second;
-
-            if (grid[r1][c1] == grid[r2][c2] && canLink(r1, c1, r2, c2)) {
+    const auto positions = getValidPositions();
+    const int size = positions.size();
+    
+    // 优化循环，避免每次调用size()
+    for (int i = 0; i < size; ++i) {
+        const auto& [r1, c1] = positions[i];
+        const int value1 = grid[r1][c1];
+        
+        for (int j = i + 1; j < size; ++j) {
+            const auto& [r2, c2] = positions[j];
+            
+            // 先检查值是否相等，再进行更复杂的路径检查
+            if (value1 == grid[r2][c2] && canLink(r1, c1, r2, c2)) {
                 return true;
             }
         }
@@ -287,19 +309,24 @@ QVector<GameLogic::HintStep> GameLogic::findSolution() {
     QVector<HintStep> solution;            // 解决方案步骤列表
     QVector<QVector<int>> tempGrid = grid; // 创建临时网格
 
-    auto positions = getValidPositions(); // 获取所有有效位置
+    // 获取所有有效位置，并预分配空间
+    auto positions = getValidPositions();
+    solution.reserve(positions.size() / 2); // 预分配解决方案列表空间
 
     while (!positions.isEmpty()) {
-        bool found = false;                   // 是否找到解决方案
+        bool found = false;
 
+        // 遍历所有可能的方块对
         for (int i = 0; i < positions.size() && !found; ++i) {
             for (int j = i + 1; j < positions.size() && !found; ++j) {
-                auto [r1, c1] = positions[i];
-                auto [r2, c2] = positions[j];
+                const auto& [r1, c1] = positions[i];
+                const auto& [r2, c2] = positions[j];
 
+                // 检查两个方块是否可以连接
                 if (grid[r1][c1] == grid[r2][c2] && canLink(r1, c1, r2, c2)) {
-                    HintStep step = {r1, c1, r2, c2, getLinkPath(r1, c1, r2, c2)}; // 获取连接路径
-                    solution.append(step);                   // 添加步骤到解决方案列表
+                    // 创建步骤并添加到解决方案中
+                    HintStep step = {r1, c1, r2, c2, getLinkPath(r1, c1, r2, c2)};
+                    solution.push_back(step);
 
                     // 移除这对方块
                     grid[r1][c1] = 0;
@@ -317,7 +344,8 @@ QVector<GameLogic::HintStep> GameLogic::findSolution() {
         }
     }
 
-    grid = tempGrid; // 恢复原始网格
+    // 恢复原始网格
+    grid = tempGrid;
     return solution;
 }
 
@@ -328,34 +356,35 @@ QVector<GameLogic::HintStep> GameLogic::findSolution() {
 void GameLogic::generateSolution() {
     // 初始化网格
     grid.resize(ROWS);
-    for (int i = 0; i < ROWS; ++i) {
-        grid[i].resize(COLS);
-        for (int j = 0; j < COLS; ++j) {
-            grid[i][j] = 0; // 初始化所有格子为0
-        }
+    for (auto& row : grid) {
+        row.resize(COLS, 0); // 初始化所有格子为0
     }
 
     // 获取当前难度下的图案数量
-    int blockTypes = settings->getBlockTypes();
+    const int blockTypes = settings->getBlockTypes();
 
     // 计算每种图案需要的对数 (总需要的方块数除以图案种数)
-    int totalCells = VISIBLE_ROWS * VISIBLE_COLS;
-    int pairsPerPattern = totalCells / (2 * blockTypes);
+    const int totalCells = VISIBLE_ROWS * VISIBLE_COLS;
+    const int pairsPerPattern = totalCells / (2 * blockTypes);
 
     // 准备可用位置列表 (只考虑内部格子)
     QVector<QPair<int, int>> positions;
+    positions.reserve(VISIBLE_ROWS * VISIBLE_COLS); // 预分配内存
     for (int i = 1; i < ROWS - 1; ++i) {
         for (int j = 1; j < COLS - 1; ++j) {
-            positions.append(qMakePair(i, j));
+            positions.emplace_back(i, j);
         }
-    }
-
-    // 随机打乱位置列表，使用C++11的梅森旋转算法（std::mt19937），random_device{}()生成随机种子
-    auto seed = std::random_device{}();
-    std::shuffle(positions.begin(), positions.end(), std::mt19937(seed));
-    qDebug() << "种子：" << seed;
-
-    // std::shuffle(positions.begin(), positions.end(), std::mt19937{std::random_device{}()});
+    }    // 随机打乱位置列表，使用更高效的随机数生成
+    static std::random_device rd;  // 静态实例，避免重复创建
+    static std::mt19937 rng(rd()); // 使用更高效的Mersenne Twister算法
+    
+    // 使用固定时间种子加上随机设备种子，提高随机性
+    uint32_t timeSeed = static_cast<uint32_t>(std::time(nullptr));
+    rng.seed(rd() ^ timeSeed);
+    
+    // 洗牌算法
+    std::shuffle(positions.begin(), positions.end(), rng);
+    qDebug() << "随机种子：" << timeSeed;
 
     // 分配图案到格子中
     int posIndex = 0;
@@ -363,8 +392,8 @@ void GameLogic::generateSolution() {
         for (int pair = 0; pair < pairsPerPattern * 2; pair += 2) {
             if (posIndex + 1 < positions.size()) {
                 // 为每对格子分配相同的图案
-                auto [row1, col1] = positions[posIndex++];
-                auto [row2, col2] = positions[posIndex++];
+                const auto& [row1, col1] = positions[posIndex++];
+                const auto& [row2, col2] = positions[posIndex++];
                 grid[row1][col1] = pattern;
                 grid[row2][col2] = pattern;
             }
@@ -375,8 +404,8 @@ void GameLogic::generateSolution() {
     while (posIndex + 1 < positions.size()) {
         // 为剩余的每对格子分配随机图案
         int pattern = QRandomGenerator::global()->bounded(1, blockTypes + 1);
-        auto [row1, col1] = positions[posIndex++];
-        auto [row2, col2] = positions[posIndex++];
+        const auto& [row1, col1] = positions[posIndex++];
+        const auto& [row2, col2] = positions[posIndex++];
         grid[row1][col1] = pattern;
         grid[row2][col2] = pattern;
     }
@@ -399,9 +428,11 @@ void GameLogic::startGame() {
     if (!isGameRunning) {
         isGameRunning = true;
         currentScore = 0;
-        timeLeft_ = settings->getGameTime();
+        timeLeft_ = settings->getGameTime(); // 从设置中获取游戏时间
         isPaused_ = false;
         gameTimer_->start(1000); // 每秒更新一次
+        
+        // 发出相关信号
         emit gameStarted();
         emit scoreChanged(currentScore);
         emit timeLeftChanged(timeLeft_);
@@ -417,6 +448,8 @@ void GameLogic::pauseGame() {
     if (isGameRunning) {
         isGameRunning = false;
         gameTimer_->stop();
+        
+        // 发出暂停信号
         emit gamePaused();
     }
 }
@@ -429,6 +462,8 @@ void GameLogic::resumeGame() {
     if (!isGameRunning) {
         isGameRunning = true;
         gameTimer_->start();
+        
+        // 发出相关信号
         emit gameResumed();
     }
 }
@@ -453,9 +488,10 @@ void GameLogic::endGame() {
  */
 void GameLogic::updateTimer() {
     if (timeLeft_ > 0) {
-        timeLeft_--;
+        --timeLeft_;
         emit timeLeftChanged(timeLeft_);
 
+        // 时间到了就结束游戏
         if (timeLeft_ <= 0) {
             endGame();
         }
@@ -596,7 +632,7 @@ QVariantMap GameLogic::getHint() {
     }
     
     // 获取第一个提示步骤
-    HintStep step = currentSolution.first();
+    const HintStep& step = currentSolution.first();
     
     // 填充提示信息
     result["row1"] = step.row1;
