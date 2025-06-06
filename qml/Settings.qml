@@ -177,7 +177,8 @@ Rectangle {
                     // 添加提示文本
                     ToolTip {
                         visible: !usernameField.acceptableInput && usernameField.text.length > 0
-                        text: qsTr("用户名只能包含字母、数字、下划线和汉字，长度1-20")
+                        // text: qsTr("用户名只能包含字母、数字、下划线和汉字，长度1-20")
+                        text: qsTr("用户名长度要为1-20个字符")
                         delay: 500
                     }
                 }

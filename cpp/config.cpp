@@ -134,7 +134,7 @@ void Config::loadConfig(config &config) {
             const auto &entries = toml::find(data, "leaderboard", "entries").as_array();
             for (const auto &entry : entries) {
                 LeaderboardEntry leaderboardEntry;
-                leaderboardEntry.name = getTomlString(entry, "name", "Unknown");
+                leaderboardEntry.name = getTomlString(entry, "name", "未知玩家");
                 leaderboardEntry.score = getTomlInt(entry, "score", 0);
                 leaderboardEntry.difficulty = getTomlString(entry, "difficulty", "普通");
 
