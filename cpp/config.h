@@ -21,9 +21,9 @@ class Config : public QObject {
 
     // 排行榜信息
     struct LeaderboardEntry {
-        QString name;
-        int score;
-        QString difficulty; // 添加难度属性
+        QString name;       // 玩家名称
+        int score;          // 分数
+        QString difficulty; // 难度
     };
 
     // 配置结构体
@@ -51,9 +51,9 @@ class Config : public QObject {
 
   private:
     template <typename T> QString getTomlString(const T &tomlValue, const std::string &key,const QString &defaultValue); // 获取TOML中的字符串值
-    template <typename T> int getTomlInt(const T &tomlValue, const std::string &key, int defaultValue); // 获取TOML中的整数值
-    template <typename T> double getTomlDouble(const T &tomlValue, const std::string &key, double defaultValue); // 获取TOML中的双精度值
-    template <typename T> bool getTomlBool(const T &tomlValue, const std::string &key, bool defaultValue); // 获取TOML中的布尔值
+    template <typename T> int getTomlInt(const T &tomlValue, const std::string &key, int defaultValue);                  // 获取TOML中的整数值
+    template <typename T> double getTomlDouble(const T &tomlValue, const std::string &key, double defaultValue);         // 获取TOML中的双精度值
+    template <typename T> bool getTomlBool(const T &tomlValue, const std::string &key, bool defaultValue);               // 获取TOML中的布尔值
 };
 
 #endif // CONFIG_H

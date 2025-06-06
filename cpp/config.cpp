@@ -12,78 +12,21 @@ Config::~Config() {
  */
 void Config::initConfig(config &config) {
     // 设置默认配置
-    config.playerName = DefaultValues::player_name;
-    config.difficulty = DefaultValues::difficulty;
-    config.gameTime = DefaultValues::game_time;
-    config.volume = DefaultValues::volume;
-    config.soundState = DefaultValues::sound_state;
-    config.screenWidth = DefaultValues::screen_width;
-    config.screenHeight = DefaultValues::screen_height;
-    config.fullscreen = DefaultValues::fullscreen;
-    config.borderless = DefaultValues::borderless;
-    config.blockCount = DefaultValues::block_count;
-    config.blockTypes = DefaultValues::block_types;
+    config.playerName      = DefaultValues::player_name;
+    config.difficulty      = DefaultValues::difficulty;
+    config.gameTime        = DefaultValues::game_time;
+    config.volume          = DefaultValues::volume;
+    config.soundState      = DefaultValues::sound_state;
+    config.screenWidth     = DefaultValues::screen_width;
+    config.screenHeight    = DefaultValues::screen_height;
+    config.fullscreen      = DefaultValues::fullscreen;
+    config.borderless      = DefaultValues::borderless;
+    config.blockCount      = DefaultValues::block_count;
+    config.blockTypes      = DefaultValues::block_types;
     config.joinLeaderboard = DefaultValues::join_leaderboard;
-    config.theme = DefaultValues::theme;
-    config.language = DefaultValues::language;
+    config.theme           = DefaultValues::theme;
+    config.language        = DefaultValues::language;
     config.leaderboard.clear();
-}
-
-/**
- * @brief 从TOML配置中读取字符串值
- * @param tomlValue TOML值
- * @param key 键名
- * @param defaultValue 默认值
- * @return 读取的字符串值
- */
-template <typename T>
-QString Config::getTomlString(const T &tomlValue, const std::string &key, const QString &defaultValue) {
-    if (tomlValue.contains(key)) {
-        return QString::fromStdString(toml::find<std::string>(tomlValue, key));
-    }
-    return defaultValue;
-}
-
-/**
- * @brief 从TOML配置中读取整数值
- * @param tomlValue TOML值
- * @param key 键名
- * @param defaultValue 默认值
- * @return 读取的整数值
- */
-template <typename T> int Config::getTomlInt(const T &tomlValue, const std::string &key, int defaultValue) {
-    if (tomlValue.contains(key)) {
-        return toml::find<int>(tomlValue, key);
-    }
-    return defaultValue;
-}
-
-/**
- * @brief 从TOML配置中读取浮点值
- * @param tomlValue TOML值
- * @param key 键名
- * @param defaultValue 默认值
- * @return 读取的浮点值
- */
-template <typename T> double Config::getTomlDouble(const T &tomlValue, const std::string &key, double defaultValue) {
-    if (tomlValue.contains(key)) {
-        return toml::find<double>(tomlValue, key);
-    }
-    return defaultValue;
-}
-
-/**
- * @brief 从TOML配置中读取布尔值
- * @param tomlValue TOML值
- * @param key 键名
- * @param defaultValue 默认值
- * @return 读取的布尔值
- */
-template <typename T> bool Config::getTomlBool(const T &tomlValue, const std::string &key, bool defaultValue) {
-    if (tomlValue.contains(key)) {
-        return toml::find<bool>(tomlValue, key);
-    }
-    return defaultValue;
 }
 
 /**
@@ -216,4 +159,61 @@ void Config::saveConfig(const config &config) {
     } catch (const std::exception &e) {
         qWarning() << "保存配置文件失败:" << e.what();
     }
+}
+
+/**
+ * @brief 从TOML配置中读取字符串值
+ * @param tomlValue TOML值
+ * @param key 键名
+ * @param defaultValue 默认值
+ * @return 读取的字符串值
+ */
+template <typename T>
+QString Config::getTomlString(const T &tomlValue, const std::string &key, const QString &defaultValue) {
+    if (tomlValue.contains(key)) {
+        return QString::fromStdString(toml::find<std::string>(tomlValue, key));
+    }
+    return defaultValue;
+}
+
+/**
+ * @brief 从TOML配置中读取整数值
+ * @param tomlValue TOML值
+ * @param key 键名
+ * @param defaultValue 默认值
+ * @return 读取的整数值
+ */
+template <typename T> int Config::getTomlInt(const T &tomlValue, const std::string &key, int defaultValue) {
+    if (tomlValue.contains(key)) {
+        return toml::find<int>(tomlValue, key);
+    }
+    return defaultValue;
+}
+
+/**
+ * @brief 从TOML配置中读取浮点值
+ * @param tomlValue TOML值
+ * @param key 键名
+ * @param defaultValue 默认值
+ * @return 读取的浮点值
+ */
+template <typename T> double Config::getTomlDouble(const T &tomlValue, const std::string &key, double defaultValue) {
+    if (tomlValue.contains(key)) {
+        return toml::find<double>(tomlValue, key);
+    }
+    return defaultValue;
+}
+
+/**
+ * @brief 从TOML配置中读取布尔值
+ * @param tomlValue TOML值
+ * @param key 键名
+ * @param defaultValue 默认值
+ * @return 读取的布尔值
+ */
+template <typename T> bool Config::getTomlBool(const T &tomlValue, const std::string &key, bool defaultValue) {
+    if (tomlValue.contains(key)) {
+        return toml::find<bool>(tomlValue, key);
+    }
+    return defaultValue;
 }

@@ -43,7 +43,7 @@ constexpr bool join_leaderboard_hard = true;   // 困难难度：加入排行榜
 const QList<QPair<int, int>> presetResolutions = {
     {4096, 2160}, // 4K UHD
     {3840, 2160}, // 4K UHD
-    {2560, 1440}, // QHD
+    {2560, 1440}, // 2K QHD
     {1920, 1200}, // WUXGA
     {1920, 1080}, // Full HD
     {1680, 1050}, // WSXGA+
