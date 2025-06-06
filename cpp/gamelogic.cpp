@@ -160,7 +160,7 @@ bool GameLogic::isGameOver() const {
 }
 
 /**
- * @brief 获取连接路径
+ * @brief 获取连接路径，用于绘制路径
  * @param r1 第一个方块的行
  * @param c1 第一个方块的列
  * @param r2 第二个方块的行
@@ -243,16 +243,6 @@ QVariantList GameLogic::getLinkPath(int r1, int c1, int r2, int c2) {
 }
 
 /**
- * @brief 检查指定位置是否有效
- * @param row 行
- * @param col 列
- * @return 如果位置有效返回true，否则返回false
- */
-bool GameLogic::isValidPosition(int row, int col) const {
-    return row >= 1 && row < ROWS - 1 && col >= 1 && col < COLS - 1;
-}
-
-/**
  * @brief 获取所有有效位置
  * @return 所有有效位置的列表
  */
@@ -269,7 +259,7 @@ QVector<QPair<int, int>> GameLogic::getValidPositions() const {
 }
 
 /**
- * @brief 检查是否还有有效的移动
+ * @brief 检查是否还有有效的移动，用于生成解决方案
  * @return 如果还有有效的移动返回true，否则返回false
  */
 bool GameLogic::hasValidMove() const {
@@ -400,6 +390,10 @@ void GameLogic::generateSolution() {
     }
 }
 
+/**
+ * @brief 开始游戏
+ * @details 如果游戏未开始，则开始游戏并初始化游戏计时器
+ */
 void GameLogic::startGame() {
     if (!isGameRunning) {
         isGameRunning = true;
@@ -438,6 +432,10 @@ void GameLogic::resumeGame() {
     }
 }
 
+/**
+ * @brief 结束游戏
+ * @details 如果游戏正在运行，则结束游戏并停止计时
+ */
 void GameLogic::endGame() {
     if (isGameRunning) {
         isGameRunning = false;
@@ -448,6 +446,10 @@ void GameLogic::endGame() {
     }
 }
 
+/**
+ * @brief 更新游戏计时器
+ * @details 每秒更新一次游戏计时器
+ */
 void GameLogic::updateTimer() {
     if (timeLeft_ > 0) {
         timeLeft_--;
@@ -459,15 +461,19 @@ void GameLogic::updateTimer() {
     }
 }
 
+/**
+ * @brief 获取排行榜
+ * @details 从 settings 中获取排行榜
+ */
 QString GameLogic::getRank(const QString &playerName, int score) const {
     // 从 settings 中获取排行榜
     QVariantList leaderboard = settings->getLeaderboard();
-    
+
     // 如果分数为0或者排行榜为空，直接返回未上榜
     if (score <= 0 || leaderboard.isEmpty()) {
         return "未上榜";
     }
-    
+
     // 检查玩家是否在排行榜中
     int rank = 1;
     bool foundPlayer = false;
@@ -476,41 +482,53 @@ QString GameLogic::getRank(const QString &playerName, int score) const {
         QVariantMap entry = entryVar.toMap();
         QString name = entry["name"].toString();
         int playerScore = entry["score"].toInt();
-        
+
         // 如果发现相同名字和相同或更高分数，表示玩家已经在排行榜中
         if (name == playerName && playerScore >= score) {
             foundPlayer = true;
             break;
         }
-        
+
         // 如果当前分数小于排行榜中的分数，排名加1
         if (score < playerScore) {
             rank++;
         }
     }
-    
+
     // 检查设置中是否允许加入排行榜
     if (!settings->getJoinLeaderboard()) {
         return "未启用排行";
     }
-    
+
     // 如果玩家不在排行榜中，且排名超过100，返回未上榜
     if (!foundPlayer && rank > 100) {
         return "未上榜";
     }
-    
+
     // 返回排名
     return "第" + QString::number(rank) + "名";
 }
 
+/**
+ * @brief 获取游戏计时器剩余时间
+ * @details 获取游戏计时器剩余时间
+ */
 int GameLogic::timeLeft() const {
     return timeLeft_;
 }
 
+/**
+ * @brief 获取游戏是否暂停
+ * @details 获取游戏是否暂停
+ */
 bool GameLogic::isPaused() const {
     return isPaused_;
 }
 
+/**
+ * @brief 设置游戏是否暂停
+ * @details 设置游戏是否暂停
+ */
 void GameLogic::setPaused(bool paused) {
     if (isPaused_ != paused) {
         isPaused_ = paused;
@@ -523,10 +541,34 @@ void GameLogic::setPaused(bool paused) {
     }
 }
 
+/**
+ * @brief 获取当前得分
+ * @details 获取当前得分
+ */
 int GameLogic::getScore() const {
     return currentScore;
 }
 
+/**
+ * @brief 设置当前得分
+ * @details 设置当前得分
+ */
 void GameLogic::setScore(int score) {
     currentScore = score;
+}
+
+/**
+ * @brief 获取列数
+ * @details 获取列数
+ */
+int GameLogic::cols() const {
+    return COLS;
+}
+
+/**
+ * @brief 获取行数
+ * @details 获取行数
+ */
+int GameLogic::rows() const {
+    return ROWS;
 }

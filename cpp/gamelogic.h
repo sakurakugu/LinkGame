@@ -42,18 +42,14 @@ class GameLogic : public QObject {
         QVariantList path; // 连接路径
     };
 
-    Q_INVOKABLE int cols() const {
-        return COLS;
-    }
-    Q_INVOKABLE int rows() const {
-        return ROWS;
-    }
+    Q_INVOKABLE int cols() const;                                            // 获取列数
+    Q_INVOKABLE int rows() const;                                            // 获取行数
     Q_INVOKABLE int getCell(int row, int col) const;                         // 获取单元格的值
     Q_INVOKABLE bool isOuterCell(int row, int col) const;                    // 判断是否是外圈格子
     Q_INVOKABLE void resetGame();                                            // 重置游戏
     Q_INVOKABLE bool canLink(int r1, int c1, int r2, int c2) const;          // 检查两个单元格是否可以连接
     Q_INVOKABLE void removeLink(int r1, int c1, int r2, int c2);             // 移除连接的两个方块
-    Q_INVOKABLE QVariantList getLinkPath(int r1, int c1, int r2, int c2);    // 获取连接路径
+    Q_INVOKABLE QVariantList getLinkPath(int r1, int c1, int r2, int c2);    // 获取连接路径，用于绘制路径
     Q_INVOKABLE bool isGameOver() const;                                     // 检查游戏是否结束
     Q_INVOKABLE int getScore() const;                                        // 获取当前分数
     Q_INVOKABLE void setScore(int score);                                    // 设置当前分数
@@ -112,7 +108,6 @@ class GameLogic : public QObject {
 
     void createGrid();                                  // 生成游戏网格
     void generateSolution();                            // 生成解决方案
-    bool isValidPosition(int row, int col) const;       // 检查位置是否有效
     QVector<QPair<int, int>> getValidPositions() const; // 获取所有有效位置
     bool hasValidMove() const;                          // 检查是否有有效移动
     QVector<HintStep> findSolution();                   // 寻找解决方案

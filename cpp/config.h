@@ -50,8 +50,6 @@ class Config : public QObject {
     void initConfig(config &config);       // 初始化配置
 
   private:
-    template <typename T> T getOrDefault(const toml::value &table, const std::string &key, const T &defaultValue);
-    QString getOrDefaultStr(const toml::value &table, const std::string &key, const QString &defaultValue);
 };
 
 #endif // CONFIG_H
