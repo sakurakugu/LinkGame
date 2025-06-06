@@ -54,7 +54,11 @@ set(MYQML_FILES
     ${MYQML_THEME}
 )
 
-
+set(MYI18N_FILES
+    i18n/qml_en.ts
+    i18n/qml_zh_CN.ts
+    i18n/qml_ja.ts
+)
 
 set(MYPRIVATE
     Qt6::Quick
@@ -109,8 +113,8 @@ qt_add_qml_module(appLinkGame
 qt_add_translations(appLinkGame
     # 最终路径：qrc:/qt/qml/Translated/i18n/qml_*.qm
     RESOURCE_PREFIX /qt/qml/Translated/i18n
-    TS_FILE_BASE qml
-    TS_FILE_DIR i18n
+    TS_FILES 
+        ${MYI18N_FILES}
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
