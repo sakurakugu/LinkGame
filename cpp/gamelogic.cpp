@@ -606,3 +606,22 @@ QVariantMap GameLogic::getHint() {
     
     return result;
 }
+
+/**
+ * @brief 获取因子对（行和列）
+ * @details 获取一个偶数的因子对（行和列），两者的差尽量小
+ * @param number 要分解的偶数
+ * @return 包含因子对的QPair<int, int>
+ */
+QPair<int, int> GameLogic::getFactorPair(int n) const {
+    int sqrtN = static_cast<int>(std::sqrt(n)); // 取平方根(显式转换为int)
+    for (int i = sqrtN; i >= 1; --i) {
+        if (n % i == 0) {
+            int j = n / i;
+            return {i, j};  // 返回尽可能接近的两个因子
+        }
+    }
+
+    // 理论上不会到这里
+    return {1, n};
+}
