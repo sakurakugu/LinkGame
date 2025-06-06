@@ -287,32 +287,33 @@ QVector<GameLogic::HintStep> GameLogic::findSolution() {
     QVector<HintStep> solution;            // 解决方案步骤列表
     QVector<QVector<int>> tempGrid = grid; // 创建临时网格
 
-    while (hasValidMove()) {
-        auto positions = getValidPositions(); // 获取所有有效位置
+    auto positions = getValidPositions(); // 获取所有有效位置
+
+    while (!positions.isEmpty()) {
         bool found = false;                   // 是否找到解决方案
 
         for (int i = 0; i < positions.size() && !found; ++i) {
             for (int j = i + 1; j < positions.size() && !found; ++j) {
-                int r1 = positions[i].first;
-                int c1 = positions[i].second;
-                int r2 = positions[j].first;
-                int c2 = positions[j].second;
+                auto [r1, c1] = positions[i];
+                auto [r2, c2] = positions[j];
 
                 if (grid[r1][c1] == grid[r2][c2] && canLink(r1, c1, r2, c2)) {
-                    HintStep step;
-                    step.row1 = r1;
-                    step.col1 = c1;
-                    step.row2 = r2;
-                    step.col2 = c2;
-                    step.path = getLinkPath(r1, c1, r2, c2); // 获取连接路径
+                    HintStep step = {r1, c1, r2, c2, getLinkPath(r1, c1, r2, c2)}; // 获取连接路径
                     solution.append(step);                   // 添加步骤到解决方案列表
 
                     // 移除这对方块
                     grid[r1][c1] = 0;
                     grid[r2][c2] = 0;
                     found = true;
+
+                    // 更新有效位置列表
+                    positions = getValidPositions();
                 }
             }
+        }
+
+        if (!found) {
+            break; // 如果没有找到解决方案，提前退出
         }
     }
 

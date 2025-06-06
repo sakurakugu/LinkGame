@@ -200,7 +200,7 @@ Rectangle {
                 delegate: Rectangle {
                     implicitWidth: parent.width
                     implicitHeight: 50
-                    color: index % 2 === 0 ? "#f9f9f9" : "white"
+                    color: index % 2 === 0 ? (currentTheme ? currentTheme.secondaryBackgroundColor : "#f9f9f9") : (currentTheme ? currentTheme.backgroundColor : "white")
                     RowLayout {
                         anchors.fill: parent
                         anchors.leftMargin: 10
@@ -211,6 +211,7 @@ Rectangle {
                         Text {
                             text: (index + 1) + "."
                             font.pixelSize: parent.parent.width * 0.03
+                            color: currentTheme ? currentTheme.textColor : "#333333"
                             Layout.preferredWidth: parent.width * 0.15
                             horizontalAlignment: Text.AlignHCenter
                             Layout.alignment: Qt.AlignVCenter
@@ -219,7 +220,8 @@ Rectangle {
                         Text {
                             text: modelData.name
                             font.pixelSize: parent.parent.width * 0.03
-                            Layout.preferredWidth: parent.width * 0.45 // 名字占更多空间
+                            color: currentTheme ? currentTheme.textColor : "#333333"
+                            Layout.preferredWidth: parent.width * 0.45
                             Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
                             elide: Text.ElideRight // 如果文字太长则显示省略号
                             wrapMode: Text.NoWrap
@@ -229,6 +231,7 @@ Rectangle {
                         Text {
                             text: modelData.difficulty || qsTr("普通")
                             font.pixelSize: parent.parent.width * 0.03
+                            color: currentTheme ? currentTheme.textColor : "#333333"
                             visible: currentDifficulty === ""
                             Layout.preferredWidth: parent.width * 0.2
                             horizontalAlignment: Text.AlignHCenter
@@ -238,6 +241,7 @@ Rectangle {
                         Text {
                             text: modelData.score
                             font.pixelSize: parent.parent.width * 0.03
+                            color: currentTheme ? currentTheme.textColor : "#333333"
                             Layout.preferredWidth: parent.width * 0.15
                             horizontalAlignment: Text.AlignHCenter
                             Layout.alignment: Qt.AlignVCenter
@@ -250,9 +254,9 @@ Rectangle {
                         hoverEnabled: true
                         onHoveredChanged: {
                             if (mouseArea.containsMouse) {
-                                parent.color = "#e0e0e0";
+                                parent.color = currentTheme ? currentTheme.hoverBackgroundColor : "#e0e0e0";
                             } else {
-                                parent.color = index % 2 === 0 ? "#f9f9f9" : "white";
+                                parent.color = index % 2 === 0 ? (currentTheme ? currentTheme.secondaryBackgroundColor : "#f9f9f9") : (currentTheme ? currentTheme.backgroundColor : "white");
                             }
                         }
                     }

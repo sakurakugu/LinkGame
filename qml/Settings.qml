@@ -144,26 +144,41 @@ Rectangle {
                 Text {
                     text: qsTr("用户名:")
                     font.pixelSize: parent.parent.parent.width * 0.02 // 使用窗口宽度的2%作为字体大小
-                }                TextField {
+                }                
+                TextField {
                     id: usernameField
                     text: root.username
                     Layout.fillWidth: true
                     maximumLength: 20
                     font.pixelSize: parent.parent.parent.width * 0.02 // 使用窗口宽度的2%作为字体大小
+                    // validator: RegularExpressionValidator {
+                    //     regularExpression: /^[a-zA-Z0-9_\u4e00-\u9fa5]{1,20}$/
+                    // }
                     onTextChanged: {
-                        settings.setPlayerName(text);
+                        if (acceptableInput) {
+                            settings.setPlayerName(text);
+                        }
                     }
                     
                     // 应用主题颜色
-                    color: currentTheme ? currentTheme.textColor : "#333333"
+                    color: acceptableInput ? (currentTheme ? currentTheme.textColor : "#333333") : "red"
                     
                     background: Rectangle {
                         implicitWidth: 200
                         implicitHeight: 40
                         color: currentTheme ? currentTheme.secondaryBackgroundColor : "#ffffff"
-                        border.color: currentTheme ? currentTheme.borderColor : "#cccccc"
+                        border.color: usernameField.acceptableInput ? 
+                                     (currentTheme ? currentTheme.borderColor : "#cccccc") : 
+                                     "red"
                         border.width: 1
                         radius: 2
+                    }
+                    
+                    // 添加提示文本
+                    ToolTip {
+                        visible: !usernameField.acceptableInput && usernameField.text.length > 0
+                        text: qsTr("用户名只能包含字母、数字、下划线和汉字，长度1-20")
+                        delay: 500
                     }
                 }
             }
@@ -385,13 +400,21 @@ Rectangle {
                                 top: 3600
                             }
                             onTextChanged: {
-                                if (text !== "" && customRadio.checked) {
-                                    settings.setGameTime(parseInt(text));
+                                if (acceptableInput && text !== "" && customRadio.checked) {
+                                    var value = parseInt(text);
+                                    if (value < 30) value = 30;
+                                    if (value > 3600) value = 3600;
+                                    if (value !== parseInt(text)) {
+                                        text = value.toString();
+                                    }
+                                    settings.setGameTime(value);
                                 }
                             }
                             
                             // 应用主题颜色
-                            color: currentTheme ? (enabled ? currentTheme.textColor : currentTheme.secondaryTextColor) : (enabled ? "#333333" : "#999999")
+                            color: acceptableInput || text === "" ? 
+                                  (currentTheme ? (enabled ? currentTheme.textColor : currentTheme.secondaryTextColor) : (enabled ? "#333333" : "#999999")) : 
+                                  "red"
                             
                             background: Rectangle {
                                 implicitWidth: 200
@@ -399,9 +422,18 @@ Rectangle {
                                 color: customTimeField.enabled ? 
                                        (currentTheme ? currentTheme.secondaryBackgroundColor : "#ffffff") : 
                                        (currentTheme ? Qt.darker(currentTheme.secondaryBackgroundColor, 1.05) : "#f0f0f0")
-                                border.color: currentTheme ? currentTheme.borderColor : "#cccccc"
+                                border.color: customTimeField.acceptableInput || customTimeField.text === "" ? 
+                                             (currentTheme ? currentTheme.borderColor : "#cccccc") : 
+                                             "red"
                                 border.width: 1
                                 radius: 2
+                            }
+                            
+                            // 添加提示文本
+                            ToolTip {
+                                visible: !customTimeField.acceptableInput && customTimeField.text.length > 0
+                                text: qsTr("游戏时间必须是30-3600之间的整数")
+                                delay: 500
                             }
                         }
                     }
@@ -423,13 +455,26 @@ Rectangle {
                                 top: 100
                             }
                             onTextChanged: {
-                                if (text !== "" && customRadio.checked) {
-                                    settings.setBlockCount(parseInt(text));
+                                if (acceptableInput && text !== "" && customRadio.checked) {
+                                    var value = parseInt(text);
+                                    // 确保方块数量是偶数
+                                    if (value % 2 !== 0) {
+                                        value = value - 1;
+                                        text = value.toString();
+                                    }
+                                    if (value < 16) value = 16;
+                                    if (value > 100) value = 100;
+                                    if (value !== parseInt(text)) {
+                                        text = value.toString();
+                                    }
+                                    settings.setBlockCount(value);
                                 }
                             }
                             
                             // 应用主题颜色
-                            color: currentTheme ? (enabled ? currentTheme.textColor : currentTheme.secondaryTextColor) : (enabled ? "#333333" : "#999999")
+                            color: acceptableInput || text === "" ? 
+                                  (currentTheme ? (enabled ? currentTheme.textColor : currentTheme.secondaryTextColor) : (enabled ? "#333333" : "#999999")) : 
+                                  "red"
                             
                             background: Rectangle {
                                 implicitWidth: 200
@@ -437,9 +482,18 @@ Rectangle {
                                 color: blockCountField.enabled ? 
                                        (currentTheme ? currentTheme.secondaryBackgroundColor : "#ffffff") : 
                                        (currentTheme ? Qt.darker(currentTheme.secondaryBackgroundColor, 1.05) : "#f0f0f0")
-                                border.color: currentTheme ? currentTheme.borderColor : "#cccccc"
+                                border.color: blockCountField.acceptableInput || blockCountField.text === "" ? 
+                                             (currentTheme ? currentTheme.borderColor : "#cccccc") : 
+                                             "red"
                                 border.width: 1
                                 radius: 2
+                            }
+                            
+                            // 添加提示文本
+                            ToolTip {
+                                visible: !blockCountField.acceptableInput && blockCountField.text.length > 0
+                                text: qsTr("方块数量必须是16-100之间的偶数")
+                                delay: 500
                             }
                         }
                     }
@@ -457,22 +511,30 @@ Rectangle {
                             font.pixelSize: parent.parent.parent.parent.width * 0.02
                             enabled: customRadio.checked
                             validator: IntValidator {
-                                bottom: 8
-                                top: 36
+                                bottom: 1
+                                top: 20
                             }
                             onTextChanged: {
-                                if (text !== "" && customRadio.checked) {
-                                    if (parseInt(text) > 20) {
-                                        text = "20";
-                                    } else if (parseInt(text) < 1) {
-                                        text = "1";
+                                if (acceptableInput && text !== "" && customRadio.checked) {
+                                    var value = parseInt(text);
+                                    if (value < 1) value = 1;
+                                    if (value > 20) value = 20;
+                                    
+                                    // 确保方块种类数量不超过总方块数量的一半
+                                    var maxTypes = Math.floor(parseInt(blockCountField.text) / 2);
+                                    if (value > maxTypes) {
+                                        value = maxTypes;
+                                        text = value.toString();
                                     }
-                                    settings.setBlockTypes(parseInt(text));
+                                    
+                                    settings.setBlockTypes(value);
                                 }
                             }
                             
                             // 应用主题颜色
-                            color: currentTheme ? (enabled ? currentTheme.textColor : currentTheme.secondaryTextColor) : (enabled ? "#333333" : "#999999")
+                            color: acceptableInput || text === "" ? 
+                                  (currentTheme ? (enabled ? currentTheme.textColor : currentTheme.secondaryTextColor) : (enabled ? "#333333" : "#999999")) : 
+                                  "red"
                             
                             background: Rectangle {
                                 implicitWidth: 200
@@ -480,9 +542,18 @@ Rectangle {
                                 color: blockTypesField.enabled ? 
                                        (currentTheme ? currentTheme.secondaryBackgroundColor : "#ffffff") : 
                                        (currentTheme ? Qt.darker(currentTheme.secondaryBackgroundColor, 1.05) : "#f0f0f0")
-                                border.color: currentTheme ? currentTheme.borderColor : "#cccccc"
+                                border.color: blockTypesField.acceptableInput || blockTypesField.text === "" ? 
+                                             (currentTheme ? currentTheme.borderColor : "#cccccc") : 
+                                             "red"
                                 border.width: 1
                                 radius: 2
+                            }
+                            
+                            // 添加提示文本
+                            ToolTip {
+                                visible: !blockTypesField.acceptableInput && blockTypesField.text.length > 0
+                                text: qsTr("方块种类数必须是1-20之间的整数，且不能超过方块数量的一半")
+                                delay: 500
                             }
                         }
                     }
@@ -490,17 +561,20 @@ Rectangle {
                     RowLayout {
                         Layout.fillWidth: true
                         Text {
+                            id: leaderboardText
                             text: qsTr("参加排行榜")
                             font.pixelSize: parent.parent.parent.parent.width * 0.02
+                            color: customRadio.checked ? (currentTheme ? currentTheme.secondaryTextColor : "#999999") : (currentTheme ? currentTheme.textColor : "#333333")
                         }                        
                         CheckBox {
                             id: joinLeaderboardCheck
-                            checked: true
-                            enabled: customRadio.checked
+                            checked: settings.getJoinLeaderboard()
+                            enabled: !customRadio.checked
+                            opacity: customRadio.checked ? 0.5 : 1.0
                             font.pixelSize: parent.parent.parent.parent.width * 0.02
                             onCheckedChanged: {
-                                if (customRadio.checked) {
-                                    settings.setCustomLeaderboardEnabled(checked);
+                                if (!customRadio.checked) {
+                                    settings.setJoinLeaderboard(checked);
                                 }
                             }
                             
@@ -537,6 +611,17 @@ Rectangle {
                                 }
                             }
                         }
+                    }
+                    
+                    // 自定义模式下的排行榜说明
+                    Text {
+                        id: customModeLeaderboardNote
+                        text: qsTr("*自定义模式不能参加排行榜")
+                        font.pixelSize: parent.parent.parent.parent.width * 0.015
+                        font.italic: true
+                        color: currentTheme ? currentTheme.secondaryTextColor : "#999999"
+                        visible: customRadio.checked
+                        Layout.topMargin: -parent.parent.parent.parent.width * 0.01
                     }
                 }
             }

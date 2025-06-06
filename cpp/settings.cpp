@@ -110,6 +110,9 @@ bool Settings::getJoinLeaderboard() const {
         return DefaultValues::join_leaderboard_medium;
     } else if (difficulty == "困难") {
         return DefaultValues::join_leaderboard_hard;
+    } else if (difficulty == "自定义") {
+        // 自定义模式下不能参加排行榜
+        return false;
     }
     return config.joinLeaderboard;
 }
