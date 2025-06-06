@@ -15,6 +15,20 @@ Rectangle {
     }
     property QtObject currentTheme: null
     property string theme: settings.getTheme()
+    property int selectedRow: -1 // 选中的行
+    property int selectedCol: -1 // 选中的列
+    property var linkPath: [] // 存储连接路径的点
+    property bool showingPath: false // 是否正在显示路径
+    property int score: 0 // 当前分数
+    property bool isPaused: gameLogic.isPaused // 是否暂停
+
+    signal returnToMenu // 返回主菜单信号
+    signal closed // 退出游戏信号
+    signal scoreUpdated(int newScore) // 分数变化信号
+    signal gameHint // 提示信号
+    signal resetAllCell // 重置所有方块信号
+    signal pauseStateChanged(bool paused) // 暂停状态变化信号
+    signal soundStateChanged(bool enabled) // 音效状态变化信号
 
     // 监听主题变化
     onThemeChanged: {
@@ -22,12 +36,6 @@ Rectangle {
         currentTheme = themeManager.loadTheme(theme);
     }
 
-    property int selectedRow: -1 // 选中的行
-    property int selectedCol: -1 // 选中的列
-    property var linkPath: [] // 存储连接路径的点
-    property bool showingPath: false // 是否正在显示路径
-    property int score: 0 // 当前分数
-    property bool isPaused: gameLogic.isPaused // 是否暂停
     // 游戏加载完成后自动开始游戏
     Component.onCompleted: {
         // console.log("GameBoard初始化，当前主题:", theme);
@@ -46,28 +54,18 @@ Rectangle {
         }
     }
 
-    signal returnToMenu // 返回主菜单信号
-    signal closed // 退出游戏信号
-    signal scoreUpdated(int newScore) // 分数变化信号
-    signal gameHint // 提示信号
-    signal resetAllCell // 重置所有方块信号
-    signal pauseStateChanged(bool paused) // 暂停状态变化信号
-    signal soundStateChanged(bool enabled) // 音效状态变化信号
-
     Connections {
         target: gameLogic
         // 监听游戏时间变化
         function onTimeLeftChanged(time) {
             if (time <= 0) {
                 gameLogic.endGame();
-                gameLogic.resetGameGrid();
                 root.closed();
             }
         }
         // 监听游戏完成信号
         function onGameCompleted() {
             gameLogic.endGame();
-            gameLogic.resetGameGrid();
             root.closed();
         }
         // 监听暂停状态变化

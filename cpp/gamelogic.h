@@ -86,11 +86,11 @@ class GameLogic : public QObject {
     Q_SIGNAL void pauseStateChanged(bool paused); // 暂停状态变化信号
 
   private:
-    int ROWS = 8;                // 行数
-    int COLS = 10;               // 列数
-    int VISIBLE_ROWS = ROWS - 2; // 可见行数
-    int VISIBLE_COLS = COLS - 2; // 可见列数
-    QVector<QVector<int>> grid;  // 游戏网格
+    int ROWS;                   // 行数
+    int COLS;                   // 列数
+    int VISIBLE_ROWS;           // 可见行数
+    int VISIBLE_COLS;           // 可见列数
+    QVector<QVector<int>> grid; // 游戏网格
 
     // 提示相关的成员
     QVector<HintStep> solutionSteps; // 存储解决方案步骤
@@ -114,6 +114,7 @@ class GameLogic : public QObject {
     bool hasValidMove() const;                          // 检查是否有有效移动
     QVector<HintStep> findSolution();                   // 寻找解决方案
     void updateTimer();                                 // 更新计时器
+    void updateDimensions();                            // 更新行列数
 };
 
 #endif // GAMELOGIC_H
