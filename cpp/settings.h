@@ -26,7 +26,7 @@ class Settings : public QObject {
 
     // 初始化窗口
     Q_INVOKABLE void initWindow();
-    
+
     // 强制重新应用方块设置
     Q_INVOKABLE void forceUpdateBlockSettings();
 
@@ -40,6 +40,7 @@ class Settings : public QObject {
     Q_INVOKABLE void addScoreToLeaderboard(const QString &name, int score);               // 添加分数到排行榜
     Q_INVOKABLE bool getJoinLeaderboard() const;                                          // 获取是否加入排行榜
     Q_INVOKABLE void setJoinLeaderboard(bool join);                                       // 设置是否加入排行榜
+    Q_INVOKABLE QString getRank(const QString &playerName, int score) const;              // 获取排名
 
     // 难度相关
     Q_INVOKABLE QString getDifficulty() const;                 // 获取难度
@@ -60,6 +61,7 @@ class Settings : public QObject {
     Q_INVOKABLE void setBlockCount(int count); // 设置方块数量
     Q_INVOKABLE int getBlockTypes() const;     // 获取方块种类数
     Q_INVOKABLE void setBlockTypes(int types); // 设置方块种类数
+    Q_INVOKABLE int getRealBlockCount() const; // 获取真实方块数量(根据难度和方块种类数计算)
 
     // 主题相关
     Q_INVOKABLE QString getTheme() const;            // 获取主题

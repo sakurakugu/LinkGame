@@ -13,10 +13,10 @@ Rectangle {
     signal closed    
     
     Component.onCompleted: {
-        console.log("Settings初始化，当前主题: " + theme);
-        console.log("加载主题...");
+        // console.log("Settings初始化，当前主题: " + theme);
+        // console.log("加载主题...");
         currentTheme = themeManager.loadTheme(theme); // 加载当前主题
-        console.log("是否成功加载主题: " + (currentTheme !== null));
+        // console.log("是否成功加载主题: " + (currentTheme !== null));
         root.forceActiveFocus(); // 确保键盘事件处理程序获得焦点
     }
 

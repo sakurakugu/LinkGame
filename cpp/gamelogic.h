@@ -22,9 +22,9 @@
 #include <QVariantMap>
 #include <QVector>
 #include <algorithm>
+#include <cmath>
 #include <fstream>
 #include <iostream>
-#include <cmath>
 #include <toml.hpp>
 
 class GameLogic : public QObject {
@@ -35,6 +35,13 @@ class GameLogic : public QObject {
   public:
     explicit GameLogic(Settings *settingsManager, QObject *parent = nullptr);
     ~GameLogic();
+
+    //  用于BFS的路径节点结构体
+    struct PathNode {
+    int x, y;      // 坐标
+    int direction; // 当前方向（0:上, 1:右, 2:下, 3:左）
+    int turns;     // 转弯次数
+};
 
     // 提示相关的结构体
     struct HintStep {
@@ -53,7 +60,6 @@ class GameLogic : public QObject {
     Q_INVOKABLE bool isGameOver() const;                                     // 检查游戏是否结束
     Q_INVOKABLE int getScore() const;                                        // 获取当前分数
     Q_INVOKABLE void setScore(int score);                                    // 设置当前分数
-    Q_INVOKABLE QString getRank(const QString &playerName, int score) const; // 获取排名
     Q_INVOKABLE QVariantMap getHint();                                       // 获取提示
     Q_INVOKABLE QPair<int, int> getFactorPair(int n) const;                  // 获取因子对（行和列）
 
@@ -87,10 +93,8 @@ class GameLogic : public QObject {
     Q_SIGNAL void pauseStateChanged(bool paused); // 暂停状态变化信号
 
   private:
-    int ROWS;                   // 行数
-    int COLS;                   // 列数
-    int VISIBLE_ROWS;           // 可见行数
-    int VISIBLE_COLS;           // 可见列数
+    int ROWS;                   // 行数（包括隐藏的外圈）
+    int COLS;                   // 列数（包括隐藏的外圈）
     QVector<QVector<int>> grid; // 游戏网格
 
     // 提示相关的成员
@@ -107,16 +111,16 @@ class GameLogic : public QObject {
     // 倒计时相关
     QTimer *gameTimer_; // 游戏计时器
     int timeLeft_;      // 剩余时间
-    bool isPaused_;     // 是否暂停    
+    bool isPaused_;     // 是否暂停
 
     void createGrid();                                  // 生成游戏网格
-    void generateSolution();                            // 生成解决方案
     QVector<QPair<int, int>> getValidPositions() const; // 获取所有有效位置
     bool hasValidMove() const;                          // 检查是否有有效移动
     QVector<HintStep> findSolution();                   // 寻找解决方案
     void updateTimer();                                 // 更新计时器
-    void updateDimensions();                            // 更新行列数
-    bool findPath(int r1, int c1, int r2, int c2, QVector<QVector<QPoint>> &parent) const; // 路径查找算法
+    void updateRowAndColumn();                          // 更新行列数
+
+    bool findPath(int r1, int c1, int r2, int c2, QVector<QVector<QPoint>> &result) const; // 路径查找算法
 };
 
 #endif // GAMELOGIC_H

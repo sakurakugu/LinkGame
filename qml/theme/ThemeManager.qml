@@ -11,7 +11,7 @@ QtObject {
 
     // 初始化函数，根据主题名称加载对应的主题文件
     function loadTheme(themeName) {
-        console.log("加载主题:", themeName);
+        // console.log("加载主题:", themeName);
         var component;
         switch (themeName) {
         case light_theme:
@@ -30,7 +30,7 @@ QtObject {
 
         if (component.status === Component.Ready) {
             currentTheme = component.createObject();
-            console.log("成功加载主题:", themeName);
+            // console.log("成功加载主题:", themeName);
             return currentTheme;
         } else {
             console.error("加载主题失败:", component.errorString(), "，组件状态:", component.status);

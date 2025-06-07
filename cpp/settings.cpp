@@ -320,6 +320,19 @@ int Settings::getBlockCount() const {
     return config.blockCount; // 自定义难度
 }
 
+int Settings::getRealBlockCount() const {
+    QString difficulty = getDifficulty();
+    if (difficulty == "简单") {
+        return DefaultValues::block_count_easy;
+    } else if (difficulty == "普通") {
+        return DefaultValues::block_count_medium;
+    } else if (difficulty == "困难") {
+        return DefaultValues::block_count_hard;
+    } else {
+        return getBlockCount(); // 默认值
+    }
+}
+
 void Settings::setBlockCount(int count) {
     if (config.blockCount != count) {
         config.blockCount = count;
@@ -516,4 +529,51 @@ void Settings::forceUpdateBlockSettings() {
     qDebug() << "强制重新应用方块设置";
     // 发出方块设置变化信号，触发游戏逻辑更新
     emit blockSettingsChanged();
+}
+
+/**
+ * @brief 获取排行榜
+ * @details 从 settings 中获取排行榜
+ */
+QString Settings::getRank(const QString &playerName, int score) const {
+    QVariantList leaderboard = getLeaderboard();
+
+    // 如果分数为0或者排行榜为空，直接返回未上榜
+    if (score <= 0 || leaderboard.isEmpty()) {
+        return "未上榜";
+    }
+
+    // 检查玩家是否在排行榜中
+    int rank = 1;
+    bool foundPlayer = false;
+
+    for (const QVariant &entryVar : leaderboard) {
+        QVariantMap entry = entryVar.toMap();
+        QString name = entry["name"].toString();
+        int playerScore = entry["score"].toInt();
+
+        // 如果发现相同名字和相同或更高分数，表示玩家已经在排行榜中
+        if (name == playerName && playerScore >= score) {
+            foundPlayer = true;
+            break;
+        }
+
+        // 如果当前分数小于排行榜中的分数，排名加1
+        if (score < playerScore) {
+            rank++;
+        }
+    }
+
+    // 检查设置中是否允许加入排行榜
+    if (!getJoinLeaderboard()) {
+        return "未启用排行";
+    }
+
+    // 如果玩家不在排行榜中，且排名超过100，返回未上榜
+    if (!foundPlayer && rank > 100) {
+        return "未上榜";
+    }
+
+    // 返回排名
+    return "第" + QString::number(rank) + "名";
 }
