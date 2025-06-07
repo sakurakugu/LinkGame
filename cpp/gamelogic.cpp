@@ -1,7 +1,7 @@
 #include "gamelogic.h"
 
 GameLogic::GameLogic(Settings *settingsManager, QObject *parent)
-    : QObject{parent}, isGameRunning(false), currentScore(0), timeLeft_(0), isPaused_(false) {
+    : QObject{parent}, isGameRunning(false), currentScore(0), timeLeft_(0), isPaused_(false), consecutiveMatches(0) {
     // 使用外部提供的设置管理器
     settings = settingsManager;
 
@@ -14,6 +14,9 @@ GameLogic::GameLogic(Settings *settingsManager, QObject *parent)
 
     // 创建游戏网格，不在这里创建，GUI中不会显示
     createGrid();
+
+    // 初始化上次匹配时间
+    lastMatchTime = QDateTime::currentDateTime();
 
     // 监听方块设置变化，更新行列数（使用直接连接模式以确保立即执行）
     connect(settings, &Settings::blockSettingsChanged, this, [this]() {
@@ -34,6 +37,8 @@ void GameLogic::startGame() {
     if (!isGameRunning) {
         isGameRunning = true;
         currentScore = 0;
+        consecutiveMatches = 0;  // 重置连续消除次数
+        lastMatchTime = QDateTime::currentDateTime(); // 重置匹配时间
         timeLeft_ = settings->getGameTime();
         isPaused_ = false;
         gameTimer_->start(1000); // 每秒更新一次
@@ -95,6 +100,8 @@ void GameLogic::resetGame() {
     currentScore = 0;
     timeLeft_ = settings->getGameTime();
     isPaused_ = false;
+    consecutiveMatches = 0;  // 重置连续消除次数
+    lastMatchTime = QDateTime::currentDateTime(); // 重置上次匹配时间
     gameTimer_->start(1000); // 再重启计时器
     createGrid();            // 重新生成游戏网格
     emit gameStarted();
@@ -299,9 +306,25 @@ bool GameLogic::canLink(int r1, int c1, int r2, int c2) const {
  */
 void GameLogic::removeLink(int r1, int c1, int r2, int c2) {
     if (grid[r1][c1] != 0 && grid[r2][c2] != 0) {
+        // 检查最近一次消除时间，更新连击计数
+        QDateTime currentTime = QDateTime::currentDateTime();
+        int secSinceLastMatch = lastMatchTime.secsTo(currentTime);
+        
+        // 如果在3秒内完成下一次消除，增加连击
+        if (secSinceLastMatch <= 3) {
+            consecutiveMatches++;
+        } else {
+            // 超过3秒，重置连击
+            consecutiveMatches = 0;
+        }
+        
+        // 更新上次消除时间
+        lastMatchTime = currentTime;
+        
         // 清除两个方块
         grid[r1][c1] = 0;
         grid[r2][c2] = 0;
+        
         // 发送信号，通知UI更新
         emit cellsChanged();
 
@@ -591,4 +614,56 @@ QPair<int, int> GameLogic::getFactorPair(int n) const {
         }
     }
     return {1, n};
+}
+
+/**
+ * @brief 计算综合评分
+ * @details 基于多种因素计算分数，包括转折点数量、剩余时间、难度和连击
+ * @param pairCount 消除方块对数（默认为1）
+ * @param turnCount 连接路径转折点数
+ * @return 计算得出的分数
+ */
+int GameLogic::calculateScore(int pairCount, int turnCount) {
+    // 基础分值
+    int baseScore = 10;
+    
+    // 转折点奖励 (0-2个转折点，转折越少奖励越高)
+    int turnBonus = 0;
+    if (turnCount <= 2) {
+        turnBonus = (2 - turnCount) * 5;
+    }
+    
+    // 速度奖励 (根据剩余时间百分比，最多加15分)
+    double timePercent = static_cast<double>(timeLeft_) / settings->getGameTime();
+    int timeBonus = static_cast<int>(timePercent * 15);
+    
+    // 难度系数 (1.0-2.0)
+    double difficultyFactor = 1.0;
+    QString difficulty = settings->getDifficulty();
+    if (difficulty == "普通") difficultyFactor = 1.5;
+    else if (difficulty == "困难") difficultyFactor = 2.0;
+    
+    // 连续消除奖励 (每连击增加10%，最多叠加到200%)
+    int comboFactor = std::min(consecutiveMatches, 10); // 最多10连击
+    double comboMultiplier = 1.0 + comboFactor * 0.1;
+    
+    // 计算最终分数
+    int totalScore = static_cast<int>((baseScore + turnBonus + timeBonus) * difficultyFactor * comboMultiplier);
+    
+    // 确保至少有基本分
+    if (totalScore < baseScore) {
+        totalScore = baseScore;
+    }
+    
+    // 返回计算得出的分数 * 消除对数
+    return totalScore * pairCount;
+}
+
+/**
+ * @brief 获取连续消除次数
+ * @details 获取当前玩家的连续消除次数
+ * @return 连续消除次数
+ */
+int GameLogic::getConsecutiveMatches() const {
+    return consecutiveMatches;
 }

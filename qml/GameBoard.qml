@@ -484,11 +484,54 @@ Rectangle {
         property int secondRow: -1
         property int secondCol: -1        // 定时器触发时的处理函数
         onTriggered: {
+            // 从路径中获取转折点数量
+            var turnCount = 0;
+            var lastDirection = "";
+
+            // 计算转折点数量（如果路径点数大于2）
+            if (root.linkPath.length > 2) {
+                for (var i = 1; i < root.linkPath.length; i++) {
+                    var dx = root.linkPath[i].col - root.linkPath[i - 1].col;
+                    var dy = root.linkPath[i].row - root.linkPath[i - 1].row;
+                    var currentDirection = "";
+
+                    if (dx > 0)
+                        currentDirection = "right";
+                    else if (dx < 0)
+                        currentDirection = "left";
+                    else if (dy > 0)
+                        currentDirection = "down";
+                    else if (dy < 0)
+                        currentDirection = "up";
+
+                    if (lastDirection !== "" && lastDirection !== currentDirection) {
+                        turnCount++;
+                    }
+
+                    lastDirection = currentDirection;
+                }
+            }
+
             // 移除连通的方块并隐藏路径
-            gameLogic.removeLink(firstRow, firstCol, secondRow, secondCol);            // 更新分数（每消除一对方块加10分）
-            root.score += 10; // 增加分数
+            gameLogic.removeLink(firstRow, firstCol, secondRow, secondCol);
+            // 使用新的评分系统
+            var additionalScore = gameLogic.calculateScore(1, turnCount);
+            root.score += additionalScore;
             gameLogic.setScore(root.score); // 更新 gameLogic 中的分数
             root.scoreUpdated(root.score);  // 发送信号
+
+            // 计算显示位置（两个方块中间位置）
+            var x1 = firstCol * (Math.min(parent.parent.width * 0.08, parent.parent.height * 0.08) + parent.width * 0.005);
+            var y1 = firstRow * (Math.min(parent.parent.width * 0.08, parent.parent.height * 0.08) + parent.width * 0.005);
+            var x2 = secondCol * (Math.min(parent.parent.width * 0.08, parent.parent.height * 0.08) + parent.width * 0.005);
+            var y2 = secondRow * (Math.min(parent.parent.width * 0.08, parent.parent.height * 0.08) + parent.width * 0.005);
+            var centerX = (x1 + x2) / 2;
+            var centerY = (y1 + y2) / 2;
+            // 显示分数提示
+            scoreHintText.showScoreHint(additionalScore, centerX, centerY, gameLogic.getConsecutiveMatches() + 1, turnCount);
+
+            console.log("加分：" + additionalScore + "，转折点：" + turnCount + "，连击次数：" + gameLogic.getConsecutiveMatches());
+
             // 更改方块颜色
             root.resetAllCell(); // 重置
             root.showingPath = false;
@@ -568,8 +611,160 @@ Rectangle {
             // 重置所有颜色
             root.resetAllCell();
         }
-    }    
-    
+    }
+
+    // 分数提示文本
+    Text {
+        id: scoreHintText
+        text: "+0"
+        color: "green"
+        font.pixelSize: 24
+        font.bold: true
+        visible: false
+        z: 10 // 确保显示在最上层
+
+        // 当分数提示显示时的动画
+        SequentialAnimation {
+            id: scoreHintAnimation
+            running: false
+
+            // 上移动画
+            NumberAnimation {
+                target: scoreHintText
+                property: "y"
+                duration: 1000
+                easing.type: Easing.OutQuad
+            }
+
+            // 不可见
+            ScriptAction {
+                script: scoreHintText.visible = false
+            }
+        }
+
+        // 分数提示透明度动画
+        NumberAnimation {
+            id: opacityAnim
+            target: scoreHintText
+            property: "opacity"
+            from: 1.0
+            to: 0.0
+            duration: 1000
+            running: false
+        }
+
+        // 显示分数提示的函数
+        function showScoreHint(score, x, y, comboCount, turnCount) {
+            // 设置文本内容和颜色
+            let comboText = "";
+            let commentText = "";
+
+            // 根据连击数变化颜色和显示
+            if (comboCount > 1) {
+                comboText = " (" + comboCount + "连击)";
+
+                if (comboCount >= 8) {
+                    color = "purple";
+                    commentText = "\n超神了！";
+                } else if (comboCount >= 5) {
+                    color = "red";
+                    commentText = "\n无敌！";
+                } else if (comboCount >= 3) {
+                    color = "orange";
+                    commentText = "\n厉害！";
+                } else {
+                    color = "green";
+                }
+            } else {
+                color = "green";
+            }
+
+            // 根据转折点给出额外评论
+            if (turnCount === 0) {
+                if (commentText === "") {
+                    commentText = "\n完美直连！";
+                }
+            }
+
+            text = "+" + score + comboText + commentText;
+
+            // 设置初始位置
+            scoreHintText.x = x;
+            scoreHintText.y = y;
+
+            // 设置目标位置（向上飘）
+            scoreHintAnimation.animations[0].from = y;
+            scoreHintAnimation.animations[0].to = y - 80;
+
+            // 显示文本
+            visible = true;
+            opacity = 1.0;
+
+            // 开始动画
+            scoreHintAnimation.start();
+            opacityAnim.start();
+        }
+    }
+
+    // 连击指示器
+    Rectangle {
+        id: comboIndicator
+        width: comboText.width + 20
+        height: comboText.height + 10
+        color: currentTheme ? Qt.rgba(currentTheme.accentColor.r, currentTheme.accentColor.g, currentTheme.accentColor.b, 0.7) : "rgba(0, 120, 215, 0.7)"
+        radius: 5
+        visible: gameLogic.getConsecutiveMatches() > 0
+        anchors {
+            top: parent.top
+            right: parent.right
+            topMargin: 60
+            rightMargin: 10
+        }
+
+        Text {
+            id: comboText
+            anchors.centerIn: parent
+            text: qsTr("连击: ") + (gameLogic.getConsecutiveMatches() + 1)
+            font.pixelSize: 18
+            color: "white"
+        }
+
+        // 连击指示器缩放动画
+        SequentialAnimation {
+            id: comboAnimation
+            running: false
+
+            NumberAnimation {
+                target: comboIndicator
+                property: "scale"
+                from: 1.0
+                to: 1.3
+                duration: 200
+                easing.type: Easing.OutQuad
+            }
+
+            NumberAnimation {
+                target: comboIndicator
+                property: "scale"
+                from: 1.3
+                to: 1.0
+                duration: 200
+                easing.type: Easing.InOutQuad
+            }
+        }
+
+        // 连击变化时触发动画
+        Connections {
+            target: gameLogic
+            function onCellsChanged() {
+                if (gameLogic.getConsecutiveMatches() > 0) {
+                    comboText.text = qsTr("连击: ") + (gameLogic.getConsecutiveMatches() + 1);
+                    comboAnimation.start();
+                }
+            }
+        }
+    }
+
     // 键盘事件处理
     Keys.onPressed: function (event) {
         if (event.key === Qt.Key_Escape) {
@@ -598,7 +793,8 @@ Rectangle {
                 break;
             case Qt.Key_Space:
             case Qt.Key_Return:// 普通键盘回车键
-            case Qt.Key_Enter: // 小键盘回车键
+            case Qt.Key_Enter // 小键盘回车键
+            :
                 // 空格键或回车键选择方块
                 if (newRow >= 0 && newCol >= 0) {
                     let index = newRow * gameLogic.cols() + newCol;

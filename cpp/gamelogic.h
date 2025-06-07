@@ -4,6 +4,7 @@
 #include "settings.h"
 
 #include <QDebug>
+#include <QDateTime>
 #include <QDir>
 #include <QFile>
 #include <QJsonArray>
@@ -62,6 +63,8 @@ class GameLogic : public QObject {
     Q_INVOKABLE void setScore(int score);                                 // 设置当前分数
     Q_INVOKABLE QVariantMap getHint();                                    // 获取提示
     Q_INVOKABLE QPair<int, int> getFactorPair(int n) const;               // 获取因子对（行和列）
+    Q_INVOKABLE int calculateScore(int pairCount, int turnCount); // 计算综合评分
+    Q_INVOKABLE int getConsecutiveMatches() const;                // 获取连续消除次数
 
     // 游戏管理相关
     Q_INVOKABLE void startGame();  // 开始游戏
@@ -107,6 +110,10 @@ class GameLogic : public QObject {
     bool m_customLeaderboardEnabled = true;
     bool isGameRunning; // 游戏是否正在运行
     int currentScore;   // 当前分数
+
+    // 综合评分系统相关成员
+    int consecutiveMatches; // 连续消除次数
+    QDateTime lastMatchTime; // 上次消除的时间戳
 
     // 倒计时相关
     QTimer *gameTimer_; // 游戏计时器
