@@ -24,6 +24,7 @@
 #include <algorithm>
 #include <fstream>
 #include <iostream>
+#include <cmath>
 #include <toml.hpp>
 
 class GameLogic : public QObject {
@@ -106,7 +107,7 @@ class GameLogic : public QObject {
     // 倒计时相关
     QTimer *gameTimer_; // 游戏计时器
     int timeLeft_;      // 剩余时间
-    bool isPaused_;     // 是否暂停
+    bool isPaused_;     // 是否暂停    
 
     void createGrid();                                  // 生成游戏网格
     void generateSolution();                            // 生成解决方案
@@ -115,6 +116,7 @@ class GameLogic : public QObject {
     QVector<HintStep> findSolution();                   // 寻找解决方案
     void updateTimer();                                 // 更新计时器
     void updateDimensions();                            // 更新行列数
+    bool findPath(int r1, int c1, int r2, int c2, QVector<QVector<QPoint>> &parent) const; // 路径查找算法
 };
 
 #endif // GAMELOGIC_H
