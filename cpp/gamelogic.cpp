@@ -8,17 +8,17 @@ GameLogic::GameLogic(Settings *settingsManager, QObject *parent)
     // 创建游戏计时器
     gameTimer_ = new QTimer(this);
     connect(gameTimer_, &QTimer::timeout, this, &GameLogic::updateTimer);
-    
+
     // 根据设置更新行列数
     updateDimensions();
-    
+
     // 创建游戏网格
     createGrid();
-    
+
     // 监听方块设置变化，更新行列数（使用直接连接模式以确保立即执行）
     connect(settings, &Settings::blockSettingsChanged, this, [this]() {
         updateDimensions();
-        resetGame();  // 重置游戏以应用新的行列数
+        resetGame(); // 重置游戏以应用新的行列数
     });
 }
 
@@ -27,18 +27,30 @@ GameLogic::GameLogic(Settings *settingsManager, QObject *parent)
  * @details 根据设置中的方块数量计算合适的行列数
  */
 void GameLogic::updateDimensions() {
+    // 获取难度
+    QString difficulty = settings->getDifficulty();
+
     // 获取方块数量
-    int blockCount = settings->getBlockCount();
-    
+    int blockCount;
+    if (difficulty == "简单") {
+        blockCount = DefaultValues::block_count_easy;
+    } else if (difficulty == "普通") {
+        blockCount = DefaultValues::block_count_medium;
+    } else if (difficulty == "困难") {
+        blockCount = DefaultValues::block_count_hard;
+    } else {
+        blockCount = settings->getBlockCount(); // 默认值
+    }
+
     // 计算合适的行列数
     auto [r, c] = getFactorPair(blockCount);
-    
+
     // 更新行列数（加2是为了外圈边框）
     ROWS = r + 2;
     COLS = c + 2;
     VISIBLE_ROWS = r;
     VISIBLE_COLS = c;
-    
+
     qDebug() << "更新网格尺寸：" << ROWS << "x" << COLS << "，有效格子：" << VISIBLE_ROWS << "x" << VISIBLE_COLS;
 }
 
@@ -476,7 +488,7 @@ void GameLogic::endGame() {
         isGameRunning = false;
         gameTimer_->stop();
         timeLeft_ = 0; // 确保时间归零
-        createGrid(); // 重新生成游戏网格
+        createGrid();  // 重新生成游戏网格
         emit timeLeftChanged(timeLeft_);
         emit gameEnded();
     }
@@ -492,7 +504,7 @@ void GameLogic::resetGame() {
     timeLeft_ = settings->getGameTime();
     isPaused_ = false;
     gameTimer_->start(1000); // 再重启计时器
-    createGrid(); // 重新生成游戏网格
+    createGrid();            // 重新生成游戏网格
     emit gameStarted();
     emit scoreChanged(currentScore);
     emit timeLeftChanged(timeLeft_);

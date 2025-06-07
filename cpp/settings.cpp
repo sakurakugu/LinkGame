@@ -129,6 +129,7 @@ QString Settings::getDifficulty() const {
 void Settings::setDifficulty(const QString &difficulty) {
     if (config.difficulty != difficulty) {
         config.difficulty = difficulty;
+        emit blockSettingsChanged(); // 发出方块设置变化信号
         saveConfig();
     }
 }
