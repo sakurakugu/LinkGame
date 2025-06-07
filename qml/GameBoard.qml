@@ -570,37 +570,69 @@ Rectangle {
             // 重置所有颜色
             root.resetAllCell();
         }
-    }
-
+    }    
+    
     // 键盘事件处理
     Keys.onPressed: function (event) {
         if (event.key === Qt.Key_Escape) {
             gameLogic.setPaused(!root.isPaused);
         } else if (!root.isPaused && !root.showingPath) {
-            // 方向键控制
+            // 方向键和WASD控制
             let newRow = root.selectedRow;
             let newCol = root.selectedCol;
 
             switch (event.key) {
             case Qt.Key_Left:
+            case Qt.Key_A:
                 newCol = Math.max(1, root.selectedCol - 1);
                 break;
             case Qt.Key_Right:
+            case Qt.Key_D:
                 newCol = Math.min(gameLogic.cols() - 2, root.selectedCol + 1);
                 break;
             case Qt.Key_Up:
+            case Qt.Key_W:
                 newRow = Math.max(1, root.selectedRow - 1);
                 break;
             case Qt.Key_Down:
+            case Qt.Key_S:
                 newRow = Math.min(gameLogic.rows() - 2, root.selectedRow + 1);
                 break;
             case Qt.Key_Space:
-                // 空格键选择方块
+            case Qt.Key_Return:// 普通键盘回车键
+            case Qt.Key_Enter: // 小键盘回车键
+                // 空格键或回车键选择方块
                 if (newRow >= 0 && newCol >= 0) {
                     let index = newRow * gameLogic.cols() + newCol;
                     let cell = grid.children[index];
-                    if (cell && cell.MouseArea) {
-                        cell.MouseArea.clicked();
+                    // 模拟点击事件
+                    if (gameLogic.getCell(newRow, newCol) !== 0) {
+                        clickSound.stop();
+                        clickSound.play();
+
+                        if (root.selectedRow === -1 && root.selectedCol === -1) {
+                            root.selectedRow = newRow;
+                            root.selectedCol = newCol;
+                            cell.color = currentTheme ? currentTheme.selectedBlockBorderColor : "blue";
+                        } else if (root.selectedRow === newRow && root.selectedCol === newCol) {
+                            root.selectedRow = -1;
+                            root.selectedCol = -1;
+                            cell.color = currentTheme ? currentTheme.gameBoardBackgroundColor : "skyblue";
+                        } else if (gameLogic.canLink(root.selectedRow, root.selectedCol, newRow, newCol)) {
+                            cell.color = currentTheme ? currentTheme.selectedBlockBorderColor : "blue";
+                            showLinkTimer.firstRow = root.selectedRow;
+                            showLinkTimer.firstCol = root.selectedCol;
+                            showLinkTimer.secondRow = newRow;
+                            showLinkTimer.secondCol = newCol;
+                            showLinkTimer.start();
+                        } else {
+                            cell.color = currentTheme ? currentTheme.selectedBlockBorderColor : "blue";
+                            resetColorTimer.firstRow = root.selectedRow;
+                            resetColorTimer.firstCol = root.selectedCol;
+                            resetColorTimer.secondRow = newRow;
+                            resetColorTimer.secondCol = newCol;
+                            resetColorTimer.start();
+                        }
                     }
                 }
                 break;

@@ -532,18 +532,31 @@ void Settings::forceUpdateBlockSettings() {
 }
 
 /**
- * @brief 获取排行榜
- * @details 从 settings 中获取排行榜
+ * @brief 获取排行榜排名
+ * @details 计算玩家在当前难度排行榜中的排名
+ * @param playerName 玩家名称
+ * @param score 玩家分数
+ * @return 排名描述文本
  */
 QString Settings::getRank(const QString &playerName, int score) const {
-    QVariantList leaderboard = getLeaderboard();
-
-    // 如果分数为0或者排行榜为空，直接返回未上榜
-    if (score <= 0 || leaderboard.isEmpty()) {
-        return "未上榜";
+    if (score <= 0) {
+        return tr("未上榜");
+    }
+    
+    // 检查设置中是否允许加入排行榜
+    if (!getJoinLeaderboard()) {
+        return tr("未启用排行");
+    }
+    
+    // 获取当前难度的排行榜，而不是所有难度
+    QString currentDifficulty = getDifficulty();
+    QVariantList leaderboard = getLeaderboardByDifficulty(currentDifficulty);
+    
+    if (leaderboard.isEmpty()) {
+        return tr("第1名"); // 如果排行榜为空，玩家将是第一名
     }
 
-    // 检查玩家是否在排行榜中
+    // 计算玩家排名
     int rank = 1;
     bool foundPlayer = false;
 
@@ -564,16 +577,11 @@ QString Settings::getRank(const QString &playerName, int score) const {
         }
     }
 
-    // 检查设置中是否允许加入排行榜
-    if (!getJoinLeaderboard()) {
-        return "未启用排行";
-    }
-
     // 如果玩家不在排行榜中，且排名超过100，返回未上榜
     if (!foundPlayer && rank > 100) {
-        return "未上榜";
+        return tr("未上榜");
     }
 
     // 返回排名
-    return "第" + QString::number(rank) + "名";
+    return tr("第%1名").arg(rank);
 }

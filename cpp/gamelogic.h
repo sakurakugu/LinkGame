@@ -38,10 +38,10 @@ class GameLogic : public QObject {
 
     //  用于BFS的路径节点结构体
     struct PathNode {
-    int x, y;      // 坐标
-    int direction; // 当前方向（0:上, 1:右, 2:下, 3:左）
-    int turns;     // 转弯次数
-};
+        int x, y;      // 坐标
+        int direction; // 当前方向（0:上, 1:右, 2:下, 3:左）
+        int turns;     // 转弯次数
+    };
 
     // 提示相关的结构体
     struct HintStep {
@@ -50,18 +50,18 @@ class GameLogic : public QObject {
         QVariantList path; // 连接路径
     };
 
-    Q_INVOKABLE int cols() const;                                            // 获取列数
-    Q_INVOKABLE int rows() const;                                            // 获取行数
-    Q_INVOKABLE int getCell(int row, int col) const;                         // 获取单元格的值
-    Q_INVOKABLE bool isOuterCell(int row, int col) const;                    // 判断是否是外圈格子
-    Q_INVOKABLE bool canLink(int r1, int c1, int r2, int c2) const;          // 检查两个单元格是否可以连接
-    Q_INVOKABLE void removeLink(int r1, int c1, int r2, int c2);             // 移除连接的两个方块
-    Q_INVOKABLE QVariantList getLinkPath(int r1, int c1, int r2, int c2);    // 获取连接路径，用于绘制路径
-    Q_INVOKABLE bool isGameOver() const;                                     // 检查游戏是否结束
-    Q_INVOKABLE int getScore() const;                                        // 获取当前分数
-    Q_INVOKABLE void setScore(int score);                                    // 设置当前分数
-    Q_INVOKABLE QVariantMap getHint();                                       // 获取提示
-    Q_INVOKABLE QPair<int, int> getFactorPair(int n) const;                  // 获取因子对（行和列）
+    Q_INVOKABLE int cols() const;                                         // 获取列数
+    Q_INVOKABLE int rows() const;                                         // 获取行数
+    Q_INVOKABLE int getCell(int row, int col) const;                      // 获取单元格的值
+    Q_INVOKABLE bool isOuterCell(int row, int col) const;                 // 判断是否是外圈格子
+    Q_INVOKABLE bool canLink(int r1, int c1, int r2, int c2) const;       // 检查两个单元格是否可以连接
+    Q_INVOKABLE void removeLink(int r1, int c1, int r2, int c2);          // 移除连接的两个方块
+    Q_INVOKABLE QVariantList getLinkPath(int r1, int c1, int r2, int c2); // 获取连接路径，用于绘制路径
+    Q_INVOKABLE bool isGameOver() const;                                  // 检查游戏是否结束
+    Q_INVOKABLE int getScore() const;                                     // 获取当前分数
+    Q_INVOKABLE void setScore(int score);                                 // 设置当前分数
+    Q_INVOKABLE QVariantMap getHint();                                    // 获取提示
+    Q_INVOKABLE QPair<int, int> getFactorPair(int n) const;               // 获取因子对（行和列）
 
     // 游戏管理相关
     Q_INVOKABLE void startGame();  // 开始游戏
@@ -113,13 +113,12 @@ class GameLogic : public QObject {
     int timeLeft_;      // 剩余时间
     bool isPaused_;     // 是否暂停
 
-    void createGrid();                                  // 生成游戏网格
-    QVector<QPair<int, int>> getValidPositions() const; // 获取所有有效位置
-    bool hasValidMove() const;                          // 检查是否有有效移动
-    QVector<HintStep> findSolution();                   // 寻找解决方案
-    void updateTimer();                                 // 更新计时器
-    void updateRowAndColumn();                          // 更新行列数
-
+    void createGrid();                                                                     // 生成游戏网格
+    QVector<QPair<int, int>> getValidPositions() const;                                    // 获取所有有效位置
+    bool hasValidMove() const;                                                             // 检查是否有有效移动
+    QVector<HintStep> findSolution();                                                      // 寻找解决方案
+    void updateTimer();                                                                    // 更新计时器
+    void updateRowAndColumn();                                                             // 更新行列数
     bool findPath(int r1, int c1, int r2, int c2, QVector<QVector<QPoint>> &result) const; // 路径查找算法
 };
 

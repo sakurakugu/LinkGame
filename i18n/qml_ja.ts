@@ -4,59 +4,59 @@
 <context>
     <name>GameBoard</name>
     <message>
-        <location filename="../qml/GameBoard.qml" line="107"/>
-        <location filename="../qml/GameBoard.qml" line="263"/>
+        <location filename="../qml/GameBoard.qml" line="105"/>
+        <location filename="../qml/GameBoard.qml" line="259"/>
         <source>继续</source>
         <translation>続けて</translation>
     </message>
     <message>
-        <location filename="../qml/GameBoard.qml" line="117"/>
+        <location filename="../qml/GameBoard.qml" line="115"/>
         <source>重置游戏</source>
         <translation>ゲームをリセットする</translation>
     </message>
     <message>
-        <location filename="../qml/GameBoard.qml" line="129"/>
+        <location filename="../qml/GameBoard.qml" line="126"/>
         <source>返回主菜单</source>
         <translation>メインメニューに戻る</translation>
     </message>
     <message>
-        <location filename="../qml/GameBoard.qml" line="140"/>
+        <location filename="../qml/GameBoard.qml" line="136"/>
         <source>设置</source>
         <translation>設定</translation>
     </message>
     <message>
-        <location filename="../qml/GameBoard.qml" line="150"/>
-        <location filename="../qml/GameBoard.qml" line="348"/>
+        <location filename="../qml/GameBoard.qml" line="146"/>
+        <location filename="../qml/GameBoard.qml" line="344"/>
         <source>退出</source>
         <translation>退出する</translation>
     </message>
     <message>
-        <location filename="../qml/GameBoard.qml" line="241"/>
+        <location filename="../qml/GameBoard.qml" line="237"/>
         <source>游戏暂停</source>
         <translation>ゲームを一時停止</translation>
     </message>
     <message>
-        <location filename="../qml/GameBoard.qml" line="241"/>
+        <location filename="../qml/GameBoard.qml" line="237"/>
         <source>游戏进行中</source>
         <translation>ゲーム中です</translation>
     </message>
     <message>
-        <location filename="../qml/GameBoard.qml" line="249"/>
+        <location filename="../qml/GameBoard.qml" line="245"/>
         <source>分数: </source>
         <translation>分数: </translation>
     </message>
     <message>
-        <location filename="../qml/GameBoard.qml" line="256"/>
+        <location filename="../qml/GameBoard.qml" line="252"/>
         <source>时间：</source>
         <translation>時間：</translation>
     </message>
     <message>
-        <location filename="../qml/GameBoard.qml" line="263"/>
+        <location filename="../qml/GameBoard.qml" line="259"/>
         <source>暂停</source>
         <translation>一時停止</translation>
     </message>
     <message>
-        <location filename="../qml/GameBoard.qml" line="274"/>
+        <location filename="../qml/GameBoard.qml" line="270"/>
         <source>提示</source>
         <translation>提示</translation>
     </message>
@@ -89,7 +89,7 @@
         <translation>もう一局やりましょう</translation>
     </message>
     <message>
-        <location filename="../qml/GameOver.qml" line="88"/>
+        <location filename="../qml/GameOver.qml" line="89"/>
         <source>返回菜单</source>
         <translation>メニューに戻る</translation>
     </message>
@@ -243,111 +243,138 @@
         <translation>ユーザー名:</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="180"/>
         <source>用户名只能包含字母、数字、下划线和汉字，长度1-20</source>
-        <translation>ユーザー名はアルファベット、数字、アンダーライン、漢字のみ、長さは1 ~ 20です</translation>
+        <translation type="vanished">ユーザー名はアルファベット、数字、アンダーライン、漢字のみ、長さは1 ~ 20です</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="191"/>
+        <location filename="../qml/Settings.qml" line="181"/>
+        <source>用户名长度要为1-20个字符</source>
+        <translation>ユーザー名の長さは1 ~ 20文字です</translation>
+    </message>
+    <message>
+        <location filename="../qml/Settings.qml" line="192"/>
         <source>难度级别:</source>
         <translation>難易度レベル:</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="200"/>
+        <location filename="../qml/Settings.qml" line="201"/>
         <source>简单</source>
         <translation>簡単</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="242"/>
+        <location filename="../qml/Settings.qml" line="243"/>
         <source>普通</source>
         <translation>普通</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="285"/>
+        <location filename="../qml/Settings.qml" line="286"/>
         <source>困难</source>
         <translation>難しい</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="328"/>
+        <location filename="../qml/Settings.qml" line="329"/>
         <source>自定义</source>
         <translation>カスタマイズ</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="389"/>
+        <location filename="../qml/Settings.qml" line="390"/>
         <source>游戏时间(秒):</source>
         <translation>ゲーム時間(秒):</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="435"/>
+        <location filename="../qml/Settings.qml" line="436"/>
         <source>游戏时间必须是30-3600之间的整数</source>
         <translation>ゲーム時間は30から3600の整数でなければなりません</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="444"/>
+        <location filename="../qml/Settings.qml" line="445"/>
         <source>方块数量:</source>
         <translation>ブロックの数:</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="495"/>
+        <location filename="../qml/Settings.qml" line="499"/>
         <source>方块数量必须是16-100之间的偶数</source>
         <translation>ブロックの数は16から100までの偶数です</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="504"/>
+        <location filename="../qml/Settings.qml" line="508"/>
         <source>方块种类:</source>
         <translation>ブロックの種類:</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="555"/>
+        <location filename="../qml/Settings.qml" line="559"/>
         <source>方块种类数必须是1-20之间的整数，且不能超过方块数量的一半</source>
         <translation>ブロックの数は1から20までの整数で,ブロックの数の半分を超えてはいけません</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="565"/>
+        <location filename="../qml/Settings.qml" line="569"/>
         <source>参加排行榜</source>
         <translation>参加ランキング</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="619"/>
+        <location filename="../qml/Settings.qml" line="623"/>
         <source>*自定义模式不能参加排行榜</source>
         <translation>*カスタムモデルはランキングに参加できません</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="635"/>
+        <location filename="../qml/Settings.qml" line="639"/>
         <source>音量:</source>
         <translation>音量:</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="738"/>
+        <location filename="../qml/Settings.qml" line="742"/>
         <source>窗口大小:</source>
         <translation>ウィンドウサイズ:</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="810"/>
+        <location filename="../qml/Settings.qml" line="814"/>
         <source>主题:</source>
         <translation>テーマ:</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="851"/>
+        <location filename="../qml/Settings.qml" line="855"/>
         <source>语言:</source>
         <translation>言語:</translation>
     </message>
     <message>
-        <location filename="../qml/Settings.qml" line="918"/>
+        <location filename="../qml/Settings.qml" line="922"/>
         <source>确定</source>
         <translation>確定</translation>
     </message>
     <message>
-        <location filename="../cpp/settings.cpp" line="234"/>
-        <location filename="../cpp/settings.cpp" line="385"/>
+        <location filename="../cpp/settings.cpp" line="235"/>
+        <location filename="../cpp/settings.cpp" line="399"/>
         <source>无边框全屏 (%1x%2)</source>
         <translation>ボーダーレス全画面 (%1x%2)</translation>
     </message>
     <message>
-        <location filename="../cpp/settings.cpp" line="236"/>
-        <location filename="../cpp/settings.cpp" line="384"/>
+        <location filename="../cpp/settings.cpp" line="237"/>
+        <location filename="../cpp/settings.cpp" line="398"/>
         <source>全屏 (%1x%2)</source>
         <translation>全画面 (%1x%2)</translation>
+    </message>
+    <message>
+        <location filename="../cpp/settings.cpp" line="543"/>
+        <location filename="../cpp/settings.cpp" line="582"/>
+        <source>未上榜</source>
+        <translation>ランク外</translation>
+    </message>
+    <message>
+        <location filename="../cpp/settings.cpp" line="548"/>
+        <source>未启用排行</source>
+        <translation>未启用排行</translation>
+    </message>
+    <message>
+        <location filename="../cpp/settings.cpp" line="556"/>
+        <source>第1名</source>
+        <translatorcomment>第1位</translatorcomment>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../cpp/settings.cpp" line="586"/>
+        <source>第%1名</source>
+        <translatorcomment>第%1位</translatorcomment>
+        <translation></translation>
     </message>
 </context>
 </TS>
