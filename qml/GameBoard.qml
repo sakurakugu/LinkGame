@@ -148,8 +148,6 @@ Rectangle {
                     Layout.preferredHeight: parent.parent.height * 0.15
                     font.pixelSize: parent.parent.width * 0.04
                     onClicked: {
-                        gameLogic.setPaused(false);
-                        gameLogic.resetGameGrid();
                         root.closed();
                     }
                 }
