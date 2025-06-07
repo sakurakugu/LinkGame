@@ -46,20 +46,20 @@ void Settings::setPlayerName(const QString &name) {
 
 QVariantList Settings::getLeaderboardByDifficulty(const QString &difficulty) const {
     QVariantList result;
-    
+
     // 获取当前难度下的排行榜
     for (const auto &entry : config.leaderboard) {
         QVariantMap item;
         item["name"] = entry.name;
         item["score"] = entry.score;
         item["difficulty"] = entry.difficulty; // 添加难度属性
-        
+
         // 如果未指定难度或难度匹配，则添加到结果中
         if (difficulty.isEmpty() || entry.difficulty == difficulty) {
             result.append(item);
         }
     }
-    
+
     return result;
 }
 
@@ -70,11 +70,11 @@ QVariantList Settings::getLeaderboard() const {
 
 void Settings::addScoreToLeaderboard(const QString &name, int score) {
     QString currentDifficulty = getDifficulty();
-    
+
     // 查找是否有同名同难度的记录
     auto it = std::find_if(config.leaderboard.begin(), config.leaderboard.end(),
-                           [&name, &currentDifficulty](const Config::LeaderboardEntry &entry) { 
-                               return entry.name == name && entry.difficulty == currentDifficulty; 
+                           [&name, &currentDifficulty](const Config::LeaderboardEntry &entry) {
+                               return entry.name == name && entry.difficulty == currentDifficulty;
                            });
 
     if (it != config.leaderboard.end()) {
@@ -188,6 +188,10 @@ void Settings::resizeWindow(int width, int height) {
     QRect screenGeometry = screen->geometry();
     qDebug() << "当前屏幕尺寸:" << screenGeometry.width() << "x" << screenGeometry.height();
 
+    // 将逻辑像素转换为物理像素
+    width = physicalToLogical(width);
+    height = physicalToLogical(height);
+
     // 确保窗口不会超出屏幕
     width = qMin(width, screenGeometry.width());
     height = qMin(height, screenGeometry.height());
@@ -195,8 +199,6 @@ void Settings::resizeWindow(int width, int height) {
     // 确保窗口不小于最小尺寸
     width = qMax(width, 800);
     height = qMax(height, 600);
-
-    qDebug() << "尝试调整窗口大小到:" << width << "x" << height;
 
     // 计算窗口位置，使其居中
     int x = (screenGeometry.width() - width) / 2;
@@ -389,6 +391,16 @@ int Settings::logicalToPhysical(int number) const {
     return qFloor(number * dpr);
 }
 
+QPair<int, int> Settings::physicalToLogical(int width, int height) const {
+    qreal dpr = window->effectiveDevicePixelRatio();
+    return {qFloor(width / dpr), qFloor(height / dpr)};
+}
+
+int Settings::physicalToLogical(int number) const {
+    qreal dpr = window->effectiveDevicePixelRatio();
+    return qFloor(number / dpr);
+}
+
 QStringList Settings::getWindowSizeModel() const {
     QStringList model;
     QPair<int, int> physicalSize = getPhysicalScreenSize();
@@ -398,18 +410,18 @@ QStringList Settings::getWindowSizeModel() const {
     model << tr("全屏 (%1x%2)").arg(physicalSize.first).arg(physicalSize.second)
           << tr("无边框全屏 (%1x%2)").arg(physicalSize.first).arg(physicalSize.second)
           << QString("%1x%2").arg(availableSize.first).arg(availableSize.second);
-    
+
     // 使用 DefaultValues 中的预设分辨率列表
     for (const auto &resolution : DefaultValues::presetResolutions) {
         int width = logicalToPhysical(resolution.first);
         int height = logicalToPhysical(resolution.second);
-        
+
         // 检查分辨率是否小于或等于屏幕物理尺寸
         if (width <= physicalSize.first && height <= physicalSize.second) {
             model << QString("%1x%2").arg(width).arg(height);
         }
     }
-    
+
     return model;
 }
 
@@ -542,16 +554,16 @@ QString Settings::getRank(const QString &playerName, int score) const {
     if (score <= 0) {
         return tr("未上榜");
     }
-    
+
     // 检查设置中是否允许加入排行榜
     if (!getJoinLeaderboard()) {
         return tr("未启用排行");
     }
-    
+
     // 获取当前难度的排行榜，而不是所有难度
     QString currentDifficulty = getDifficulty();
     QVariantList leaderboard = getLeaderboardByDifficulty(currentDifficulty);
-    
+
     if (leaderboard.isEmpty()) {
         return tr("第1名"); // 如果排行榜为空，玩家将是第一名
     }

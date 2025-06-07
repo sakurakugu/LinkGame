@@ -202,7 +202,7 @@ int GameLogic::getCell(int row, int col) const {
  * @param c1 第一个方块的列
  * @param r2 第二个方块的行
  * @param c2 第二个方块的列
- * @param result 存储父节点的数组，用于重构路径
+ * @param result 存储结果数组，用于重构路径
  * @return 是否找到路径
  */
 bool GameLogic::findPath(int r1, int c1, int r2, int c2, QVector<QVector<QPoint>> &result) const {

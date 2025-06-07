@@ -96,6 +96,8 @@ class Settings : public QObject {
     Q_INVOKABLE QPair<int, int> getAvailableScreenSize() const;     // 获取可用屏幕大小（不包括任务栏等系统区域）
     QPair<int, int> logicalToPhysical(int width, int height) const; // 逻辑像素转物理像素(× 缩放倍数 dpr)
     int logicalToPhysical(int number) const;                        // 逻辑像素转物理像素(× 缩放倍数 dpr)
+    QPair<int, int> physicalToLogical(int width, int height) const; // 物理像素转逻辑像素(÷ 缩放倍数 dpr)
+    int physicalToLogical(int number) const;                        // 物理像素转逻辑像素(÷ 缩放倍数 dpr)
 
     // 配置相关
     Q_INVOKABLE void saveConfig(); // 保存配置
