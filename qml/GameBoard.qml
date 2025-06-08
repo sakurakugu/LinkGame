@@ -528,7 +528,7 @@ Rectangle {
             var centerX = (x1 + x2) / 2;
             var centerY = (y1 + y2) / 2;
             // 显示分数提示
-            scoreHintText.showScoreHint(additionalScore, centerX, centerY, gameLogic.getConsecutiveMatches() + 1, turnCount);
+            scoreHintText.showScoreHint(additionalScore, centerX, centerY, gameLogic.getConsecutiveMatches(), turnCount);
 
             console.log("加分：" + additionalScore + "，转折点：" + turnCount + "，连击次数：" + gameLogic.getConsecutiveMatches());
 
@@ -661,17 +661,17 @@ Rectangle {
 
             // 根据连击数变化颜色和显示
             if (comboCount > 1) {
-                comboText = " (" + comboCount + "连击)";
+                comboText = " (" + comboCount + qsTr("连击)");
 
                 if (comboCount >= 8) {
                     color = "purple";
-                    commentText = "\n超神了！";
+                    commentText = qsTr("\n超神了！");
                 } else if (comboCount >= 5) {
                     color = "red";
-                    commentText = "\n无敌！";
+                    commentText = qsTr("\n无敌！");
                 } else if (comboCount >= 3) {
                     color = "orange";
-                    commentText = "\n厉害！";
+                    commentText = qsTr("\n厉害！");
                 } else {
                     color = "green";
                 }
@@ -679,12 +679,12 @@ Rectangle {
                 color = "green";
             }
 
-            // 根据转折点给出额外评论
-            if (turnCount === 0) {
-                if (commentText === "") {
-                    commentText = "\n完美直连！";
-                }
-            }
+            // // 根据转折点给出额外评论
+            // if (turnCount === 0) {
+            //     if (commentText === "") {
+            //         commentText = qsTr("\n完美直连！");
+            //     }
+            // }
 
             text = "+" + score + comboText + commentText;
 
@@ -706,64 +706,64 @@ Rectangle {
         }
     }
 
-    // 连击指示器
-    Rectangle {
-        id: comboIndicator
-        width: comboText.width + 20
-        height: comboText.height + 10
-        color: currentTheme ? Qt.rgba(currentTheme.accentColor.r, currentTheme.accentColor.g, currentTheme.accentColor.b, 0.7) : "rgba(0, 120, 215, 0.7)"
-        radius: 5
-        visible: gameLogic.getConsecutiveMatches() > 0
-        anchors {
-            top: parent.top
-            right: parent.right
-            topMargin: 60
-            rightMargin: 10
-        }
+    // 右上角连击指示器
+    // Rectangle {
+    //     id: comboIndicator
+    //     width: comboText.width + 20
+    //     height: comboText.height + 10
+    //     color: currentTheme ? Qt.rgba(currentTheme.accentColor.r, currentTheme.accentColor.g, currentTheme.accentColor.b, 0.7) : "rgba(0, 120, 215, 0.7)"
+    //     radius: 5
+    //     visible: gameLogic.getConsecutiveMatches() > 0
+    //     anchors {
+    //         top: parent.top
+    //         right: parent.right
+    //         topMargin: 60
+    //         rightMargin: 10
+    //     }
 
-        Text {
-            id: comboText
-            anchors.centerIn: parent
-            text: qsTr("连击: ") + (gameLogic.getConsecutiveMatches() + 1)
-            font.pixelSize: 18
-            color: "white"
-        }
+    //     Text {
+    //         id: comboText
+    //         anchors.centerIn: parent
+    //         text: qsTr("连击: ") + (gameLogic.getConsecutiveMatches())
+    //         font.pixelSize: 18
+    //         color: "white"
+    //     }
 
-        // 连击指示器缩放动画
-        SequentialAnimation {
-            id: comboAnimation
-            running: false
+    //     // 连击指示器缩放动画
+    //     SequentialAnimation {
+    //         id: comboAnimation
+    //         running: false
 
-            NumberAnimation {
-                target: comboIndicator
-                property: "scale"
-                from: 1.0
-                to: 1.3
-                duration: 200
-                easing.type: Easing.OutQuad
-            }
+    //         NumberAnimation {
+    //             target: comboIndicator
+    //             property: "scale"
+    //             from: 1.0
+    //             to: 1.3
+    //             duration: 200
+    //             easing.type: Easing.OutQuad
+    //         }
 
-            NumberAnimation {
-                target: comboIndicator
-                property: "scale"
-                from: 1.3
-                to: 1.0
-                duration: 200
-                easing.type: Easing.InOutQuad
-            }
-        }
+    //         NumberAnimation {
+    //             target: comboIndicator
+    //             property: "scale"
+    //             from: 1.3
+    //             to: 1.0
+    //             duration: 200
+    //             easing.type: Easing.InOutQuad
+    //         }
+    //     }
 
-        // 连击变化时触发动画
-        Connections {
-            target: gameLogic
-            function onCellsChanged() {
-                if (gameLogic.getConsecutiveMatches() > 0) {
-                    comboText.text = qsTr("连击: ") + (gameLogic.getConsecutiveMatches() + 1);
-                    comboAnimation.start();
-                }
-            }
-        }
-    }
+    //     // 连击变化时触发动画
+    //     Connections {
+    //         target: gameLogic
+    //         function onCellsChanged() {
+    //             if (gameLogic.getConsecutiveMatches() > 0) {
+    //                 comboText.text = qsTr("连击: ") + (gameLogic.getConsecutiveMatches() + 1);
+    //                 comboAnimation.start();
+    //             }
+    //         }
+    //     }
+    // }
 
     // 键盘事件处理
     Keys.onPressed: function (event) {

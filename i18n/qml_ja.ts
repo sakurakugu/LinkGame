@@ -5,7 +5,7 @@
     <name>GameBoard</name>
     <message>
         <location filename="../qml/GameBoard.qml" line="105"/>
-        <location filename="../qml/GameBoard.qml" line="259"/>
+        <location filename="../qml/GameBoard.qml" line="257"/>
         <source>继续</source>
         <translation>続けて</translation>
     </message>
@@ -26,39 +26,62 @@
     </message>
     <message>
         <location filename="../qml/GameBoard.qml" line="146"/>
-        <location filename="../qml/GameBoard.qml" line="344"/>
+        <location filename="../qml/GameBoard.qml" line="342"/>
         <source>退出</source>
         <translation>退出する</translation>
     </message>
     <message>
-        <location filename="../qml/GameBoard.qml" line="237"/>
+        <location filename="../qml/GameBoard.qml" line="235"/>
         <source>游戏暂停</source>
         <translation>ゲームを一時停止</translation>
     </message>
     <message>
-        <location filename="../qml/GameBoard.qml" line="237"/>
+        <location filename="../qml/GameBoard.qml" line="235"/>
         <source>游戏进行中</source>
         <translation>ゲーム中です</translation>
     </message>
     <message>
-        <location filename="../qml/GameBoard.qml" line="245"/>
+        <location filename="../qml/GameBoard.qml" line="243"/>
         <source>分数: </source>
         <translation>分数: </translation>
     </message>
     <message>
-        <location filename="../qml/GameBoard.qml" line="252"/>
+        <location filename="../qml/GameBoard.qml" line="250"/>
         <source>时间：</source>
         <translation>時間：</translation>
     </message>
     <message>
-        <location filename="../qml/GameBoard.qml" line="259"/>
+        <location filename="../qml/GameBoard.qml" line="257"/>
         <source>暂停</source>
         <translation>一時停止</translation>
     </message>
     <message>
-        <location filename="../qml/GameBoard.qml" line="270"/>
+        <location filename="../qml/GameBoard.qml" line="268"/>
         <source>提示</source>
         <translation>提示</translation>
+    </message>
+    <message>
+        <location filename="../qml/GameBoard.qml" line="664"/>
+        <source>连击)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/GameBoard.qml" line="668"/>
+        <source>
+超神了！</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/GameBoard.qml" line="671"/>
+        <source>
+无敌！</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/GameBoard.qml" line="674"/>
+        <source>
+厉害！</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -103,11 +126,15 @@
     </message>
     <message>
         <location filename="../qml/Help.qml" line="75"/>
-        <source>&lt;h2&gt;游戏规则&lt;/h2&gt;&lt;p&gt;1. 点击两个相同的方块&lt;/p&gt;&lt;p&gt;2. 如果两个方块可以用不超过三条直线连接，它们就会消失&lt;/p&gt;&lt;p&gt;3. 消除所有方块即可获胜&lt;/p&gt;&lt;p&gt;4. 游戏有时间限制，请在时间内完成&lt;/p&gt;&lt;h2&gt;操作说明&lt;/h2&gt;&lt;p&gt;- 点击方块选择&lt;/p&gt;&lt;p&gt;- 再次点击取消选择&lt;/p&gt;&lt;p&gt;- 点击&apos;提示&apos;按钮获取帮助&lt;/p&gt;&lt;p&gt;- 游戏结束后可以查看得分&lt;/p&gt;&lt;h2&gt;快捷键&lt;/h2&gt;&lt;p&gt;- ESC：暂停游戏/返回&lt;/p&gt;&lt;p&gt;- 方向键：移动选择&lt;/p&gt;&lt;p&gt;- 空格键：选择方块&lt;/p&gt;&lt;h2&gt;作者&lt;/h2&gt;&lt;p&gt;- 潘彦玮&lt;/p&gt;&lt;p&gt;- 谢智行&lt;/p&gt;</source>
-        <translation>&lt;h2&gt;ゲームのルール&lt;/h2&gt;&lt;p&gt;1. 同じブロックを2つクリックしてください&lt;/p&gt;&lt;p&gt;2. もし二つの四角形が三本以下の直線でつながることができれば、それらは消えてしまいます。&lt;/p&gt;&lt;p&gt;3. すべてのブロックを消去すれば勝利です&lt;/p&gt;&lt;p&gt;4. ゲームには時間制限がありますので、時間内に完了してください。&lt;/p&gt;&lt;h2&gt;操作説明&lt;/h2&gt;&lt;p&gt;- ブロックをクリックして選択します&lt;/p&gt;&lt;p&gt;- 再度クリックして選択をキャンセルする&lt;/p&gt;&lt;p&gt;- クリック&apos;提示&apos;ボタンを押してヘルプを取得する&lt;/p&gt;&lt;p&gt;- ゲーム終了後にスコアを確認できます。&lt;/p&gt;&lt;h2&gt;ショートカットキー&lt;/h2&gt;&lt;p&gt;- ESC: ゲームを一時停止する/戻る&lt;/p&gt;&lt;p&gt;- 方向キー：選択を移動する&lt;/p&gt;&lt;p&gt;- スペースキー：ボックスを選択&lt;/p&gt;&lt;h2&gt;作者&lt;/h2&gt;&lt;p&gt;- 潘彦玮&lt;/p&gt;&lt;p&gt;- 谢智行&lt;/p&gt;</translation>
+        <source>&lt;h2&gt;游戏规则&lt;/h2&gt;&lt;p&gt;1. 点击两个相同的方块&lt;/p&gt;&lt;p&gt;2. 如果两个方块可以用不超过三条直线连接，它们就会消失&lt;/p&gt;&lt;p&gt;3. 消除所有方块即可获胜&lt;/p&gt;&lt;p&gt;4. 游戏有时间限制，请在时间内完成&lt;/p&gt;&lt;h2&gt;操作说明&lt;/h2&gt;&lt;p&gt;- 点击方块选择&lt;/p&gt;&lt;p&gt;- 再次点击取消选择&lt;/p&gt;&lt;p&gt;- 点击&apos;提示&apos;按钮获取帮助&lt;/p&gt;&lt;p&gt;- 游戏结束后可以查看得分&lt;/p&gt;&lt;h2&gt;分数计算&lt;/h2&gt;&lt;p&gt;- 每消除一对方块得基础分值10分&lt;/p&gt;&lt;p&gt;- 若连线的转折少，每个少个转折+5基础分&lt;/p&gt;&lt;p&gt;- 根据剩余时间的百分比，最多加+15基础分&lt;/p&gt;&lt;p&gt;- 根据难度系数，加1.0/1.5/2.0的倍数到基础分&lt;/p&gt;&lt;p&gt;- 每次连击增加10%的倍率，最多200%&lt;/p&gt;&lt;p&gt;- 最终得分 = 基础分 * 难度系数 * 连击倍率&lt;/p&gt;&lt;p&gt;- 若看提示会-30分，连接错-10分&lt;/p&gt;&lt;p&gt;- 最高分数会被记录在排行榜中&lt;/p&gt;&lt;h2&gt;快捷键&lt;/h2&gt;&lt;p&gt;- ESC：暂停游戏/返回&lt;/p&gt;&lt;p&gt;- 方向键/WASD键：移动选择&lt;/p&gt;&lt;p&gt;- 空格键/回车键：选择方块&lt;/p&gt;&lt;h2&gt;作者&lt;/h2&gt;&lt;p&gt;- 潘彦玮&lt;/p&gt;&lt;p&gt;- 谢智行&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/Help.qml" line="100"/>
+        <source>&lt;h2&gt;游戏规则&lt;/h2&gt;&lt;p&gt;1. 点击两个相同的方块&lt;/p&gt;&lt;p&gt;2. 如果两个方块可以用不超过三条直线连接，它们就会消失&lt;/p&gt;&lt;p&gt;3. 消除所有方块即可获胜&lt;/p&gt;&lt;p&gt;4. 游戏有时间限制，请在时间内完成&lt;/p&gt;&lt;h2&gt;操作说明&lt;/h2&gt;&lt;p&gt;- 点击方块选择&lt;/p&gt;&lt;p&gt;- 再次点击取消选择&lt;/p&gt;&lt;p&gt;- 点击&apos;提示&apos;按钮获取帮助&lt;/p&gt;&lt;p&gt;- 游戏结束后可以查看得分&lt;/p&gt;&lt;h2&gt;快捷键&lt;/h2&gt;&lt;p&gt;- ESC：暂停游戏/返回&lt;/p&gt;&lt;p&gt;- 方向键：移动选择&lt;/p&gt;&lt;p&gt;- 空格键：选择方块&lt;/p&gt;&lt;h2&gt;作者&lt;/h2&gt;&lt;p&gt;- 潘彦玮&lt;/p&gt;&lt;p&gt;- 谢智行&lt;/p&gt;</source>
+        <translation type="vanished">&lt;h2&gt;ゲームのルール&lt;/h2&gt;&lt;p&gt;1. 同じブロックを2つクリックしてください&lt;/p&gt;&lt;p&gt;2. もし二つの四角形が三本以下の直線でつながることができれば、それらは消えてしまいます。&lt;/p&gt;&lt;p&gt;3. すべてのブロックを消去すれば勝利です&lt;/p&gt;&lt;p&gt;4. ゲームには時間制限がありますので、時間内に完了してください。&lt;/p&gt;&lt;h2&gt;操作説明&lt;/h2&gt;&lt;p&gt;- ブロックをクリックして選択します&lt;/p&gt;&lt;p&gt;- 再度クリックして選択をキャンセルする&lt;/p&gt;&lt;p&gt;- クリック&apos;提示&apos;ボタンを押してヘルプを取得する&lt;/p&gt;&lt;p&gt;- ゲーム終了後にスコアを確認できます。&lt;/p&gt;&lt;h2&gt;ショートカットキー&lt;/h2&gt;&lt;p&gt;- ESC: ゲームを一時停止する/戻る&lt;/p&gt;&lt;p&gt;- 方向キー：選択を移動する&lt;/p&gt;&lt;p&gt;- スペースキー：ボックスを選択&lt;/p&gt;&lt;h2&gt;作者&lt;/h2&gt;&lt;p&gt;- 潘彦玮&lt;/p&gt;&lt;p&gt;- 谢智行&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <location filename="../qml/Help.qml" line="109"/>
         <source>返回</source>
         <translation>戻る</translation>
     </message>
@@ -342,36 +369,36 @@
         <translation>確定</translation>
     </message>
     <message>
-        <location filename="../cpp/settings.cpp" line="235"/>
-        <location filename="../cpp/settings.cpp" line="399"/>
+        <location filename="../cpp/settings.cpp" line="237"/>
+        <location filename="../cpp/settings.cpp" line="411"/>
         <source>无边框全屏 (%1x%2)</source>
         <translation>ボーダーレス全画面 (%1x%2)</translation>
     </message>
     <message>
-        <location filename="../cpp/settings.cpp" line="237"/>
-        <location filename="../cpp/settings.cpp" line="398"/>
+        <location filename="../cpp/settings.cpp" line="239"/>
+        <location filename="../cpp/settings.cpp" line="410"/>
         <source>全屏 (%1x%2)</source>
         <translation>全画面 (%1x%2)</translation>
     </message>
     <message>
-        <location filename="../cpp/settings.cpp" line="543"/>
-        <location filename="../cpp/settings.cpp" line="582"/>
+        <location filename="../cpp/settings.cpp" line="555"/>
+        <location filename="../cpp/settings.cpp" line="594"/>
         <source>未上榜</source>
         <translation>ランク外</translation>
     </message>
     <message>
-        <location filename="../cpp/settings.cpp" line="548"/>
+        <location filename="../cpp/settings.cpp" line="560"/>
         <source>未启用排行</source>
         <translation>未启用排行</translation>
     </message>
     <message>
-        <location filename="../cpp/settings.cpp" line="556"/>
+        <location filename="../cpp/settings.cpp" line="568"/>
         <source>第1名</source>
         <translatorcomment>第1位</translatorcomment>
         <translation></translation>
     </message>
     <message>
-        <location filename="../cpp/settings.cpp" line="586"/>
+        <location filename="../cpp/settings.cpp" line="598"/>
         <source>第%1名</source>
         <translatorcomment>第%1位</translatorcomment>
         <translation></translation>

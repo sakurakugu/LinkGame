@@ -644,7 +644,7 @@ int GameLogic::calculateScore(int pairCount, int turnCount) {
     else if (difficulty == "困难") difficultyFactor = 2.0;
     
     // 连续消除奖励 (每连击增加10%，最多叠加到200%)
-    int comboFactor = std::min(consecutiveMatches, 10); // 最多10连击
+    int comboFactor = std::min(consecutiveMatches, 10); // 按照最多10连击来加分
     double comboMultiplier = 1.0 + comboFactor * 0.1;
     
     // 计算最终分数
