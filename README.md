@@ -6,6 +6,8 @@
 
 用 Qt(QML) 和 C++ 编写的连连看小游戏，这是数据结构课程的实践作业。游戏具有多种难度级别、排行榜系统和多语言支持。
 
+> 镜像仓库：[gitcode.com/sakurakugu/LinkGame](https://github.com/sakurakugu/LinkGame)
+
 ![游戏截图](docs/图片1.png)
 ![游戏截图](docs/图片2.png)
 
@@ -47,7 +49,7 @@
 
 ### 构建步骤
 
-> 如果构建失败，大概率是网络问题，请先删除 `_deps/` 然后从github上下载 https://github.com/ToruNiina/toml11.git 放到 `_deps/toml11-src` , 然后若还是错误，请删除 `_deps/toml11-subbuild` 目录并重新执行构建步骤即可
+> 如果构建失败，大概率是网络问题，请先删除 `_deps/` 然后从github上下载 [toml库](https://github.com/ToruNiina/toml11) 的源代码 放到 `_deps/toml11-src` , 然后若还是错误，请删除 `_deps/toml11-subbuild` 目录并重新执行构建步骤即可
 
 #### 使用 Qt Creator 构建
 
@@ -137,3 +139,7 @@
 - [水果图标](https://www.iconfont.cn/search/index?searchType=icon&q=%E6%B0%B4%E6%9E%9C)
 - [Qt](https://www.qt.io/)
 - [toml11](https://github.com/ToruNiina/toml11) 库用于配置文件解析
+
+## 其他
+
+![:sakurakugu-LinkGame](https://count.getloli.com/@:sakurakugu-LinkGame)
