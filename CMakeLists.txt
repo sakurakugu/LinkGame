@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.16)
 project(LinkGame VERSION 0.1 LANGUAGES CXX)
 
 # 设置C++标准和其他编译选项
-set(CMAKE_CXX_STANDARD 17) # 明确指定C++标准
+set(CMAKE_CXX_STANDARD 23) # 明确指定C++标准
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(QT_QML_GENERATE_QMLLS_INI ON)
 set(CMAKE_AUTORCC ON) # 自动处理资源文件
@@ -99,7 +99,7 @@ set(RESOURCES
 # 查找所有需要的Qt组件
 find_package(Qt6 REQUIRED ${QT_COMPONENTS})
 
-qt_standard_project_setup(REQUIRES 6.8)
+qt_standard_project_setup(REQUIRES 6.9)
 
 # 添加外部库 toml11
 include(FetchContent)

@@ -23,7 +23,7 @@
 ## 技术栈
 
 - C++
-- Qt 6.8.3
+- Qt 6.9.1
 - QML
 - CMake 构建系统
 - toml11（配置文件解析）
@@ -41,11 +41,13 @@
 
 ### 前提条件
 
-- Qt 6.8.3 或更高版本
+- Qt 6.9.1 或更高版本
 - CMake 3.16 或更高版本
 - 支持C++17的编译器
 
 ### 构建步骤
+
+> 如果构建失败，大概率是网络问题，请先删除 `_deps/` 然后从github上下载 https://github.com/ToruNiina/toml11.git 放到 `_deps/toml11-src` , 然后若还是错误，请删除 `_deps/toml11-subbuild` 目录并重新执行构建步骤即可
 
 #### 使用 Qt Creator 构建
 
