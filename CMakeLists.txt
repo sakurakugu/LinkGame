@@ -27,6 +27,8 @@ set(PROJECT_SOURCES
     cpp/settings.h
     cpp/language.cpp
     cpp/language.h
+    cpp/logger.cpp
+    cpp/logger.h
 )
 
 # 设置 QML 文件的路径
@@ -62,8 +64,8 @@ set(MYI18N_FILES
     i18n/qml_ja.ts
 )
 
-# 设置私有库变量 MYPRIVATE, 储存需要链接的库
-set(MYPRIVATE
+# 设置私有库变量 PRIVATE_LIBRARIES, 储存需要链接的库
+set(PRIVATE_LIBRARIES
     Qt6::Quick
     toml11::toml11
 )
@@ -134,6 +136,13 @@ qt_add_translations(appLinkGame
     TS_FILES ${MYI18N_FILES}
 )
 
+# 平台特定配置
+# Windows 调试配置：在 VSCode + Ninja + Debug 模式下显示控制台
+if(WIN32 AND "${CMAKE_GENERATOR}" MATCHES "Ninja" AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(WIN32_EXEC_FLAG FALSE)          # 显示控制台窗口，便于调试
+else()
+    set(WIN32_EXEC_FLAG TRUE)           # 隐藏控制台窗口
+endif()
 # Qt 在 iOS 上会自动设置 MACOSX_BUNDLE_GUI_IDENTIFIER
 # 如果你正在为 iOS 或 macOS 开发，你应该考虑手动设置一个明确的、固定的 bundle 标识符。
 set_target_properties(appLinkGame PROPERTIES
@@ -141,12 +150,12 @@ set_target_properties(appLinkGame PROPERTIES
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
-    WIN32_EXECUTABLE TRUE
+    WIN32_EXECUTABLE ${WIN32_EXEC_FLAG}
 )
 
 # 设置编译选项
 target_link_libraries(appLinkGame
-    PRIVATE ${MYPRIVATE}
+    PRIVATE ${PRIVATE_LIBRARIES}
 )
 
 # 设置编译选项

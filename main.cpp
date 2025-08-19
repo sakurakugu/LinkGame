@@ -8,15 +8,31 @@
 #include "cpp/gamelogic.h" // 游戏逻辑类
 #include "cpp/language.h"
 #include "cpp/settings.h"
+#include "cpp/logger.h"
 
 int main(int argc, char *argv[]) {
 
     QGuiApplication app(argc, argv);
     app.setWindowIcon(QIcon(":/image/icon.png")); // 设置窗口图标
+    
+    // 初始化日志系统
+    Logger &logger = Logger::GetInstance();
+    qInstallMessageHandler(Logger::messageHandler);
+    // // 应用日志设置
+    // logger.setLogLevel(static_cast<Logger::LogLevel>(Logger::Info));
+    // logger.setLogToFile(config.getLogToFile());
+    // logger.setLogToConsole(config.getLogToConsole());
+    // logger.setMaxLogFileSize(config.getMaxLogFileSize());
+    // logger.setMaxLogFiles(config.getMaxLogFiles());
+
+    // qInfo() << "日志系统初始化完成，日志文件路径:" << config.getLogFilePath();
+
+    // 记录应用启动
+    qInfo() << "MyTodo 应用程序启动";
 
     QQmlApplicationEngine engine;
-
     auto context = engine.rootContext(); // 获取根全局对象
+
     // 创建并注册Language
     Language language;
     context->setContextProperty("language", &language);
