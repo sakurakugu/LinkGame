@@ -60,8 +60,7 @@ Rectangle {
         }
 
         ScrollView {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
+            implicitWidth: parent.width
             Layout.preferredWidth: parent.width * 0.8 // 使用父容器宽度的80%
             Layout.preferredHeight: parent.height * 0.7 // 使用父容器高度的70%
             Layout.alignment: Qt.AlignHCenter // 水平居中

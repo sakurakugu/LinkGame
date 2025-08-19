@@ -24,7 +24,7 @@ Window {
         id: themeManager
     }
     property QtObject currentTheme: null
-    property string currentThemeName: settings.getTheme() // 存储当前主题名称
+    property string currentThemeName: "light" // 默认主题名称，稍后会从settings更新
     
     // 设置一个全局的主题对象，可供各个页面访问
     property alias globalTheme: root.currentTheme
@@ -40,7 +40,8 @@ Window {
             height = settings.getWindowHeight();
             isFullScreen = settings.isFullscreen();
 
-            // 加载当前主题
+            // 从settings获取当前主题并加载
+            currentThemeName = settings.getTheme();
             console.log("Main窗口初始化，加载主题:", currentThemeName);
             currentTheme = themeManager.loadTheme(currentThemeName);
         });

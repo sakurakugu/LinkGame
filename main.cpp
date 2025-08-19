@@ -13,22 +13,27 @@
 int main(int argc, char *argv[]) {
 
     QGuiApplication app(argc, argv);
+    
+    // 设置 Qt Quick Controls 样式为 Basic 以支持自定义
+    qputenv("QT_QUICK_CONTROLS_STYLE", "Basic");
+    
     app.setWindowIcon(QIcon(":/image/icon.png")); // 设置窗口图标
     
     // 初始化日志系统
     Logger &logger = Logger::GetInstance();
     qInstallMessageHandler(Logger::messageHandler);
-    // // 应用日志设置
-    // logger.setLogLevel(static_cast<Logger::LogLevel>(Logger::Info));
+    // 应用日志设置
+    logger.setLogLevel(static_cast<Logger::LogLevel>(Logger::Info));
+    // 暂时使用默认设置，因为Config类没有提供日志相关的getter方法
     // logger.setLogToFile(config.getLogToFile());
     // logger.setLogToConsole(config.getLogToConsole());
     // logger.setMaxLogFileSize(config.getMaxLogFileSize());
     // logger.setMaxLogFiles(config.getMaxLogFiles());
 
-    // qInfo() << "日志系统初始化完成，日志文件路径:" << config.getLogFilePath();
+    qInfo() << "日志系统初始化完成";
 
     // 记录应用启动
-    qInfo() << "MyTodo 应用程序启动";
+    qInfo() << "LinkGame 应用程序启动";
 
     QQmlApplicationEngine engine;
     auto context = engine.rootContext(); // 获取根全局对象
