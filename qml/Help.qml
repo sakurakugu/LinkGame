@@ -55,7 +55,7 @@ Rectangle {
             text: qsTr("游戏帮助")
             font.pixelSize: parent.parent.width * 0.05 // 使用窗口宽度的5%作为字体大小
             font.bold: true
-            color: currentTheme ? currentTheme.textColor : "#333333"
+            color: root.currentTheme ? root.currentTheme.textColor : "#333333"
             Layout.alignment: Qt.AlignHCenter
         }
 

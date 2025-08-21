@@ -49,21 +49,21 @@ Rectangle {
         Text {
             text: qsTr("游戏结束")
             font.pixelSize: 48
-            color: currentTheme ? currentTheme.textColor : "#333333"
+            color: root.currentTheme ? root.currentTheme.textColor : "#333333"
             Layout.alignment: Qt.AlignHCenter
         }
 
         Text {
             text: qsTr("玩家: ") + playerName
             font.pixelSize: 24
-            color: currentTheme ? currentTheme.textColor : "#333333"
+            color: root.currentTheme ? root.currentTheme.textColor : "#333333"
             Layout.alignment: Qt.AlignHCenter
         }
 
         Text {
             text: qsTr("最终得分: ") + finalScore
             font.pixelSize: 24
-            color: currentTheme ? currentTheme.textColor : "#333333"
+            color: root.currentTheme ? root.currentTheme.textColor : "#333333"
             Layout.alignment: Qt.AlignHCenter
         }
 
@@ -71,7 +71,7 @@ Rectangle {
             id: rankText
             text: qsTr("当前排名: ") + rank
             font.pixelSize: 24
-            color: currentTheme ? currentTheme.textColor : "#333333"
+            color: root.currentTheme ? root.currentTheme.textColor : "#333333"
             Layout.alignment: Qt.AlignHCenter
             visible: finalScore > 0
         }

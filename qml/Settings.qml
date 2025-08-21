@@ -95,15 +95,15 @@ Rectangle {
                 implicitHeight: 100
                 radius: width / 2
                 color: parent.pressed ? 
-                       (currentTheme ? Qt.darker(currentTheme.accentColor, 1.1) : "#005a9e") : 
-                       (currentTheme ? currentTheme.accentColor : "#0078d7")
+                       (root.currentTheme ? Qt.darker(root.currentTheme.accentColor, 1.1) : "#005a9e") : 
+                       (root.currentTheme ? root.currentTheme.accentColor : "#0078d7")
                 opacity: parent.active ? 0.8 : 0.5
             }
             
             background: Rectangle {
                 implicitWidth: 6
                 implicitHeight: 100
-                color: currentTheme ? Qt.alpha(currentTheme.borderColor, 0.1) : "#1a000000"
+                color: root.currentTheme ? Qt.alpha(root.currentTheme.borderColor, 0.1) : "#1a000000"
                 radius: width / 2
                 opacity: 0.5
             }
@@ -133,7 +133,7 @@ Rectangle {
             Text {
                 text: qsTr("游戏设置")
                 font.pixelSize: parent.parent.width * 0.04 // 使用窗口宽度的4%作为字体大小
-                color: currentTheme ? currentTheme.textColor : "#333333"
+                color: root.currentTheme ? root.currentTheme.textColor : "#333333"
                 Layout.alignment: Qt.AlignHCenter
             }
 
@@ -161,14 +161,14 @@ Rectangle {
                     }
                     
                     // 应用主题颜色
-                    color: acceptableInput ? (currentTheme ? currentTheme.textColor : "#333333") : "red"
+                    color: acceptableInput ? (root.currentTheme ? root.currentTheme.textColor : "#333333") : "red"
                     
                     background: Rectangle {
                         implicitWidth: 200
                         implicitHeight: 40
-                        color: currentTheme ? currentTheme.secondaryBackgroundColor : "#ffffff"
+                        color: root.currentTheme ? root.currentTheme.secondaryBackgroundColor : "#ffffff"
                         border.color: usernameField.acceptableInput ? 
-                                     (currentTheme ? currentTheme.borderColor : "#cccccc") : 
+                                     (root.currentTheme ? root.currentTheme.borderColor : "#cccccc") : 
                                      "red"
                         border.width: 1
                         radius: 2
@@ -213,7 +213,7 @@ Rectangle {
                             text: easyRadio.text
                             font: easyRadio.font
                             opacity: enabled ? 1.0 : 0.3
-                            color: currentTheme ? currentTheme.textColor : "#333333"
+                            color: root.currentTheme ? root.currentTheme.textColor : "#333333"
                             leftPadding: easyRadio.indicator.width + easyRadio.spacing
                             verticalAlignment: Text.AlignVCenter
                         }
@@ -224,7 +224,7 @@ Rectangle {
                             x: easyRadio.leftPadding
                             y: parent.height / 2 - height / 2
                             radius: 9
-                            border.color: currentTheme ? currentTheme.borderColor : "#999999"
+                            border.color: root.currentTheme ? root.currentTheme.borderColor : "#999999"
                             border.width: 1
                             
                             Rectangle {
@@ -233,7 +233,7 @@ Rectangle {
                                 x: 4
                                 y: 4
                                 radius: 5
-                                color: currentTheme ? currentTheme.accentColor : "#0078d7"
+                                color: root.currentTheme ? root.currentTheme.accentColor : "#0078d7"
                                 visible: easyRadio.checked
                             }
                         }
@@ -256,7 +256,7 @@ Rectangle {
                             text: mediumRadio.text
                             font: mediumRadio.font
                             opacity: enabled ? 1.0 : 0.3
-                            color: currentTheme ? currentTheme.textColor : "#333333"
+                            color: root.currentTheme ? root.currentTheme.textColor : "#333333"
                             leftPadding: mediumRadio.indicator.width + mediumRadio.spacing
                             verticalAlignment: Text.AlignVCenter
                         }
@@ -267,7 +267,7 @@ Rectangle {
                             x: mediumRadio.leftPadding
                             y: parent.height / 2 - height / 2
                             radius: 9
-                            border.color: currentTheme ? currentTheme.borderColor : "#999999"
+                            border.color: root.currentTheme ? root.currentTheme.borderColor : "#999999"
                             border.width: 1
                             
                             Rectangle {
@@ -276,7 +276,7 @@ Rectangle {
                                 x: 4
                                 y: 4
                                 radius: 5
-                                color: currentTheme ? currentTheme.accentColor : "#0078d7"
+                                color: root.currentTheme ? root.currentTheme.accentColor : "#0078d7"
                                 visible: mediumRadio.checked
                             }
                         }
@@ -299,7 +299,7 @@ Rectangle {
                             text: hardRadio.text
                             font: hardRadio.font
                             opacity: enabled ? 1.0 : 0.3
-                            color: currentTheme ? currentTheme.textColor : "#333333"
+                            color: root.currentTheme ? root.currentTheme.textColor : "#333333"
                             leftPadding: hardRadio.indicator.width + hardRadio.spacing
                             verticalAlignment: Text.AlignVCenter
                         }
@@ -310,7 +310,7 @@ Rectangle {
                             x: hardRadio.leftPadding
                             y: parent.height / 2 - height / 2
                             radius: 9
-                            border.color: currentTheme ? currentTheme.borderColor : "#999999"
+                            border.color: root.currentTheme ? root.currentTheme.borderColor : "#999999"
                             border.width: 1
                             
                             Rectangle {
@@ -319,7 +319,7 @@ Rectangle {
                                 x: 4
                                 y: 4
                                 radius: 5
-                                color: currentTheme ? currentTheme.accentColor : "#0078d7"
+                                color: root.currentTheme ? root.currentTheme.accentColor : "#0078d7"
                                 visible: hardRadio.checked
                             }
                         }
@@ -342,7 +342,7 @@ Rectangle {
                             text: customRadio.text
                             font: customRadio.font
                             opacity: enabled ? 1.0 : 0.3
-                            color: currentTheme ? currentTheme.textColor : "#333333"
+                            color: root.currentTheme ? root.currentTheme.textColor : "#333333"
                             leftPadding: customRadio.indicator.width + customRadio.spacing
                             verticalAlignment: Text.AlignVCenter
                         }
@@ -353,7 +353,7 @@ Rectangle {
                             x: customRadio.leftPadding
                             y: parent.height / 2 - height / 2
                             radius: 9
-                            border.color: currentTheme ? currentTheme.borderColor : "#999999"
+                            border.color: root.currentTheme ? root.currentTheme.borderColor : "#999999"
                             border.width: 1
                             
                             Rectangle {
@@ -362,7 +362,7 @@ Rectangle {
                                 x: 4
                                 y: 4
                                 radius: 5
-                                color: currentTheme ? currentTheme.accentColor : "#0078d7"
+                                color: root.currentTheme ? root.currentTheme.accentColor : "#0078d7"
                                 visible: customRadio.checked
                             }
                         }
@@ -374,8 +374,8 @@ Rectangle {
             Rectangle {
                 Layout.fillWidth: true
                 Layout.preferredHeight: parent.parent.height * 0.3 // 使用窗口高度的40%作为高度
-                color: currentTheme ? currentTheme.secondaryBackgroundColor : "#f8f8f8"
-                border.color: currentTheme ? currentTheme.borderColor : "#dddddd"
+                color: root.currentTheme ? root.currentTheme.secondaryBackgroundColor : "#f8f8f8"
+                border.color: root.currentTheme ? root.currentTheme.borderColor : "#dddddd"
                 border.width: 1
                 radius: 5
 
@@ -414,17 +414,17 @@ Rectangle {
                             
                             // 应用主题颜色
                             color: acceptableInput || text === "" ? 
-                                  (currentTheme ? (enabled ? currentTheme.textColor : currentTheme.secondaryTextColor) : (enabled ? "#333333" : "#999999")) : 
+                                  (root.currentTheme ? (enabled ? root.currentTheme.textColor : root.currentTheme.secondaryTextColor) : (enabled ? "#333333" : "#999999")) : 
                                   "red"
                             
                             background: Rectangle {
                                 implicitWidth: 200
                                 implicitHeight: 40
                                 color: customTimeField.enabled ? 
-                                       (currentTheme ? currentTheme.secondaryBackgroundColor : "#ffffff") : 
-                                       (currentTheme ? Qt.darker(currentTheme.secondaryBackgroundColor, 1.05) : "#f0f0f0")
+                                       (root.currentTheme ? root.currentTheme.secondaryBackgroundColor : "#ffffff") : 
+                                       (root.currentTheme ? Qt.darker(root.currentTheme.secondaryBackgroundColor, 1.05) : "#f0f0f0")
                                 border.color: customTimeField.acceptableInput || customTimeField.text === "" ? 
-                                             (currentTheme ? currentTheme.borderColor : "#cccccc") : 
+                                             (root.currentTheme ? root.currentTheme.borderColor : "#cccccc") : 
                                              "red"
                                 border.width: 1
                                 radius: 2
@@ -477,17 +477,17 @@ Rectangle {
                             
                             // 应用主题颜色
                             color: acceptableInput || text === "" ? 
-                                  (currentTheme ? (enabled ? currentTheme.textColor : currentTheme.secondaryTextColor) : (enabled ? "#333333" : "#999999")) : 
+                                  (root.currentTheme ? (enabled ? root.currentTheme.textColor : root.currentTheme.secondaryTextColor) : (enabled ? "#333333" : "#999999")) : 
                                   "red"
                             
                             background: Rectangle {
                                 implicitWidth: 200
                                 implicitHeight: 40
                                 color: blockCountField.enabled ? 
-                                       (currentTheme ? currentTheme.secondaryBackgroundColor : "#ffffff") : 
-                                       (currentTheme ? Qt.darker(currentTheme.secondaryBackgroundColor, 1.05) : "#f0f0f0")
+                                       (root.currentTheme ? root.currentTheme.secondaryBackgroundColor : "#ffffff") : 
+                                       (root.currentTheme ? Qt.darker(root.currentTheme.secondaryBackgroundColor, 1.05) : "#f0f0f0")
                                 border.color: blockCountField.acceptableInput || blockCountField.text === "" ? 
-                                             (currentTheme ? currentTheme.borderColor : "#cccccc") : 
+                                             (root.currentTheme ? root.currentTheme.borderColor : "#cccccc") : 
                                              "red"
                                 border.width: 1
                                 radius: 2
@@ -537,17 +537,17 @@ Rectangle {
                             
                             // 应用主题颜色
                             color: acceptableInput || text === "" ? 
-                                  (currentTheme ? (enabled ? currentTheme.textColor : currentTheme.secondaryTextColor) : (enabled ? "#333333" : "#999999")) : 
+                                  (root.currentTheme ? (enabled ? root.currentTheme.textColor : root.currentTheme.secondaryTextColor) : (enabled ? "#333333" : "#999999")) : 
                                   "red"
                             
                             background: Rectangle {
                                 implicitWidth: 200
                                 implicitHeight: 40
                                 color: blockTypesField.enabled ? 
-                                       (currentTheme ? currentTheme.secondaryBackgroundColor : "#ffffff") : 
-                                       (currentTheme ? Qt.darker(currentTheme.secondaryBackgroundColor, 1.05) : "#f0f0f0")
+                                       (root.currentTheme ? root.currentTheme.secondaryBackgroundColor : "#ffffff") : 
+                                       (root.currentTheme ? Qt.darker(root.currentTheme.secondaryBackgroundColor, 1.05) : "#f0f0f0")
                                 border.color: blockTypesField.acceptableInput || blockTypesField.text === "" ? 
-                                             (currentTheme ? currentTheme.borderColor : "#cccccc") : 
+                                             (root.currentTheme ? root.currentTheme.borderColor : "#cccccc") : 
                                              "red"
                                 border.width: 1
                                 radius: 2
@@ -568,7 +568,7 @@ Rectangle {
                             id: leaderboardText
                             text: qsTr("参加排行榜")
                             font.pixelSize: parent.parent.parent.parent.width * 0.02
-                            color: customRadio.checked ? (currentTheme ? currentTheme.secondaryTextColor : "#999999") : (currentTheme ? currentTheme.textColor : "#333333")
+                            color: customRadio.checked ? (root.currentTheme ? root.currentTheme.secondaryTextColor : "#999999") : (root.currentTheme ? root.currentTheme.textColor : "#333333")
                         }                        
                         CheckBox {
                             id: joinLeaderboardCheck
@@ -588,7 +588,7 @@ Rectangle {
                                 text: ""
                                 font: joinLeaderboardCheck.font
                                 opacity: enabled ? 1.0 : 0.3
-                                color: currentTheme ? currentTheme.textColor : "#333333"
+                                color: root.currentTheme ? root.currentTheme.textColor : "#333333"
                                 verticalAlignment: Text.AlignVCenter
                             }
                             
@@ -598,13 +598,13 @@ Rectangle {
                                 x: joinLeaderboardCheck.leftPadding
                                 y: parent.height / 2 - height / 2
                                 radius: 3
-                                border.color: currentTheme ? 
-                                    (joinLeaderboardCheck.enabled ? currentTheme.borderColor : Qt.lighter(currentTheme.borderColor, 1.2)) : 
+                                border.color: root.currentTheme ? 
+                                    (joinLeaderboardCheck.enabled ? root.currentTheme.borderColor : Qt.lighter(root.currentTheme.borderColor, 1.2)) : 
                                     (joinLeaderboardCheck.enabled ? "#999999" : "#cccccc")
                                 border.width: 1
                                 color: joinLeaderboardCheck.checked ? 
-                                    (currentTheme ? currentTheme.accentColor : "#0078d7") : 
-                                    (currentTheme ? "transparent" : "transparent")
+                                    (root.currentTheme ? root.currentTheme.accentColor : "#0078d7") : 
+                                    (root.currentTheme ? "transparent" : "transparent")
                                 
                                 Text {
                                     text: "✓"
@@ -623,7 +623,7 @@ Rectangle {
                         text: qsTr("*自定义模式不能参加排行榜")
                         font.pixelSize: parent.parent.parent.parent.width * 0.015
                         font.italic: true
-                        color: currentTheme ? currentTheme.secondaryTextColor : "#999999"
+                        color: root.currentTheme ? root.currentTheme.secondaryTextColor : "#999999"
                         visible: customRadio.checked
                         Layout.topMargin: -parent.parent.parent.parent.width * 0.01
                     }
@@ -653,7 +653,7 @@ Rectangle {
                         text: ""
                         font: soundCheckbox.font
                         opacity: enabled ? 1.0 : 0.3
-                        color: currentTheme ? currentTheme.textColor : "#333333"
+                        color: root.currentTheme ? root.currentTheme.textColor : "#333333"
                         verticalAlignment: Text.AlignVCenter
                     }
                     
@@ -663,11 +663,11 @@ Rectangle {
                         x: soundCheckbox.leftPadding
                         y: parent.height / 2 - height / 2
                         radius: 3
-                        border.color: currentTheme ? currentTheme.borderColor : "#999999"
+                        border.color: root.currentTheme ? root.currentTheme.borderColor : "#999999"
                         border.width: 1
                         color: soundCheckbox.checked ? 
-                            (currentTheme ? currentTheme.accentColor : "#0078d7") : 
-                            (currentTheme ? "transparent" : "transparent")
+                            (root.currentTheme ? root.currentTheme.accentColor : "#0078d7") : 
+                            (root.currentTheme ? "transparent" : "transparent")
                         
                         Text {
                             text: "✓"
@@ -698,15 +698,15 @@ Rectangle {
                         width: volumeSlider.availableWidth
                         height: implicitHeight
                         radius: 2
-                        color: currentTheme ? 
-                               (volumeSlider.enabled ? currentTheme.borderColor : Qt.lighter(currentTheme.borderColor, 1.2)) : 
+                        color: root.currentTheme ? 
+                               (volumeSlider.enabled ? root.currentTheme.borderColor : Qt.lighter(root.currentTheme.borderColor, 1.2)) : 
                                (volumeSlider.enabled ? "#bdbebf" : "#e6e6e6")
 
                         Rectangle {
                             width: volumeSlider.visualPosition * parent.width
                             height: parent.height
-                            color: currentTheme ? 
-                                   (volumeSlider.enabled ? currentTheme.accentColor : Qt.lighter(currentTheme.accentColor, 1.2)) : 
+                            color: root.currentTheme ? 
+                                   (volumeSlider.enabled ? root.currentTheme.accentColor : Qt.lighter(root.currentTheme.accentColor, 1.2)) : 
                                    (volumeSlider.enabled ? "#0078d7" : "#9ebce0")
                             radius: 2
                         }
@@ -719,11 +719,11 @@ Rectangle {
                         implicitHeight: 14
                         radius: 7
                         color: volumeSlider.pressed ? 
-                               (currentTheme ? Qt.darker(currentTheme.accentColor, 1.1) : "#005a9e") : 
-                               (currentTheme ? currentTheme.accentColor : "#0078d7")
+                               (root.currentTheme ? Qt.darker(root.currentTheme.accentColor, 1.1) : "#005a9e") : 
+                               (root.currentTheme ? root.currentTheme.accentColor : "#0078d7")
                         border.color: volumeSlider.pressed ? 
-                                     (currentTheme ? Qt.darker(currentTheme.accentColor, 1.1) : "#005a9e") : 
-                                     (currentTheme ? currentTheme.accentColor : "#0078d7")
+                                     (root.currentTheme ? Qt.darker(root.currentTheme.accentColor, 1.1) : "#005a9e") : 
+                                     (root.currentTheme ? root.currentTheme.accentColor : "#0078d7")
                         opacity: volumeSlider.enabled ? 1 : 0.3
                     }
                 }
@@ -788,7 +788,7 @@ Rectangle {
                     contentItem: Text {
                         text: windowSizeCombo.displayText
                         font: windowSizeCombo.font
-                        color: currentTheme ? currentTheme.textColor : "#333333"
+                        color: root.currentTheme ? root.currentTheme.textColor : "#333333"
                         verticalAlignment: Text.AlignVCenter
                         elide: Text.ElideRight
                         leftPadding: 5
@@ -797,8 +797,8 @@ Rectangle {
                     background: Rectangle {
                         implicitWidth: 120
                         implicitHeight: 40
-                        color: currentTheme ? currentTheme.secondaryBackgroundColor : "#f8f8f8"
-                        border.color: currentTheme ? currentTheme.borderColor : "#cccccc"
+                        color: root.currentTheme ? root.currentTheme.secondaryBackgroundColor : "#f8f8f8"
+                        border.color: root.currentTheme ? root.currentTheme.borderColor : "#cccccc"
                         border.width: 1
                         radius: 2
                     }
@@ -829,7 +829,7 @@ Rectangle {
                     contentItem: Text {
                         text: themeCombo.displayText
                         font: themeCombo.font
-                        color: currentTheme ? currentTheme.textColor : "#333333"
+                        color: root.currentTheme ? root.currentTheme.textColor : "#333333"
                         verticalAlignment: Text.AlignVCenter
                         elide: Text.ElideRight
                         leftPadding: 5
@@ -838,8 +838,8 @@ Rectangle {
                     background: Rectangle {
                         implicitWidth: 120
                         implicitHeight: 40
-                        color: currentTheme ? currentTheme.secondaryBackgroundColor : "#f8f8f8"
-                        border.color: currentTheme ? currentTheme.borderColor : "#cccccc"
+                        color: root.currentTheme ? root.currentTheme.secondaryBackgroundColor : "#f8f8f8"
+                        border.color: root.currentTheme ? root.currentTheme.borderColor : "#cccccc"
                         border.width: 1
                         radius: 2
                     }
@@ -871,7 +871,7 @@ Rectangle {
                     contentItem: Text {
                         text: languageCombo.displayText
                         font: languageCombo.font
-                        color: currentTheme ? currentTheme.textColor : "#333333"
+                        color: root.currentTheme ? root.currentTheme.textColor : "#333333"
                         verticalAlignment: Text.AlignVCenter
                         elide: Text.ElideRight
                         leftPadding: 5
@@ -880,8 +880,8 @@ Rectangle {
                     background: Rectangle {
                         implicitWidth: 120
                         implicitHeight: 40
-                        color: currentTheme ? currentTheme.secondaryBackgroundColor : "#f8f8f8"
-                        border.color: currentTheme ? currentTheme.borderColor : "#cccccc"
+                        color: root.currentTheme ? root.currentTheme.secondaryBackgroundColor : "#f8f8f8"
+                        border.color: root.currentTheme ? root.currentTheme.borderColor : "#cccccc"
                         border.width: 1
                         radius: 2
                     }
@@ -923,9 +923,9 @@ Rectangle {
         buttonWidth: contentLayout.width * 0.15
         buttonHeight: root.height * 0.08
         fontSize: width * 0.2
-        normalColor: currentTheme ? currentTheme.accentColor : "#5ca9fb"
-        hoverColor: currentTheme ? Qt.lighter(currentTheme.accentColor, 1.2) : "#b0d3f8"
-        pressedColor: currentTheme ? Qt.darker(currentTheme.accentColor, 1.1) : "#4a90e2"
+        normalColor: root.currentTheme ? root.currentTheme.accentColor : "#5ca9fb"
+        hoverColor: root.currentTheme ? Qt.lighter(root.currentTheme.accentColor, 1.2) : "#b0d3f8"
+        pressedColor: root.currentTheme ? Qt.darker(root.currentTheme.accentColor, 1.1) : "#4a90e2"
         onClicked: root.closed()
     }
 }

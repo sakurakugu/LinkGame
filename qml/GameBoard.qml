@@ -93,7 +93,7 @@ Rectangle {
             width: parent.width * 0.4
             height: parent.height * 0.4
             anchors.centerIn: parent
-            color: currentTheme ? currentTheme.secondaryBackgroundColor : "#ffffff"
+            color: root.currentTheme ? root.currentTheme.secondaryBackgroundColor : "#ffffff"
             opacity: 0.9
             radius: 10
 
@@ -189,7 +189,7 @@ Rectangle {
                 return;
             var ctx = getContext("2d"); // 获取2D上下文
             ctx.clearRect(0, 0, width, height); // 清除画布
-            ctx.strokeStyle = currentTheme ? currentTheme.connectionLineColor : "#FF0000"; // 设置线条颜色
+            ctx.strokeStyle = root.currentTheme ? root.currentTheme.connectionLineColor : "#FF0000"; // 设置线条颜色
             ctx.lineWidth = 3; // 设置线条宽度
 
             ctx.beginPath(); // 开始路径
@@ -210,7 +210,7 @@ Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
         height: parent.height * 0.08
-        color: currentTheme ? currentTheme.secondaryBackgroundColor : "#e0e0e0"
+        color: root.currentTheme ? root.currentTheme.secondaryBackgroundColor : "#e0e0e0"
         enabled: !root.isPaused
 
         RowLayout {
@@ -220,7 +220,7 @@ Rectangle {
                 id: gameStatus
                 text: root.isPaused ? qsTr("游戏暂停") : qsTr("游戏进行中")
                 font.pixelSize: parent.parent.height * 0.4
-                color: currentTheme ? currentTheme.textColor : "#333333"
+                color: root.currentTheme ? root.currentTheme.textColor : "#333333"
                 Layout.alignment: Qt.AlignCenter
             }
 
@@ -228,14 +228,14 @@ Rectangle {
                 id: scoreText
                 text: qsTr("分数: ") + root.score
                 font.pixelSize: parent.parent.height * 0.4
-                color: currentTheme ? currentTheme.textColor : "#333333"
+                color: root.currentTheme ? root.currentTheme.textColor : "#333333"
             }
 
             Text {
                 id: timeText
                 text: qsTr("时间：") + Math.floor(gameLogic.timeLeft / 60) + ":" + (gameLogic.timeLeft % 60).toString().padStart(2, "0")
                 font.pixelSize: parent.parent.height * 0.4
-                color: currentTheme ? currentTheme.textColor : "#333333"
+                color: root.currentTheme ? root.currentTheme.textColor : "#333333"
                 Layout.alignment: Qt.AlignCenter
             }
 
@@ -270,7 +270,7 @@ Rectangle {
                             let oldIndex = root.selectedRow * gameLogic.cols() + root.selectedCol;
                             let oldCell = grid.children[oldIndex];
                             if (oldCell) {
-                                oldCell.color = currentTheme ? currentTheme.gameBoardBackgroundColor : "skyblue";
+                                oldCell.color = root.currentTheme ? root.currentTheme.gameBoardBackgroundColor : "skyblue";
                             }
                         }
 
@@ -278,7 +278,7 @@ Rectangle {
                         let index1 = hint.row1 * gameLogic.cols() + hint.col1;
                         let cell1 = grid.children[index1];
                         if (cell1) {
-                            // cell1.color = currentTheme ? currentTheme.selectedBlockBorderColor : "blue";
+                            // cell1.color = root.currentTheme ? root.currentTheme.selectedBlockBorderColor : "blue";
                             cell1.color = "red";
                         }
 
@@ -286,7 +286,7 @@ Rectangle {
                         let index2 = hint.row2 * gameLogic.cols() + hint.col2;
                         let cell2 = grid.children[index2];
                         if (cell2) {
-                            // cell2.color = currentTheme ? currentTheme.selectedBlockBorderColor : "blue";
+                            // cell2.color = root.currentTheme ? root.currentTheme.selectedBlockBorderColor : "blue";
                             cell2.color = "red";
                         }
 
@@ -359,8 +359,8 @@ Rectangle {
                 width: Math.min(parent.parent.width * 0.08, parent.parent.height * 0.08) // 使用窗口宽度和高度的8%作为方块大小
                 height: width // 保持方块为正方形
                 // visible: !grid.isOuterCell(index)
-                color: grid.getCell(index) === 0 ? "transparent" : (currentTheme ? currentTheme.gameBoardBackgroundColor : "skyblue")
-                border.color: grid.getCell(index) === 0 ? "transparent" : (currentTheme ? currentTheme.blockBorderColor : "black")
+                color: grid.getCell(index) === 0 ? "transparent" : (root.currentTheme ? root.currentTheme.gameBoardBackgroundColor : "skyblue")
+                border.color: grid.getCell(index) === 0 ? "transparent" : (root.currentTheme ? root.currentTheme.blockBorderColor : "black")
 
                 property bool highlighted: false // 是否高亮
                 property bool pathHighlighted: false // 路径高亮
@@ -402,20 +402,20 @@ Rectangle {
                             if (root.selectedRow === -1 && root.selectedCol === -1) {
                                 root.selectedRow = r;
                                 root.selectedCol = c;
-                                cell.color = currentTheme ? currentTheme.selectedBlockBorderColor : "blue";
+                                cell.color = root.currentTheme ? root.currentTheme.selectedBlockBorderColor : "blue";
                             } else if (root.selectedRow === r && root.selectedCol === c) {
                                 root.selectedRow = -1;
                                 root.selectedCol = -1;
-                                cell.color = currentTheme ? currentTheme.gameBoardBackgroundColor : "skyblue";
+                                cell.color = root.currentTheme ? root.currentTheme.gameBoardBackgroundColor : "skyblue";
                             } else if (gameLogic.canLink(root.selectedRow, root.selectedCol, r, c)) {
-                                cell.color = currentTheme ? currentTheme.selectedBlockBorderColor : "blue";
+                                cell.color = root.currentTheme ? root.currentTheme.selectedBlockBorderColor : "blue";
                                 showLinkTimer.firstRow = root.selectedRow;
                                 showLinkTimer.firstCol = root.selectedCol;
                                 showLinkTimer.secondRow = r;
                                 showLinkTimer.secondCol = c;
                                 showLinkTimer.start();
                             } else {
-                                cell.color = currentTheme ? currentTheme.selectedBlockBorderColor : "blue";
+                                cell.color = root.currentTheme ? root.currentTheme.selectedBlockBorderColor : "blue";
                                 resetColorTimer.firstRow = root.selectedRow;
                                 resetColorTimer.firstCol = root.selectedCol;
                                 resetColorTimer.secondRow = r;
@@ -429,8 +429,8 @@ Rectangle {
                 Connections {
                     target: root
                     function onResetAllCell() {
-                        cell.color = grid.getCell(index) === 0 ? "transparent" : (currentTheme ? currentTheme.gameBoardBackgroundColor : "skyblue");
-                        cell.border.color = grid.getCell(index) === 0 ? "transparent" : (currentTheme ? currentTheme.blockBorderColor : "black");
+                        cell.color = grid.getCell(index) === 0 ? "transparent" : (root.currentTheme ? root.currentTheme.gameBoardBackgroundColor : "skyblue");
+                        cell.border.color = grid.getCell(index) === 0 ? "transparent" : (root.currentTheme ? root.currentTheme.blockBorderColor : "black");
                         image.source = grid.getCell(index) === 0 ? "" : "qrc:/qt/qml/LinkGame/image/fruits/" + grid.getCell(index) + ".svg";
                     }
                 }
@@ -697,7 +697,7 @@ Rectangle {
     //     id: comboIndicator
     //     width: comboText.width + 20
     //     height: comboText.height + 10
-    //     color: currentTheme ? Qt.rgba(currentTheme.accentColor.r, currentTheme.accentColor.g, currentTheme.accentColor.b, 0.7) : "rgba(0, 120, 215, 0.7)"
+    //     color: root.currentTheme ? Qt.rgba(root.currentTheme.accentColor.r, root.currentTheme.accentColor.g, root.currentTheme.accentColor.b, 0.7) : "rgba(0, 120, 215, 0.7)"
     //     radius: 5
     //     visible: gameLogic.getConsecutiveMatches() > 0
     //     anchors {

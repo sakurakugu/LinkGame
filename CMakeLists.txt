@@ -1,14 +1,23 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(LinkGame VERSION 0.1 LANGUAGES CXX)
+project(LinkGame 
+    VERSION 1.0.0
+    DESCRIPTION "连连看小游戏"
+    HOMEPAGE_URL "https://github.com/sakurakugu/LinkGame"
+    LANGUAGES CXX)
 
 # 设置C++标准和其他编译选项
-set(CMAKE_CXX_STANDARD 23) # 明确指定C++标准
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(QT_QML_GENERATE_QMLLS_INI ON)
-set(CMAKE_AUTORCC ON) # 自动处理资源文件
+set(CMAKE_CXX_STANDARD 23)                 # 使用 C++23 标准
+set(CMAKE_CXX_STANDARD_REQUIRED ON)        # 强制要求 C++23
+set(CMAKE_CXX_EXTENSIONS OFF)              # 禁用编译器扩展，确保可移植性
+set(QT_QML_GENERATE_QMLLS_INI ON)          # 生成 qmlls.ini 文件
 
-# 设置 待包含的 Qt 组件
+# Qt 自动化工具
+set(CMAKE_AUTORCC ON)                      # 自动处理资源文件
+set(CMAKE_AUTOMOC ON)                      # 自动处理 MOC
+set(CMAKE_AUTOUIC ON)                      # 自动处理 UIC
+
+# 设置待包含的 Qt 组件
 set(QT_COMPONENTS 
     Core
     Gui
@@ -98,6 +107,11 @@ set(RESOURCES
     music/sound_effect.mp3
 )
 
+# 安装路径配置
+if (WIN32)
+set(CMAKE_INSTALL_PREFIX "C:/Software/Apps/LinkGame" CACHE PATH "安装路径前缀" FORCE)
+endif()
+
 # 查找所有需要的Qt组件
 find_package(Qt6 REQUIRED ${QT_COMPONENTS})
 
@@ -121,12 +135,12 @@ qt_add_executable(appLinkGame
 
 # 添加 QML 文件到项目中
 qt_add_qml_module(appLinkGame
-URI LinkGame
-VERSION 1.0
-# QML_FILES
-QML_FILES ${MYQML_FILES}
-    SOURCES ${PROJECT_SOURCES}
-    RESOURCES ${RESOURCES}
+    URI LinkGame                    # QML 模块 URI
+    VERSION 1.0                     # 模块版本
+    QML_FILES ${MYQML_FILES}        # QML 文件列表
+    SOURCES ${PROJECT_SOURCES}      # C++ 源文件
+    RESOURCES ${RESOURCES}          # 资源文件  
+    OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml/LinkGame  # 输出目录
 )
 
 # 国际化翻译
@@ -146,11 +160,18 @@ endif()
 # Qt 在 iOS 上会自动设置 MACOSX_BUNDLE_GUI_IDENTIFIER
 # 如果你正在为 iOS 或 macOS 开发，你应该考虑手动设置一个明确的、固定的 bundle 标识符。
 set_target_properties(appLinkGame PROPERTIES
-#    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.appLinkGame
+    # macOS Bundle 配置
+    MACOSX_BUNDLE_GUI_IDENTIFIER com.sakurakugu.linkgame
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
+
+    # Windows 可执行文件配置
     WIN32_EXECUTABLE ${WIN32_EXEC_FLAG}
+
+    # 通用属性
+    RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib
 )
 
 # 设置编译选项
@@ -158,10 +179,20 @@ target_link_libraries(appLinkGame
     PRIVATE ${PRIVATE_LIBRARIES}
 )
 
-# 设置编译选项
+# 安装配置
 include(GNUInstallDirs)
 install(TARGETS appLinkGame
-    BUNDLE DESTINATION .
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    BUNDLE DESTINATION .                                    # macOS Bundle 安装位置
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}             # 可执行文件安装位置
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}             # 库文件安装位置
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}             # 静态库安装位置
 )
+
+# 构建信息输出
+message(STATUS "====== LinkGame 构建配置 =====")
+message(STATUS "项目版本: ${PROJECT_VERSION}")
+message(STATUS "构建类型: ${CMAKE_BUILD_TYPE}")
+message(STATUS "C++ 标准: ${CMAKE_CXX_STANDARD}")
+message(STATUS "Qt6 版本: ${Qt6_VERSION}")
+message(STATUS "安装前缀: ${CMAKE_INSTALL_PREFIX}")
+message(STATUS "=============================")

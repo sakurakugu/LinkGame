@@ -113,7 +113,7 @@ Window {
             // 背景
             Rectangle {
                 anchors.fill: parent
-                color: currentTheme ? currentTheme.backgroundColor : "#f0f0f0"
+                color: root.currentTheme ? root.currentTheme.backgroundColor : "#f0f0f0"
                 
                 // 标题
                 Text {

@@ -14,13 +14,13 @@ Item {
         id: cellRect // 方块的矩形元素
         anchors.fill: parent // 填充父元素
         color: {
-            if (highlighted) {
+            if (root.highlighted) {
                 // 如果高亮
                 return "#FFD700"; // 金色高亮
-            } else if (pathHighlighted) {
+            } else if (root.pathHighlighted) {
                 // 如果路径高亮
                 return "#90EE90"; // 浅绿色路径高亮
-            } else if (selected) {
+            } else if (root.selected) {
                 // 如果选中
                 return "#ADD8E6"; // 浅蓝色选中
             } else {
@@ -33,7 +33,7 @@ Item {
 
         Text {
             anchors.centerIn: parent // 居中显示
-            text: pattern > 0 ? pattern.toString() : "" // 如果图案大于0，显示图案，否则显示空字符串
+            text: root.pattern > 0 ? root.pattern.toString() : "" // 如果图案大于0，显示图案，否则显示空字符串
             font.pixelSize: 20 // 字体大小
         }
     }
@@ -41,7 +41,7 @@ Item {
     MouseArea {
         anchors.fill: parent // 填充父元素
         onClicked: {
-            if (pattern > 0) {
+            if (root.pattern > 0) {
                 // 如果图案大于0
                 root.selected = !root.selected; // 切换选中状态
             }

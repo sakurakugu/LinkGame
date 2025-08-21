@@ -63,9 +63,9 @@ Rectangle {
         spacing: 20
 
         Text {
-            text: currentDifficulty === "" ? qsTr("排行榜") : qsTr("排行榜 - ") + currentDifficulty
+            text: root.currentDifficulty === "" ? qsTr("排行榜") : qsTr("排行榜 - ") + root.currentDifficulty
             font.pixelSize: 36
-            color: currentTheme ? currentTheme.textColor : "#333333"
+            color: root.currentTheme ? root.currentTheme.textColor : "#333333"
             Layout.alignment: Qt.AlignHCenter
         }
         RowLayout {
@@ -78,26 +78,26 @@ Rectangle {
             Text {
                 text: qsTr("难度:")
                 font.pixelSize: parent.parent.width * 0.03
-                color: currentTheme ? currentTheme.textColor : "#333333"
+                color: root.currentTheme ? root.currentTheme.textColor : "#333333"
                 verticalAlignment: Text.AlignVCenter
             }
             ComboBox {
                 id: difficultyComboBox
                 model: [qsTr("全部"), qsTr("简单"), qsTr("普通"), qsTr("困难")]
                 currentIndex: 0
-                Layout.preferredWidth: 120
+                Layout.preferredWidth: parent.parent.width * 0.15
                 implicitHeight: 40
                 font.pixelSize: parent.parent.width * 0.03
                 // 监听当前索引变化
                 onCurrentIndexChanged: {
-                    currentDifficulty = currentIndex === 0 ? "" : model[currentIndex];
-                    updateLeaderboard();
+                    root.currentDifficulty = currentIndex === 0 ? "" : model[currentIndex];
+                    root.updateLeaderboard();
                 }
 
                 // 背景颜色适应主题
                 background: Rectangle {
-                    color: currentTheme ? currentTheme.secondaryBackgroundColor : "white"
-                    border.color: currentTheme ? currentTheme.borderColor : "#cccccc"
+                    color: root.currentTheme ? root.currentTheme.secondaryBackgroundColor : "white"
+                    border.color: root.currentTheme ? root.currentTheme.borderColor : "#cccccc"
                     border.width: 1
                     radius: 5
                 }// 样式
@@ -110,14 +110,14 @@ Rectangle {
                         width: parent.width
                         height: parent.height
                         color: index === difficultyComboBox.currentIndex ? "#0078d4" : "transparent"
-                        border.color: currentTheme ? currentTheme.borderColor : "#cccccc"
+                        border.color: root.currentTheme ? root.currentTheme.borderColor : "#cccccc"
                         border.width: 1
                         radius: 5
 
                         Text {
                             text: modelData
                             font.pixelSize: difficultyComboBox.font.pixelSize
-                            color: index === difficultyComboBox.currentIndex ? "white" : currentTheme ? currentTheme.textColor : "#333333"
+                            color: index === difficultyComboBox.currentIndex ? "white" : root.currentTheme ? root.currentTheme.textColor : "#333333"
                             anchors.centerIn: parent
                         }
                     }
@@ -127,7 +127,7 @@ Rectangle {
                         onClicked: {
                             difficultyComboBox.currentIndex = index;
                             currentDifficulty = index === 0 ? "" : model[index];
-                            updateLeaderboard();
+                            root.updateLeaderboard();
                         }
                     }
                 }
@@ -137,8 +137,8 @@ Rectangle {
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            color: currentTheme ? currentTheme.secondaryBackgroundColor : "white"
-            border.color: currentTheme ? currentTheme.borderColor : "#cccccc"
+            color: root.currentTheme ? root.currentTheme.secondaryBackgroundColor : "white"
+            border.color: root.currentTheme ? root.currentTheme.borderColor : "#cccccc"
             border.width: 1
             radius: 5
 
@@ -200,7 +200,7 @@ Rectangle {
                 delegate: Rectangle {
                     implicitWidth: parent.width
                     implicitHeight: 50
-                    color: index % 2 === 0 ? (currentTheme ? currentTheme.secondaryBackgroundColor : "#f9f9f9") : (currentTheme ? currentTheme.backgroundColor : "white")
+                    color: index % 2 === 0 ? (root.currentTheme ? root.currentTheme.secondaryBackgroundColor : "#f9f9f9") : (root.currentTheme ? root.currentTheme.backgroundColor : "white")
                     RowLayout {
                         anchors.fill: parent
                         anchors.leftMargin: 10
@@ -211,7 +211,7 @@ Rectangle {
                         Text {
                             text: (index + 1) + "."
                             font.pixelSize: parent.parent.width * 0.03
-                            color: currentTheme ? currentTheme.textColor : "#333333"
+                            color: root.currentTheme ? root.currentTheme.textColor : "#333333"
                             Layout.preferredWidth: parent.width * 0.15
                             horizontalAlignment: Text.AlignHCenter
                             Layout.alignment: Qt.AlignVCenter
@@ -220,7 +220,7 @@ Rectangle {
                         Text {
                             text: modelData.name
                             font.pixelSize: parent.parent.width * 0.03
-                            color: currentTheme ? currentTheme.textColor : "#333333"
+                            color: root.currentTheme ? root.currentTheme.textColor : "#333333"
                             Layout.preferredWidth: parent.width * 0.45
                             Layout.alignment: Qt.AlignVCenter | Qt.AlignLeft
                             elide: Text.ElideRight // 如果文字太长则显示省略号
@@ -231,8 +231,8 @@ Rectangle {
                         Text {
                             text: modelData.difficulty || qsTr("普通")
                             font.pixelSize: parent.parent.width * 0.03
-                            color: currentTheme ? currentTheme.textColor : "#333333"
-                            visible: currentDifficulty === ""
+                            color: root.currentTheme ? root.currentTheme.textColor : "#333333"
+                            visible: root.currentDifficulty === ""
                             Layout.preferredWidth: parent.width * 0.2
                             horizontalAlignment: Text.AlignHCenter
                             Layout.alignment: Qt.AlignVCenter
@@ -241,7 +241,7 @@ Rectangle {
                         Text {
                             text: modelData.score
                             font.pixelSize: parent.parent.width * 0.03
-                            color: currentTheme ? currentTheme.textColor : "#333333"
+                            color: root.currentTheme ? root.currentTheme.textColor : "#333333"
                             Layout.preferredWidth: parent.width * 0.15
                             horizontalAlignment: Text.AlignHCenter
                             Layout.alignment: Qt.AlignVCenter
@@ -254,9 +254,9 @@ Rectangle {
                         hoverEnabled: true
                         onHoveredChanged: {
                             if (mouseArea.containsMouse) {
-                                parent.color = currentTheme ? currentTheme.hoverBackgroundColor : "#e0e0e0";
+                                parent.color = root.currentTheme ? root.currentTheme.hoverBackgroundColor : "#e0e0e0";
                             } else {
-                                parent.color = index % 2 === 0 ? (currentTheme ? currentTheme.secondaryBackgroundColor : "#f9f9f9") : (currentTheme ? currentTheme.backgroundColor : "white");
+                                parent.color = index % 2 === 0 ? (root.currentTheme ? root.currentTheme.secondaryBackgroundColor : "#f9f9f9") : (root.currentTheme ? root.currentTheme.backgroundColor : "white");
                             }
                         }
                     }
@@ -284,7 +284,7 @@ Rectangle {
     Connections {
         target: settings
         function onLeaderboardChanged() {
-            updateLeaderboard(); // 使用更新函数保持当前难度的筛选
+            root.updateLeaderboard(); // 使用更新函数保持当前难度的筛选
         }
     }
 }
