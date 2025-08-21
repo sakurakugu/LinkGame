@@ -58,11 +58,7 @@ const QList<QPair<int, int>> presetResolutions = {
 };
 
 // 支持的语言列表
-const QList<QPair<QString, QString>> languageList = {
-    {"zh_CN", "简体中文"},
-    {"en", "English"},
-    {"ja", "日本語"}
-};
+const QList<QPair<QString, QString>> languageList = {{"zh_CN", "简体中文"}, {"en", "English"}, {"ja", "日本語"}};
 
 }; // namespace DefaultValues
 

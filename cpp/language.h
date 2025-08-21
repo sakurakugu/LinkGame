@@ -7,7 +7,8 @@
 
 class Language : public QObject {
     Q_OBJECT
-    Q_PROPERTY(QString currentLanguage READ currentLanguage WRITE setCurrentLanguage NOTIFY languageChanged) // 定义一个属性 currentLanguage，用于获取和设置当前语言
+    Q_PROPERTY(QString currentLanguage READ currentLanguage WRITE setCurrentLanguage NOTIFY
+                   languageChanged) // 定义一个属性 currentLanguage，用于获取和设置当前语言
 
   public:
     explicit Language(QObject *parent = nullptr); // 构造函数

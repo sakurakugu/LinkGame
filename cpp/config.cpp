@@ -15,20 +15,20 @@ Config::~Config() {
  */
 void Config::initConfig(config &config) {
     // 设置默认配置
-    config.playerName      = DefaultValues::player_name;
-    config.difficulty      = DefaultValues::difficulty;
-    config.gameTime        = DefaultValues::game_time;
-    config.volume          = DefaultValues::volume;
-    config.soundState      = DefaultValues::sound_state;
-    config.screenWidth     = DefaultValues::screen_width;
-    config.screenHeight    = DefaultValues::screen_height;
-    config.fullscreen      = DefaultValues::fullscreen;
-    config.borderless      = DefaultValues::borderless;
-    config.blockCount      = DefaultValues::block_count;
-    config.blockTypes      = DefaultValues::block_types;
+    config.playerName = DefaultValues::player_name;
+    config.difficulty = DefaultValues::difficulty;
+    config.gameTime = DefaultValues::game_time;
+    config.volume = DefaultValues::volume;
+    config.soundState = DefaultValues::sound_state;
+    config.screenWidth = DefaultValues::screen_width;
+    config.screenHeight = DefaultValues::screen_height;
+    config.fullscreen = DefaultValues::fullscreen;
+    config.borderless = DefaultValues::borderless;
+    config.blockCount = DefaultValues::block_count;
+    config.blockTypes = DefaultValues::block_types;
     config.joinLeaderboard = DefaultValues::join_leaderboard;
-    config.theme           = DefaultValues::theme;
-    config.language        = DefaultValues::language;
+    config.theme = DefaultValues::theme;
+    config.language = DefaultValues::language;
     config.leaderboard.clear();
 }
 

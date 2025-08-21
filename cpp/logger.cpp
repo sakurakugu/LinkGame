@@ -41,7 +41,7 @@ Logger::~Logger() {
 
 /**
  * @brief 消息处理函数
- * 
+ *
  * @param type 消息类型
  * @param context 消息上下文
  * @param msg 消息内容
@@ -52,7 +52,7 @@ void Logger::messageHandler(QtMsgType type, const QMessageLogContext &context, c
 
 /**
  * @brief 设置日志级别
- * 
+ *
  * @param level 日志级别
  */
 void Logger::setLogLevel(LogLevel level) {
@@ -62,7 +62,7 @@ void Logger::setLogLevel(LogLevel level) {
 
 /**
  * @brief 设置是否将日志输出到文件
- * 
+ *
  * @param enabled 是否输出到文件
  */
 void Logger::setLogToFile(bool enabled) {
@@ -83,7 +83,7 @@ void Logger::setLogToFile(bool enabled) {
 
 /**
  * @brief 设置是否将日志输出到控制台
- * 
+ *
  * @param enabled 是否输出到控制台
  */
 void Logger::setLogToConsole(bool enabled) {
@@ -93,7 +93,7 @@ void Logger::setLogToConsole(bool enabled) {
 
 /**
  * @brief 设置最大日志文件大小
- * 
+ *
  * @param maxSize 最大日志文件大小（字节）
  */
 void Logger::setMaxLogFileSize(qint64 maxSize) {
@@ -103,7 +103,7 @@ void Logger::setMaxLogFileSize(qint64 maxSize) {
 
 /**
  * @brief 设置最大日志文件
- * 
+ *
  * @param maxFiles 最大日志文件
  */
 void Logger::setMaxLogFiles(int maxFiles) {
@@ -113,7 +113,7 @@ void Logger::setMaxLogFiles(int maxFiles) {
 
 /**
  * @brief 设置最大日志文件数量
- * 
+ *
  * @param maxFiles 最大日志文件数量
  */
 QString Logger::getLogFilePath() const {
@@ -122,7 +122,7 @@ QString Logger::getLogFilePath() const {
 
 /**
  * @brief 清空日志文件
- * 
+ *
  */
 void Logger::clearLogs() {
     QMutexLocker locker(&m_mutex);
@@ -153,7 +153,7 @@ void Logger::clearLogs() {
 
 /**
  * @brief 轮转日志文件
- * 
+ *
  * 检查日志文件是否超过最大大小限制，如果超过则进行轮转。
  */
 void Logger::rotateLogFile() {
@@ -163,7 +163,7 @@ void Logger::rotateLogFile() {
 
 /**
  * @brief 写入日志
- * 
+ *
  * @param type 日志类型
  * @param context 日志上下文
  * @param msg 日志消息
@@ -216,7 +216,7 @@ void Logger::writeLog(QtMsgType type, const QMessageLogContext &context, const Q
 
 /**
  * @brief 初始化日志文件
- * 
+ *
  * 初始化日志文件，创建日志文件目录和文件流。
  */
 void Logger::initLogFile() {
@@ -232,8 +232,8 @@ void Logger::initLogFile() {
         m_logStream->setEncoding(QStringConverter::Utf8);
 
         // 写入启动标记
-        QString startMsg =
-            QString("\n=== LinkGame 应用启动 [%1] ===").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+        QString startMsg = QString("\n=== LinkGame 应用启动 [%1] ===")
+                               .arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
         *m_logStream << startMsg << Qt::endl;
         m_logStream->flush();
     } else {
@@ -245,7 +245,7 @@ void Logger::initLogFile() {
 
 /**
  * @brief 检查日志文件是否需要轮转
- * 
+ *
  * 检查日志文件是否超过最大大小限制，如果超过则进行轮转。
  */
 void Logger::checkLogRotation() {
@@ -287,7 +287,7 @@ void Logger::checkLogRotation() {
 
 /**
  * @brief 格式化日志消息
- * 
+ *
  * @param type 日志类型
  * @param context 日志上下文
  * @param msg 日志消息
@@ -303,7 +303,7 @@ QString Logger::formatLogMessage(QtMsgType type, const QMessageLogContext &conte
 
 /**
  * @brief 将日志类型转换为字符串
- * 
+ *
  * @param type 日志类型
  * @return QString 日志类型的字符串表示
  */

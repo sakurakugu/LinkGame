@@ -1,4 +1,4 @@
-# Qt和Cpp的连连看
+# Qt 和 Cpp 的连连看
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -33,7 +33,7 @@
 ## 项目结构
 
 - `cpp/` - C++源代码，包含游戏逻辑和配置
-- `qml/` - QML界面文件
+- `qml/` - QML 界面文件
 - `i18n/` - 国际化翻译文件
 - `image/` - 图像资源
 - `music/` - 音效资源
@@ -45,15 +45,16 @@
 
 - Qt 6.9.1 或更高版本
 - CMake 3.16 或更高版本
-- 支持C++17的编译器
+- 支持 C++17 的编译器
 
 ### 构建步骤
 
-> 如果构建失败，大概率是网络问题，请先删除 `_deps/` 然后从github上下载 [toml库](https://github.com/ToruNiina/toml11) 的源代码 放到 `_deps/toml11-src` , 然后若还是错误，请删除 `_deps/toml11-subbuild` 目录并重新执行构建步骤即可
+> 如果构建失败，大概率是网络问题，请先删除 `_deps/` 然后从 github 上下载 [toml 库](https://github.com/ToruNiina/toml11) 的源代码 放到 `_deps/toml11-src` , 然后若还是错误，请删除 `_deps/toml11-subbuild` 目录并重新执行构建步骤即可
 
 #### 使用 Qt Creator 构建
 
 1. 克隆项目到本地
+
    ```bash
    git clone https://gitcode.com/sakurakugu/LinkGame.git
    cd LinkGame
@@ -69,16 +70,19 @@
 #### 使用 CMake 构建
 
 1. 克隆项目到本地
+
    ```bash
    git clone https://gitcode.com/sakurakugu/LinkGame.git
    cd LinkGame
    ```
 
 2. 配置 VSCode
+
    - 在 VSCode 中，下载 Qt Extension Pack 和 CMake Tools 插件
    - 其次在插件设置中设置 Qt 路径
    - 然后按下 `Ctrl+Shift+P` 打开命令面板，输入 `CMake: Select a Kit` 并选择 `Qt-6.8.3-mingw_64`
    - 最后在终端中输入以下命令
+
    ```bash
    mkdir build
    cd build
@@ -86,6 +90,7 @@
    ```
 
 3. 构建项目
+
    - 按下 `Ctrl+Shift+P` 打开命令面板，输入 `CMake: Build Target` 按钮
    - 选择 `all` 选项
    - 等待构建完成
@@ -101,13 +106,14 @@
 本游戏支持多种语言，包括中文、英文和日文。若要更新或添加新的翻译：
 
 1. 生成翻译文件
+
    ```bash
    lupdate main.cpp qml/ cpp/ -ts ./i18n/qml_en.ts ./i18n/qml_zh_CN.ts ./i18n/qml_ja.ts
    ```
 
    > 如果没找到命令，记得将 `C:\安装位置\Qt\6.9.1\mingw_64\bin` 放入环境变量中
 
-2. 使用Qt Linguist进行翻译编辑
+2. 使用 Qt Linguist 进行翻译编辑
 
 3. 重新构建项目，翻译会自动被编译并添加到项目中
 

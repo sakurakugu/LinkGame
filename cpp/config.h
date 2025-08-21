@@ -12,14 +12,14 @@ class Config : public QObject {
 
   public:
     // 单例模式
-    static Config& GetInstance() {
+    static Config &GetInstance() {
         static Config instance;
         return instance;
     }
-    
+
     // 禁用拷贝构造和赋值操作
-    Config(const Config&) = delete;
-    Config& operator=(const Config&) = delete;
+    Config(const Config &) = delete;
+    Config &operator=(const Config &) = delete;
 
     // 排行榜信息
     struct LeaderboardEntry {
@@ -54,11 +54,16 @@ class Config : public QObject {
   private:
     explicit Config(QObject *parent = nullptr);
     ~Config();
-    
-    template <typename T> QString getTomlString(const T &tomlValue, const std::string &key,const QString &defaultValue); // 获取TOML中的字符串值
-    template <typename T> int getTomlInt(const T &tomlValue, const std::string &key, int defaultValue);                  // 获取TOML中的整数值
-    template <typename T> double getTomlDouble(const T &tomlValue, const std::string &key, double defaultValue);         // 获取TOML中的双精度值
-    template <typename T> bool getTomlBool(const T &tomlValue, const std::string &key, bool defaultValue);               // 获取TOML中的布尔值
+
+    template <typename T>
+    QString getTomlString(const T &tomlValue, const std::string &key,
+                          const QString &defaultValue); // 获取TOML中的字符串值
+    template <typename T>
+    int getTomlInt(const T &tomlValue, const std::string &key, int defaultValue); // 获取TOML中的整数值
+    template <typename T>
+    double getTomlDouble(const T &tomlValue, const std::string &key, double defaultValue); // 获取TOML中的双精度值
+    template <typename T>
+    bool getTomlBool(const T &tomlValue, const std::string &key, bool defaultValue); // 获取TOML中的布尔值
 };
 
 #endif // CONFIG_H
