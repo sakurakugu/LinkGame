@@ -123,7 +123,7 @@ Rectangle {
                 }
 
                 Button {
-                    text: qsTr("返回主菜单")
+                    text: qsTr("暂停并返回主菜单")
                     Layout.preferredWidth: parent.parent.width * 0.6
                     Layout.preferredHeight: parent.parent.height * 0.15
                     font.pixelSize: parent.parent.width * 0.04

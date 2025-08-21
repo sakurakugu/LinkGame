@@ -19,7 +19,7 @@ Logger::Logger(QObject *parent)
     // m_logDir = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/logs";
     // m_logDir = QCoreApplication::applicationDirPath() + "/logs";
     m_logDir = QDir::currentPath() + "/logs";
-    m_logFileName = "mytodo.log";
+    m_logFileName = "LinkGame.log";
 
     // 确保日志目录存在
     QDir dir;
@@ -234,7 +234,7 @@ void Logger::initLogFile() {
 
         // 写入启动标记
         QString startMsg =
-            QString("\n=== MyTodo 应用启动 [%1] ===").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
+            QString("\n=== LinkGame 应用启动 [%1] ===").arg(QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss"));
         *m_logStream << startMsg << Qt::endl;
         m_logStream->flush();
     } else {
@@ -267,13 +267,13 @@ void Logger::checkLogRotation() {
         // 轮转日志文件
         QString currentLogPath = getLogFilePath();
         QString timestamp = QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss");
-        QString rotatedLogPath = m_logDir + "/mytodo_" + timestamp + ".log";
+        QString rotatedLogPath = m_logDir + "/LinkGame_" + timestamp + ".log";
 
         QFile::rename(currentLogPath, rotatedLogPath);
 
         // 清理旧的日志文件
         QDir logDir(m_logDir);
-        QStringList logFiles = logDir.entryList(QStringList() << "mytodo_*.log", QDir::Files, QDir::Time);
+        QStringList logFiles = logDir.entryList(QStringList() << "LinkGame_*.log", QDir::Files, QDir::Time);
 
         // 删除超出数量限制的旧文件
         while (logFiles.size() >= m_maxLogFiles) {

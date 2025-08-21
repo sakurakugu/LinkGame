@@ -115,7 +115,7 @@ class Settings : public QObject {
 
   private:
     Config::config config; // 配置
-    Config configManager;  // 配置管理器
+    Config &configManager; // 配置管理器
     QQuickWindow *window;  // 主窗口
 };
 

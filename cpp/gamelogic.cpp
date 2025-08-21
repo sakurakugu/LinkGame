@@ -213,15 +213,33 @@ int GameLogic::getCell(int row, int col) const {
  * @return 是否找到路径
  */
 bool GameLogic::findPath(int r1, int c1, int r2, int c2, QVector<QVector<QPoint>> &result) const {
+    // 如果起点和终点相同，直接返回false
+    if (r1 == r2 && c1 == c2) {
+        return false;
+    }
+
     // 方向数组：上、右、下、左
-    const int dr[] = {-1, 0, 1, 0};
-    const int dc[] = {0, 1, 0, -1};
+    static const int dr[] = {-1, 0, 1, 0};
+    static const int dc[] = {0, 1, 0, -1};
 
-    // BFS需要的队列
-    QQueue<PathNode> queue;
+    // 使用静态缓存来减少内存分配
+    static QVector<QVector<int>> visited;
+    static QQueue<PathNode> queue;
+    
+    // 初始化或重用访问数组
+    if (visited.size() != ROWS || visited[0].size() != COLS) {
+        visited = QVector<QVector<int>>(ROWS, QVector<int>(COLS, INT_MAX));
+    } else {
+        // 快速重置访问数组
+        for (int i = 0; i < ROWS; ++i) {
+            std::fill(visited[i].begin(), visited[i].end(), INT_MAX);
+        }
+    }
 
-    // 记录已访问的节点及其转弯次数（记录最小转弯次数）
-    QVector<QVector<int>> visited(ROWS, QVector<int>(COLS, INT_MAX));
+    // 清空队列
+    while (!queue.isEmpty()) {
+        queue.dequeue();
+    }
 
     // 初始化result数组
     result.resize(ROWS);

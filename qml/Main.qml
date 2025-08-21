@@ -225,6 +225,7 @@ Window {
                 anchors.fill: parent
                 onRestartGame: {
                     stackView.pop();
+                    stackView.pop();
                     stackView.push(gameComponent);
                 }
                 onReturnToMenu: {

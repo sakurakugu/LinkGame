@@ -1,6 +1,7 @@
 #include "settings.h"
 
-Settings::Settings(QObject *parent) : QObject{parent}, window(nullptr) {
+Settings::Settings(QObject *parent) : QObject{parent}, window(nullptr), configManager(Config::GetInstance()) {
+
     // 加载配置
     configManager.loadConfig(config);
 

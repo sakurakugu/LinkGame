@@ -105,6 +105,8 @@
    lupdate main.cpp qml/ cpp/ -ts ./i18n/qml_en.ts ./i18n/qml_zh_CN.ts ./i18n/qml_ja.ts
    ```
 
+   > 如果没找到命令，记得将 `C:\安装位置\Qt\6.9.1\mingw_64\bin` 放入环境变量中
+
 2. 使用Qt Linguist进行翻译编辑
 
 3. 重新构建项目，翻译会自动被编译并添加到项目中
