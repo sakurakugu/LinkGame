@@ -45,7 +45,7 @@
 
 - Qt 6.9.1 或更高版本
 - CMake 3.16 或更高版本
-- 支持 C++17 的编译器
+- 支持 C++23 的编译器
 
 ### 构建步骤
 
@@ -124,25 +124,7 @@
 3. 消除所有图案即可获胜
 4. 如果无法继续消除，可以使用"重排"功能
 
-## 开发计划
-
-请参见[TODO.md](TODO.md)文件，了解计划中的功能和改进。
-
-## 贡献
-
-欢迎提交问题报告和改进建议。如果你想贡献代码，请遵循以下步骤：
-
-1. Fork 项目
-2. 创建你的特性分支 (`git checkout -b feature/amazing-feature`)
-3. 提交你的更改 (`git commit -m 'Add some amazing feature'`)
-4. 推送到分支 (`git push origin feature/amazing-feature`)
-5. 开启一个 Pull Request
-
-## 许可证
-
-本项目基于 MIT 许可证发布 - 查看 [LICENSE](LICENSE) 文件了解更多详情。
-
-## 致谢
+## 使用到的库
 
 - [水果图标](https://www.iconfont.cn/search/index?searchType=icon&q=%E6%B0%B4%E6%9E%9C)
 - [Qt](https://www.qt.io/)
