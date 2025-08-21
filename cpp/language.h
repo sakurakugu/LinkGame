@@ -3,9 +3,6 @@
 
 #include "default_value.h"
 
-#include <QDebug>
-#include <QGuiApplication>
-#include <QObject>
 #include <QTranslator>
 
 class Language : public QObject {

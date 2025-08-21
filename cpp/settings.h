@@ -5,18 +5,8 @@
 #include "default_value.h"
 #include "language.h"
 
-#include <QDebug>
-#include <QGuiApplication>
 #include <QObject>
-#include <QPair>
 #include <QQuickWindow>
-#include <QScreen>
-#include <QString>
-#include <QStringList>
-#include <QTimer>
-#include <QVariantList>
-#include <QVariantMap>
-#include <algorithm>
 
 class Settings : public QObject {
     Q_OBJECT

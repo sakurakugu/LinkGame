@@ -1,5 +1,7 @@
 #include "language.h"
 
+#include <QGuiApplication>
+
 // 使用 DefaultValues 中的语言列表
 const QList<QPair<QString, QString>> Language::languageList = DefaultValues::languageList;
 

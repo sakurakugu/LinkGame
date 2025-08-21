@@ -1,5 +1,8 @@
 #include "config.h"
 
+#include <QCoreApplication>
+#include <QDir>
+
 Config::Config(QObject *parent) : QObject(parent) {
 }
 
@@ -35,7 +38,7 @@ void Config::initConfig(config &config) {
  */
 void Config::loadConfig(config &config) {
     // 输出配置文件的绝对路径
-    qDebug() << "配置文件路径:" << QDir::currentPath() + "/config.toml";
+    qInfo() << "配置文件路径:" << QCoreApplication::applicationDirPath() + "/config.toml";
 
     try {
         // 读取配置文件

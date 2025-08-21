@@ -41,12 +41,7 @@ int main(int argc, char *argv[]) {
     Logger &logger = Logger::GetInstance();
     qInstallMessageHandler(Logger::messageHandler);
     // 应用日志设置
-    logger.setLogLevel(static_cast<Logger::LogLevel>(Logger::Info));
-    // 暂时使用默认设置，因为Config类没有提供日志相关的getter方法
-    // logger.setLogToFile(config.getLogToFile());
-    // logger.setLogToConsole(config.getLogToConsole());
-    // logger.setMaxLogFileSize(config.getMaxLogFileSize());
-    // logger.setMaxLogFiles(config.getMaxLogFiles());
+    logger.setLogLevel(static_cast<Logger::LogLevel>(Logger::Debug));
 
     qInfo() << "日志系统初始化完成";
 

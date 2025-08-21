@@ -150,6 +150,12 @@ qt_add_translations(appLinkGame
     TS_FILES ${MYI18N_FILES}
 )
 
+# 设置目标属性
+set_target_properties(appLinkGame PROPERTIES
+    OUTPUT_NAME "LinkGame"            # 输出文件名
+    DEBUG_POSTFIX "_debug"              # Debug 版本后缀
+)
+
 # 平台特定配置
 # Windows 调试配置：在 VSCode + Ninja + Debug 模式下显示控制台
 if(WIN32 AND "${CMAKE_GENERATOR}" MATCHES "Ninja" AND CMAKE_BUILD_TYPE STREQUAL "Debug")

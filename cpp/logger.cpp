@@ -17,8 +17,7 @@ Logger::Logger(QObject *parent)
 {
     // 设置日志目录
     // m_logDir = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/logs";
-    // m_logDir = QCoreApplication::applicationDirPath() + "/logs";
-    m_logDir = QDir::currentPath() + "/logs";
+    m_logDir = QCoreApplication::applicationDirPath() + "/logs";
     m_logFileName = "LinkGame.log";
 
     // 确保日志目录存在

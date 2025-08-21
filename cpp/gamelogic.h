@@ -4,29 +4,7 @@
 #include "settings.h"
 
 #include <QDateTime>
-#include <QDebug>
-#include <QDir>
-#include <QFile>
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QObject>
-#include <QPair>
-#include <QPoint>
-#include <QQueue>
-#include <QRandomGenerator>
-#include <QString>
-#include <QTextStream>
 #include <QTimer>
-#include <QVariant>
-#include <QVariantList>
-#include <QVariantMap>
-#include <QVector>
-#include <algorithm>
-#include <cmath>
-#include <fstream>
-#include <iostream>
-#include <toml.hpp>
 
 class GameLogic : public QObject {
     Q_OBJECT

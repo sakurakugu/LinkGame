@@ -3,13 +3,8 @@
 
 #include "default_value.h"
 
-#include <QDir>
-#include <QFile>
 #include <QObject>
-#include <QStandardPaths>
 #include <QString>
-#include <QTextStream>
-#include <QVector>
 #include <toml.hpp>
 
 class Config : public QObject {

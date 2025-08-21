@@ -1,5 +1,7 @@
 #include "settings.h"
 
+#include <QTimer>
+
 Settings::Settings(QObject *parent) : QObject{parent}, window(nullptr), configManager(Config::GetInstance()) {
 
     // 加载配置
