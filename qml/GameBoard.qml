@@ -138,7 +138,7 @@ Rectangle {
                     Layout.preferredHeight: parent.parent.height * 0.15
                     font.pixelSize: parent.parent.width * 0.04
                     onClicked: {
-                        settingsLoader.active = true;
+                        stackView.push(settingsComponent);
                     }
                 }
 
@@ -152,20 +152,6 @@ Rectangle {
                     }
                 }
             }
-        }
-    }
-
-    // 设置界面加载器
-    Loader {
-        id: settingsLoader
-        anchors.fill: parent
-        source: "Settings.qml"
-        active: false
-        z: 1000 // 确保设置界面在暂停页面之上
-        onLoaded: {
-            item.closed.connect(function () {
-                settingsLoader.active = false;
-            });
         }
     }
 

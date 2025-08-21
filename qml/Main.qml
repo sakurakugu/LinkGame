@@ -96,190 +96,180 @@ Window {
         }
     }
 
-    // 游戏状态枚举
-    readonly property var page: {
-        "Menu": 0       // 主菜单
-        ,
-        "Playing": 1    // 游戏中
-        ,
-        "GameOver": 2   // 游戏结束
-        ,
-        "Leaderboard": 3// 排行榜
-        ,
-        "Settings": 4   // 设置
-        ,
-        "Help": 5        // 帮助
+    // StackView用于页面管理
+    property alias stackView: stackView
+
+    // StackView用于页面导航
+    StackView {
+        id: stackView
+        anchors.fill: parent
+        initialItem: menuPage
     }
 
-    property int pageState: page.Menu  // 页面状态
-
-    // 主页面
+    // 主菜单页面
     Component {
-        id: menuComponent        
-        // 背景
-        Rectangle {
-            color: currentTheme ? currentTheme.backgroundColor : "#f0f0f0"
-            // 标题
-            Text {
-                id: titleText
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.top: parent.top
-                anchors.topMargin: parent.height * 0.10  // 使用窗口高度的10%作为上边距
-                anchors.bottomMargin: parent.height * 0.10                
-                text: qsTr("连连看小游戏")
-                font.pixelSize: parent.width * 0.06 // 使用窗口宽度的6%作为字体大小
-                font.bold: true
-                color: root.currentTheme ? root.currentTheme.textColor : "#333333"
+        id: menuPage
+        Page {
+            // 背景
+            Rectangle {
+                anchors.fill: parent
+                color: currentTheme ? currentTheme.backgroundColor : "#f0f0f0"
+                
+                // 标题
+                Text {
+                    id: titleText
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.top: parent.top
+                    anchors.topMargin: parent.height * 0.10  // 使用窗口高度的10%作为上边距
+                    anchors.bottomMargin: parent.height * 0.10                
+                    text: qsTr("连连看小游戏")
+                    font.pixelSize: parent.width * 0.06 // 使用窗口宽度的6%作为字体大小
+                    font.bold: true
+                    color: root.currentTheme ? root.currentTheme.textColor : "#333333"
+                }
+
+                // 按钮布局
+                ColumnLayout {
+                    anchors.centerIn: parent
+                    anchors.topMargin: parent.height * 0.2 // 与标题保持一定距离
+                    spacing: parent.height * 0.03 // 使用窗口高度的3%作为按钮间距
+
+                    MyButton {
+                        text: qsTr("开始游戏")
+                        fontSize: parent.parent.width * 0.03
+                        buttonWidth: parent.parent.width * 0.25
+                        buttonHeight: parent.parent.height * 0.08
+
+                        onClicked: {
+                            console.log("点击-主页面-开始游戏");
+                            stackView.push(gameComponent);
+                        }
+                    }
+
+                    MyButton {
+                        text: qsTr("排行榜")
+                        fontSize: parent.parent.width * 0.03
+                        buttonWidth: parent.parent.width * 0.25
+                        buttonHeight: parent.parent.height * 0.08
+
+                        onClicked: {
+                            console.log("点击-主页面-排行榜");
+                            stackView.push(leaderboardComponent);
+                        }
+                    }
+
+                    MyButton {
+                        text: qsTr("设置")
+                        fontSize: parent.parent.width * 0.03
+                        buttonWidth: parent.parent.width * 0.25
+                        buttonHeight: parent.parent.height * 0.08
+
+                        onClicked: {
+                            console.log("点击-主页面-设置");
+                            stackView.push(settingsComponent);
+                        }
+                    }
+
+                    MyButton {
+                        text: qsTr("游戏帮助")
+                        fontSize: parent.parent.width * 0.03
+                        buttonWidth: parent.parent.width * 0.25
+                        buttonHeight: parent.parent.height * 0.08
+
+                        onClicked: {
+                            console.log("点击-主页面-游戏帮助");
+                            stackView.push(helpComponent);
+                        }
+                    }
+
+                    MyButton {
+                        text: qsTr("退出游戏")
+                        fontSize: parent.parent.width * 0.03
+                        buttonWidth: parent.parent.width * 0.25
+                        buttonHeight: parent.parent.height * 0.08
+                        normalColor: "#f35c4b"
+                        hoverColor: "#fda0a0"
+                        pressedColor: "#ec3030"
+
+                        onClicked: {
+                            console.log("点击-主页面-退出游戏");
+                            Qt.quit();
+                         }
+                     }
+                 }
+             }
+         }
+    }
+
+    // 游戏页面组件
+    Component {
+        id: gameComponent
+        Page {
+            GameBoard {
+                anchors.fill: parent
+                onReturnToMenu: {
+                    stackView.pop();
+                }
+                onClosed: {
+                    stackView.push(gameOverComponent);
+                }
             }
+        }
+    }
 
-            // 按钮布局
-            ColumnLayout {
-                anchors.centerIn: parent
-                anchors.topMargin: parent.height * 0.2 // 与标题保持一定距离
-                spacing: parent.height * 0.03 // 使用窗口高度的3%作为按钮间距
-
-                MyButton {
-                    text: qsTr("开始游戏")
-                    fontSize: parent.parent.width * 0.03
-                    buttonWidth: parent.parent.width * 0.25
-                    buttonHeight: parent.parent.height * 0.08
-
-                    onClicked: {
-                        console.log("点击-主页面-开始游戏");
-                        pageState = page.Playing;
-                    }
+    // 游戏结束页面组件
+    Component {
+        id: gameOverComponent
+        Page {
+            GameOver {
+                anchors.fill: parent
+                onRestartGame: {
+                    stackView.pop();
+                    stackView.push(gameComponent);
                 }
-
-                MyButton {
-                    text: qsTr("排行榜")
-                    fontSize: parent.parent.width * 0.03
-                    buttonWidth: parent.parent.width * 0.25
-                    buttonHeight: parent.parent.height * 0.08
-
-                    onClicked: {
-                        console.log("点击-主页面-排行榜");
-                        pageState = page.Leaderboard;
-                    }
-                }
-
-                MyButton {
-                    text: qsTr("设置")
-                    fontSize: parent.parent.width * 0.03
-                    buttonWidth: parent.parent.width * 0.25
-                    buttonHeight: parent.parent.height * 0.08
-
-                    onClicked: {
-                        console.log("点击-主页面-设置");
-                        pageState = page.Settings;
-                    }
-                }
-
-                MyButton {
-                    text: qsTr("游戏帮助")
-                    fontSize: parent.parent.width * 0.03
-                    buttonWidth: parent.parent.width * 0.25
-                    buttonHeight: parent.parent.height * 0.08
-
-                    onClicked: {
-                        console.log("点击-主页面-游戏帮助");
-                        pageState = page.Help;
-                    }
-                }
-
-                MyButton {
-                    text: qsTr("退出游戏")
-                    fontSize: parent.parent.width * 0.03
-                    buttonWidth: parent.parent.width * 0.25
-                    buttonHeight: parent.parent.height * 0.08
-                    normalColor: "#f35c4b"
-                    hoverColor: "#fda0a0"
-                    pressedColor: "#ec3030"
-
-                    onClicked: {
-                        console.log("点击-主页面-退出游戏");
-                        Qt.quit();
-                    }
+                onReturnToMenu: {
+                    stackView.popToIndex(0);
                 }
             }
         }
     }
 
-    // 开始菜单界面
-    Loader {
-        id: menuLoader
-        anchors.fill: parent
-        active: pageState === page.Menu
-        sourceComponent: menuComponent
-    }
-
-    // 游戏主界面
-    Loader {
-        id: gameLoader
-        anchors.fill: parent
-        source: "GameBoard.qml"
-        active: pageState === page.Playing
-        onLoaded: {
-            item.returnToMenu.connect(function () {
-                pageState = page.Menu;
-            });
-            item.closed.connect(function () {
-                pageState = page.GameOver;
-            });
+    // 排行榜页面组件
+    Component {
+        id: leaderboardComponent
+        Page {
+            Leaderboard {
+                anchors.fill: parent
+                onClosed: {
+                    stackView.pop();
+                }
+            }
         }
     }
 
-    // 游戏结束界面
-    Loader {
-        id: endLoader
-        anchors.fill: parent
-        source: "GameOver.qml"
-        active: pageState === page.GameOver
-        onLoaded: {
-            item.restartGame.connect(function () {
-                pageState = page.Playing;
-            });
-            item.returnToMenu.connect(function () {
-                pageState = page.Menu;
-            });
+    // 设置页面组件
+    Component {
+        id: settingsComponent
+        Page {
+            Settings {
+                anchors.fill: parent
+                onClosed: {
+                    stackView.pop();
+                }
+            }
         }
     }
 
-    // 排行榜界面
-    Loader {
-        id: leaderboardLoader
-        anchors.fill: parent
-        source: "Leaderboard.qml"
-        active: pageState === page.Leaderboard
-        onLoaded: {
-            item.closed.connect(function () {
-                pageState = page.Menu;
-            });
-        }
-    }
-
-    // 设置界面
-    Loader {
-        id: settingsLoader
-        anchors.fill: parent
-        source: "Settings.qml"
-        active: pageState === page.Settings
-        onLoaded: {
-            item.closed.connect(function () {
-                pageState = page.Menu;
-            });
-        }
-    }
-
-    // 帮助界面
-    Loader {
-        id: helpLoader
-        anchors.fill: parent
-        source: "Help.qml"
-        active: pageState === page.Help
-        onLoaded: {
-            item.closed.connect(function () {
-                pageState = page.Menu;
-            });
+    // 帮助页面组件
+    Component {
+        id: helpComponent
+        Page {
+            Help {
+                anchors.fill: parent
+                onClosed: {
+                    stackView.pop();
+                }
+            }
         }
     }
 

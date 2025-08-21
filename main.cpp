@@ -1,24 +1,42 @@
+// Qt 相关头文件
 #include <QDebug>
 #include <QGuiApplication>
 #include <QIcon> // 添加 QIcon 头文件
 #include <QQmlApplicationEngine>
 #include <QQmlContext> // 用于将 C++ 的对象暴露给 QML
 #include <QTranslator> // 添加 QTranslator 头文件
-
+// Windows 相关头文件
+#ifdef Q_OS_WIN
+#include <windows.h>
+#endif
+// 自定义头文件
 #include "cpp/gamelogic.h" // 游戏逻辑类
 #include "cpp/language.h"
-#include "cpp/settings.h"
 #include "cpp/logger.h"
+#include "cpp/settings.h"
 
 int main(int argc, char *argv[]) {
+#if defined(Q_OS_WIN) && defined(QT_DEBUG)
+    // Windows平台
+    UINT cp = GetACP();
+    if (cp == 65001) {
+        // 设置 Windows 控制台输入输出为 UTF-8
+        SetConsoleCP(CP_UTF8);
+        SetConsoleOutputCP(CP_UTF8);
+    } else if (cp == 936) {
+        // 设置 Windows 控制台输入输出为 GBK
+        SetConsoleCP(936);
+        SetConsoleOutputCP(936);
+    }
+#endif
 
     QGuiApplication app(argc, argv);
-    
+
     // 设置 Qt Quick Controls 样式为 Basic 以支持自定义
     qputenv("QT_QUICK_CONTROLS_STYLE", "Basic");
-    
+
     app.setWindowIcon(QIcon(":/image/icon.png")); // 设置窗口图标
-    
+
     // 初始化日志系统
     Logger &logger = Logger::GetInstance();
     qInstallMessageHandler(Logger::messageHandler);

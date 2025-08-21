@@ -68,7 +68,6 @@ CMakeLists.txt.user*
 *.pyc
 
 # Binaries
-# --------
 *.dll
 *.exe
 
@@ -83,7 +82,7 @@ CMakeLists.txt.user*
 .cache/
 
 # CMake 生成的文件
-.qmlls.ini
+# .qmlls.ini
 
 # 其他
 config.toml
