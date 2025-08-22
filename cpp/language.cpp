@@ -54,7 +54,7 @@ void Language::loadTranslation(const QString &language) {
     QGuiApplication::removeTranslator(&translator_);
 
     // 加载新的翻译文件
-    QString translationFile = QString(":/qt/qml/Translated/i18n/qml_%1.qm").arg(language);
+    QString translationFile = QString(":/i18n/LinkGame_%1.qm").arg(language);
     if (translator_.load(translationFile)) {
         if (QGuiApplication::installTranslator(&translator_)) {
             qDebug() << "成功加载翻译文件:" << translationFile;

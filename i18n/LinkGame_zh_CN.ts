@@ -233,22 +233,22 @@
         <translation>退出游戏</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="302"/>
+        <location filename="../qml/Main.qml" line="303"/>
         <source>确认退出</source>
         <translation>确认退出</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="329"/>
+        <location filename="../qml/Main.qml" line="330"/>
         <source>确定要退出游戏吗？</source>
         <translation>确定要退出游戏吗？</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="344"/>
+        <location filename="../qml/Main.qml" line="345"/>
         <source>退出 (Enter)</source>
         <translation>退出 (Enter)</translation>
     </message>
     <message>
-        <location filename="../qml/Main.qml" line="366"/>
+        <location filename="../qml/Main.qml" line="367"/>
         <source>取消 (Esc)</source>
         <translation>取消 (Esc)</translation>
     </message>
@@ -365,35 +365,35 @@
         <translation>确定</translation>
     </message>
     <message>
-        <location filename="../cpp/settings.cpp" line="238"/>
-        <location filename="../cpp/settings.cpp" line="412"/>
+        <location filename="../cpp/settings.cpp" line="240"/>
+        <location filename="../cpp/settings.cpp" line="414"/>
         <source>无边框全屏 (%1x%2)</source>
         <translation>无边框全屏 (%1x%2)</translation>
     </message>
     <message>
-        <location filename="../cpp/settings.cpp" line="240"/>
-        <location filename="../cpp/settings.cpp" line="411"/>
+        <location filename="../cpp/settings.cpp" line="242"/>
+        <location filename="../cpp/settings.cpp" line="413"/>
         <source>全屏 (%1x%2)</source>
         <translation>全屏 (%1x%2)</translation>
     </message>
     <message>
-        <location filename="../cpp/settings.cpp" line="556"/>
-        <location filename="../cpp/settings.cpp" line="595"/>
+        <location filename="../cpp/settings.cpp" line="558"/>
+        <location filename="../cpp/settings.cpp" line="597"/>
         <source>未上榜</source>
         <translation>未上榜</translation>
     </message>
     <message>
-        <location filename="../cpp/settings.cpp" line="561"/>
+        <location filename="../cpp/settings.cpp" line="563"/>
         <source>未启用排行</source>
         <translation>未启用排行</translation>
     </message>
     <message>
-        <location filename="../cpp/settings.cpp" line="569"/>
+        <location filename="../cpp/settings.cpp" line="571"/>
         <source>第1名</source>
         <translation>第1名</translation>
     </message>
     <message>
-        <location filename="../cpp/settings.cpp" line="599"/>
+        <location filename="../cpp/settings.cpp" line="601"/>
         <source>第%1名</source>
         <translation>第%1名</translation>
     </message>

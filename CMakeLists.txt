@@ -66,11 +66,17 @@ set(MYQML_FILES
     ${MYQML_THEME}
 )
 
+# 设置国际化翻译的语言列表
+set(QT_I18N_TRANSLATED_LANGUAGES 
+    en
+    zh_CN
+    ja
+)
 # 设置国际化翻译文件的路径
-set(MYI18N_FILES
-    i18n/qml_en.ts
-    i18n/qml_zh_CN.ts
-    i18n/qml_ja.ts
+set(I18N_FILES
+    i18n/LinkGame_en.ts
+    i18n/LinkGame_zh_CN.ts
+    i18n/LinkGame_ja.ts
 )
 
 # 设置私有库变量 PRIVATE_LIBRARIES, 储存需要链接的库
@@ -127,14 +133,14 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(toml11)
 
 # 将文件添加到Qt_Creator的列表中
-qt_add_executable(appLinkGame
+qt_add_executable(LinkGame
     main.cpp
     ${PROJECT_SOURCES}
     "./image/icon.rc" # 添加图标资源
 )
 
 # 添加 QML 文件到项目中
-qt_add_qml_module(appLinkGame
+qt_add_qml_module(LinkGame
     URI LinkGame                    # QML 模块 URI
     VERSION 1.0                     # 模块版本
     QML_FILES ${MYQML_FILES}        # QML 文件列表
@@ -144,14 +150,14 @@ qt_add_qml_module(appLinkGame
 )
 
 # 国际化翻译
-qt_add_translations(appLinkGame
-    # 最终路径：qrc:/qt/qml/Translated/i18n/qml_*.qm
-    RESOURCE_PREFIX /qt/qml/Translated/i18n
-    TS_FILES ${MYI18N_FILES}
+qt_add_translations(LinkGame
+    # 最终路径：qrc:/i18n/LinkGame_*.qm
+    TS_FILES ${I18N_FILES}
+    RESOURCE_PREFIX /i18n
 )
 
 # 设置目标属性
-set_target_properties(appLinkGame PROPERTIES
+set_target_properties(LinkGame PROPERTIES
     OUTPUT_NAME "LinkGame"            # 输出文件名
     DEBUG_POSTFIX "_debug"              # Debug 版本后缀
 )
@@ -165,7 +171,7 @@ else()
 endif()
 # Qt 在 iOS 上会自动设置 MACOSX_BUNDLE_GUI_IDENTIFIER
 # 如果你正在为 iOS 或 macOS 开发，你应该考虑手动设置一个明确的、固定的 bundle 标识符。
-set_target_properties(appLinkGame PROPERTIES
+set_target_properties(LinkGame PROPERTIES
     # macOS Bundle 配置
     MACOSX_BUNDLE_GUI_IDENTIFIER com.sakurakugu.linkgame
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
@@ -181,13 +187,13 @@ set_target_properties(appLinkGame PROPERTIES
 )
 
 # 设置编译选项
-target_link_libraries(appLinkGame
+target_link_libraries(LinkGame
     PRIVATE ${PRIVATE_LIBRARIES}
 )
 
 # 安装配置
 include(GNUInstallDirs)
-install(TARGETS appLinkGame
+install(TARGETS LinkGame
     BUNDLE DESTINATION .                                    # macOS Bundle 安装位置
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}             # 可执行文件安装位置
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}             # 库文件安装位置

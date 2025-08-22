@@ -107,13 +107,34 @@
 
 1. 生成翻译文件
 
+   在这里添加所需的翻译文件路径和语言列表到 `CMakeLists.txt` 文件中：
+
+   ```cmake
+   # 设置国际化翻译的语言列表
+   set(QT_I18N_TRANSLATED_LANGUAGES 
+      en
+      zh_CN
+      ja
+   )
+   # 设置国际化翻译文件的路径
+   set(I18N_FILES
+      i18n/LinkGame_en.ts
+      i18n/LinkGame_zh_CN.ts
+      i18n/LinkGame_ja.ts
+   )
+   ```
+
+   然后运行CMake以生成待翻译文件：
+
    ```bash
-   lupdate main.cpp qml/ cpp/ -ts ./i18n/qml_en.ts ./i18n/qml_zh_CN.ts ./i18n/qml_ja.ts
+   cmake -B build -S . # 设置构建目录并生成翻译文件
+   cmake --build build --target update_translations # 更新翻译文件
+   cmake --build build --target all # 构建并生成可执行文件
    ```
 
    > 如果没找到命令，记得将 `C:\安装位置\Qt\6.9.1\mingw_64\bin` 放入环境变量中
 
-2. 使用 Qt Linguist 进行翻译编辑
+2. 使用 Qt Linguist 打开 `i18n/LinkGame_*.ts` 文件进行翻译编辑
 
 3. 重新构建项目，翻译会自动被编译并添加到项目中
 
