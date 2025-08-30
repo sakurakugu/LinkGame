@@ -60,6 +60,8 @@ const QList<QPair<int, int>> presetResolutions = {
 // 支持的语言列表
 const QList<QPair<QString, QString>> languageList = {{"zh_CN", "简体中文"}, {"en", "English"}, {"ja", "日本語"}};
 
+constexpr std::string_view logFileName{"LinkGame"}; // 日志文件名
+
 }; // namespace DefaultValues
 
 #endif // DEFAULT_VALUE_H

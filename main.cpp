@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
     Logger &logger = Logger::GetInstance();
     qInstallMessageHandler(Logger::messageHandler);
     // 应用日志设置
-    logger.setLogLevel(static_cast<Logger::LogLevel>(Logger::Debug));
+    logger.setLogLevel(static_cast<Logger::LogLevel>(Logger::LogLevel::Debug));
 
     qInfo() << "日志系统初始化完成";
 
