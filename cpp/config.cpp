@@ -147,6 +147,7 @@ void Config::saveConfig(const config &config) {
 
         // 添加注释
         data.comments().push_back(" 连连看游戏配置文件");
+        data.comments().push_back(" \u4f5c\u8005: \u6f58\u5f66\u73ae\u3001\u8c22\u667a\u884c");
 
         // 写入文件
         std::ofstream file("config.toml");

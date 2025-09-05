@@ -5,10 +5,12 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext> // 用于将 C++ 的对象暴露给 QML
 #include <QTranslator> // 添加 QTranslator 头文件
+
 // Windows 相关头文件
 #ifdef Q_OS_WIN
 #include <windows.h>
 #endif
+
 // 自定义头文件
 #include "cpp/gamelogic.h" // 游戏逻辑类
 #include "cpp/language.h"

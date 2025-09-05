@@ -94,7 +94,10 @@ Rectangle {
                     "<h2>快捷键</h2>" +
                     "<p>- ESC：暂停游戏/返回</p>" +
                     "<p>- 方向键/WASD键：移动选择</p>" +
-                    "<p>- 空格键/回车键：选择方块</p>"
+                    "<p>- 空格键/回车键：选择方块</p>" +
+                    "<h2>\u4f5c\u8005</h2>" +
+                    "<p>- \u6f58\u5f66\u73ae</p>" +
+                    "<p>- \u8c22\u667a\u884c</p>"
                     )
                 font.pixelSize: parent.parent.parent.width * 0.02
                 textFormat: Text.RichText

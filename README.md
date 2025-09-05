@@ -148,6 +148,7 @@
 ## 使用到的库
 
 - [水果图标](https://www.iconfont.cn/search/index?searchType=icon&q=%E6%B0%B4%E6%9E%9C)
+- [应用图标](https://www.doubao.com/)
 - [Qt](https://www.qt.io/)
 - [toml11](https://github.com/ToruNiina/toml11) 库用于配置文件解析
 
