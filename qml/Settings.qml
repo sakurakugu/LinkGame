@@ -15,7 +15,7 @@ Rectangle {
     Component.onCompleted: {
         // console.log("Settings初始化，当前主题: " + theme);
         // console.log("加载主题...");
-        currentTheme = themeManager.loadTheme(theme); // 加载当前主题
+        currentTheme = ThemeManager.loadTheme(theme); // 加载当前主题
         // console.log("是否成功加载主题: " + (currentTheme !== null));
         root.forceActiveFocus(); // 确保键盘事件处理程序获得焦点
     }
@@ -30,13 +30,10 @@ Rectangle {
     property bool joinLeaderboard: settings.getJoinLeaderboard()
     property bool isSoundEnabled: settings.getSoundState()
     property string theme: settings.getTheme()    // 主题管理器
-    property ThemeManager themeManager: ThemeManager {
-        id: themeManager
-    }
     property QtObject currentTheme: null    // 当主题变化时更新预览
     onThemeChanged: {
         console.log("Settings主题变化:", theme);
-        currentTheme = themeManager.loadTheme(theme);
+        currentTheme = ThemeManager.loadTheme(theme);
         updateThemeUI();
     }
     

@@ -6,23 +6,19 @@ import "./theme"
 Rectangle {
     id: root
     color: currentTheme ? currentTheme.backgroundColor : "#f0f0f0"
-
-    // 主题管理器
-    property ThemeManager themeManager: ThemeManager {
-        id: themeManager
-    }
+    
     property QtObject currentTheme: null
     property string theme: settings.getTheme()
 
     // 监听主题变化
     onThemeChanged: {
         // console.log("GameOver主题变化:", theme);
-        currentTheme = themeManager.loadTheme(theme);
+        currentTheme = ThemeManager.loadTheme(theme);
     }
 
     Component.onCompleted: {
         // console.log("GameOver初始化，当前主题:", theme);
-        currentTheme = themeManager.loadTheme(theme); // 加载当前主题
+        currentTheme = ThemeManager.loadTheme(theme); // 加载当前主题
         root.forceActiveFocus();
     }
 
@@ -32,7 +28,7 @@ Rectangle {
         function onThemeChanged() {
             theme = settings.getTheme();
             // console.log("GameOver主题变化检测到:", theme);
-            currentTheme = themeManager.loadTheme(theme);
+            currentTheme = ThemeManager.loadTheme(theme);
         }
     }
 

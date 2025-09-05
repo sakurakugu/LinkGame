@@ -9,24 +9,20 @@ Rectangle {
     color: currentTheme ? currentTheme.backgroundColor : "#f0f0f0"
     focus: true // 确保可以接收键盘事件
 
-    // 主题管理器
-    property ThemeManager themeManager: ThemeManager {
-        id: themeManager
-    }
     property QtObject currentTheme: null
     property string theme: settings.getTheme()
 
     // 监听主题变化
     onThemeChanged: {
         console.log("Help主题变化:", theme);
-        currentTheme = themeManager.loadTheme(theme);
+        currentTheme = ThemeManager.loadTheme(theme);
     }
 
     signal closed
 
     Component.onCompleted: {
         console.log("Help初始化，当前主题:", theme);
-        currentTheme = themeManager.loadTheme(theme); // 加载当前主题
+        currentTheme = ThemeManager.loadTheme(theme); // 加载当前主题
         root.forceActiveFocus(); // 确保键盘事件处理程序获得焦点
     }
     
@@ -36,7 +32,7 @@ Rectangle {
         function onThemeChanged() {
             theme = settings.getTheme();
             console.log("Help主题变化检测到:", theme);
-            currentTheme = themeManager.loadTheme(theme);
+            currentTheme = ThemeManager.loadTheme(theme);
         }
     }
 

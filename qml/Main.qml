@@ -16,13 +16,9 @@ Window {
     minimumWidth: 800
     minimumHeight: 600
     flags: isFullScreen ? (Qt.Window | Qt.FramelessWindowHint) : Qt.Window
+    color: currentTheme ? currentTheme.backgroundColor : "#f0f0f0" // 应用主题背景色
     property bool isFullScreen: false
     property bool exitDialogVisible: false // 控制退出确认对话框的可见性
-    // 主题管理器
-    color: currentTheme ? currentTheme.backgroundColor : "#f0f0f0" // 应用主题背景色
-    property ThemeManager themeManager: ThemeManager {
-        id: themeManager
-    }
     property QtObject currentTheme: null
     property string currentThemeName: "light" // 默认主题名称，稍后会从settings更新
     
@@ -43,7 +39,7 @@ Window {
             // 从settings获取当前主题并加载
             currentThemeName = settings.getTheme();
             console.log("Main窗口初始化，加载主题:", currentThemeName);
-            currentTheme = themeManager.loadTheme(currentThemeName);
+            currentTheme = ThemeManager.loadTheme(currentThemeName);
         });
         // root.forceActiveFocus(); // 确保键盘事件处理程序获得焦点
     }
@@ -66,7 +62,7 @@ Window {
             currentThemeName = settings.getTheme();
             console.log("Main - 主题变化检测到:", currentThemeName);
             // 更新当前主题
-            currentTheme = themeManager.loadTheme(currentThemeName);
+            currentTheme = ThemeManager.loadTheme(currentThemeName);
         }
     }
 

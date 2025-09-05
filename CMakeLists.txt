@@ -1,10 +1,11 @@
 cmake_minimum_required(VERSION 3.16)
 
 project(LinkGame 
-    VERSION 1.0.0
+    VERSION 1.1.0
     DESCRIPTION "连连看小游戏"
     HOMEPAGE_URL "https://github.com/sakurakugu/LinkGame"
-    LANGUAGES CXX)
+    LANGUAGES CXX
+)
 
 # 设置C++标准和其他编译选项
 set(CMAKE_CXX_STANDARD 23)                 # 使用 C++23 标准
@@ -52,6 +53,11 @@ set(MYQML_THEME
     qml/theme/LightTheme.qml
     qml/theme/DarkTheme.qml
     qml/theme/PinkTheme.qml
+)
+
+# 单例组件
+set_source_files_properties(
+    qml/theme/ThemeManager.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE # 主题管理器
 )
 
 # 设置 QML 文件的路径
@@ -115,7 +121,7 @@ set(RESOURCES
 
 # 安装路径配置
 if (WIN32)
-set(CMAKE_INSTALL_PREFIX "C:/Software/Apps/LinkGame" CACHE PATH "安装路径前缀" FORCE)
+    set(CMAKE_INSTALL_PREFIX "C:/Software/Apps/LinkGame" CACHE PATH "安装路径前缀" FORCE)
 endif()
 
 # 查找所有需要的Qt组件

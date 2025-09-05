@@ -6,7 +6,9 @@
 
 用 Qt(QML) 和 C++ 编写的连连看小游戏，这是数据结构课程的实践作业。游戏具有多种难度级别、排行榜系统和多语言支持。
 
-> 镜像仓库：[gitcode.com/sakurakugu/LinkGame](https://github.com/sakurakugu/LinkGame)
+> 主仓库：    [github.com/sakurakugu/LinkGame](https://github.com/sakurakugu/LinkGame)
+>
+> 镜像仓库：[gitcode.com/sakurakugu/LinkGame](https://gitcode.com/sakurakugu/LinkGame)
 
 ![游戏截图](docs/图片1.png)
 ![游戏截图](docs/图片2.png)
@@ -49,7 +51,7 @@
 
 ### 构建步骤
 
-> 如果构建失败，大概率是网络问题，请先删除 `_deps/` 然后从 github 上下载 [toml 库](https://github.com/ToruNiina/toml11) 的源代码 放到 `_deps/toml11-src` , 然后若还是错误，请删除 `_deps/toml11-subbuild` 目录并重新执行构建步骤即可
+> 如果构建失败，大概率是网络问题，请先删除 `_deps/` 然后从 github 上下载 [toml 库](https://github.com/ToruNiina/toml11) 的源代码 改名并放到 `_deps/toml11-src` , 然后若还是错误，请删除 `_deps/toml11-subbuild` 目录并重新执行构建步骤即可
 
 #### 使用 Qt Creator 构建
 
@@ -80,7 +82,8 @@
 
    - 在 VSCode 中，下载 Qt Extension Pack 和 CMake Tools 插件
    - 其次在插件设置中设置 Qt 路径
-   - 然后按下 `Ctrl+Shift+P` 打开命令面板，输入 `CMake: Select a Kit` 并选择 `Qt-6.8.3-mingw_64`
+   - 然后按下 `Ctrl+Shift+P` 打开命令面板，输入 `Qt: Scan for Qt Kits` 让它查找 Qt 的工具包
+   - 然后按下 `Ctrl+Shift+P` 打开命令面板，输入 `CMake: Select a Kit` 并选择 `Qt-6.9.2-mingw_64`
    - 最后在终端中输入以下命令
 
    ```bash
@@ -91,14 +94,14 @@
 
 3. 构建项目
 
-   - 按下 `Ctrl+Shift+P` 打开命令面板，输入 `CMake: Build Target` 按钮
+   - 按下 `Ctrl+Shift+P` 打开命令面板，输入 `CMake: Build Target` 按钮（或者点击左下角的构建按钮 `▶`）
    - 选择 `all` 选项
    - 等待构建完成
 
 4. 运行游戏
    ```bash
    cd ./build
-   ./appLinkGame
+   ./bin/LinkGame.exe # 或者 ./bin/LinkGame_debug.exe
    ```
 
 ## 多语言支持
@@ -132,7 +135,7 @@
    cmake --build build --target all # 构建并生成可执行文件
    ```
 
-   > 如果没找到命令，记得将 `C:\安装位置\Qt\6.9.1\mingw_64\bin` 放入环境变量中
+   > 如果没找到命令，记得将 `C:\安装位置\Qt\6.9.2\mingw_64\bin` 放入环境变量中
 
 2. 使用 Qt Linguist 打开 `i18n/LinkGame_*.ts` 文件进行翻译编辑
 

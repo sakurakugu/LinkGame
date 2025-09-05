@@ -1,4 +1,5 @@
-import QtQuick 2.0
+pragma Singleton
+import QtQuick
 
 QtObject {
     // 主题标识符
