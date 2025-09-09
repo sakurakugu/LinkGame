@@ -5,7 +5,7 @@
 
 #include <QObject>
 #include <QString>
-#include <toml.hpp>
+#include <toml++/toml.hpp>
 
 class Config : public QObject {
     Q_OBJECT

@@ -1,7 +1,10 @@
 cmake_minimum_required(VERSION 3.16)
 
+# 包含版本号处理模块
+include("${CMAKE_SOURCE_DIR}/cpp/script/version.cmake")
+
 project(LinkGame 
-    VERSION 1.1.0
+    VERSION ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}
     DESCRIPTION "连连看小游戏"
     HOMEPAGE_URL "https://github.com/sakurakugu/LinkGame"
     LANGUAGES CXX
@@ -88,7 +91,7 @@ set(I18N_FILES
 # 设置私有库变量 PRIVATE_LIBRARIES, 储存需要链接的库
 set(PRIVATE_LIBRARIES
     Qt6::Quick
-    toml11::toml11
+    tomlplusplus::tomlplusplus
 )
 
 # 设置资源文件的路径
@@ -129,14 +132,14 @@ find_package(Qt6 REQUIRED ${QT_COMPONENTS})
 
 qt_standard_project_setup(REQUIRES 6.9)
 
-# 添加外部库 toml11
+# 添加外部库 toml++
 include(FetchContent)
 FetchContent_Declare(
-    toml11
-    GIT_REPOSITORY https://github.com/ToruNiina/toml11.git
-    GIT_TAG        v4.4.0
+    tomlplusplus
+    GIT_REPOSITORY https://github.com/marzer/tomlplusplus.git
+    GIT_TAG        v3.4.0
 )
-FetchContent_MakeAvailable(toml11)
+FetchContent_MakeAvailable(tomlplusplus)
 
 # 将文件添加到Qt_Creator的列表中
 qt_add_executable(LinkGame
@@ -195,6 +198,12 @@ set_target_properties(LinkGame PROPERTIES
 # 设置编译选项
 target_link_libraries(LinkGame
     PRIVATE ${PRIVATE_LIBRARIES}
+)
+
+target_include_directories(LinkGame
+    PRIVATE ${CMAKE_SOURCE_DIR}/cpp
+    PRIVATE ${INCLUDE_DIR}
+
 )
 
 # 安装配置

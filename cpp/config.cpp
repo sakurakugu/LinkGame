@@ -42,7 +42,7 @@ void Config::loadConfig(config &config) {
 
     try {
         // 读取配置文件
-        const auto data = toml::parse("./config.toml");
+        const auto data = toml::parse_file("./config.toml");
         qDebug() << "加载配置文件成功";
 
         // 初始化默认配置
@@ -50,13 +50,13 @@ void Config::loadConfig(config &config) {
 
         // 读取玩家名称
         if (data.contains("player")) {
-            const auto &player = toml::find(data, "player");
+            const auto &player = data["player"];
             config.playerName = getTomlString(player, "name", DefaultValues::player_name);
         }
 
         // 读取游戏设置
         if (data.contains("settings")) {
-            const auto &settings = toml::find(data, "settings");
+            const auto &settings = data["settings"];
 
             // 使用辅助函数读取各项配置
             config.difficulty = getTomlString(settings, "difficulty", DefaultValues::difficulty);
@@ -76,26 +76,33 @@ void Config::loadConfig(config &config) {
 
         // 读取排行榜
         config.leaderboard.clear();
-        if (data.contains("leaderboard") && toml::find(data, "leaderboard").contains("entries")) {
-            const auto &entries = toml::find(data, "leaderboard", "entries").as_array();
-            for (const auto &entry : entries) {
-                LeaderboardEntry leaderboardEntry;
-                leaderboardEntry.name = getTomlString(entry, "name", "未知玩家");
-                leaderboardEntry.score = getTomlInt(entry, "score", 0);
-                leaderboardEntry.difficulty = getTomlString(entry, "difficulty", "普通");
+        if (data.contains("leaderboard")) {
+            const auto &leaderboard = data["leaderboard"];
+            if (leaderboard && leaderboard.as_table()->contains("entries")) {
+                const auto &entries = leaderboard["entries"];
+                if (entries.is_array()) {
+                    for (const auto &entry : *entries.as_array()) {
+                        LeaderboardEntry leaderboardEntry;
+                        leaderboardEntry.name = getTomlString(entry, "name", "未知玩家");
+                        leaderboardEntry.score = getTomlInt(entry, "score", 0);
+                        leaderboardEntry.difficulty = getTomlString(entry, "difficulty", "普通");
 
-                config.leaderboard.append(leaderboardEntry);
+                        config.leaderboard.append(leaderboardEntry);
+                    }
+                }
             }
         }
 
         // 读取屏幕设置
         if (data.contains("screen")) {
-            const auto &screen = toml::find(data, "screen");
+            const auto &screen = data["screen"];
             config.screenWidth = getTomlInt(screen, "width", DefaultValues::screen_width);
             config.screenHeight = getTomlInt(screen, "height", DefaultValues::screen_height);
             config.fullscreen = getTomlBool(screen, "fullscreen", DefaultValues::fullscreen);
             config.borderless = getTomlBool(screen, "borderless", DefaultValues::borderless);
         }
+    } catch (const toml::parse_error &e) {
+        qCritical() << "解析配置文件失败:" << e.description();
     } catch (const std::exception &e) {
         qWarning() << "加载配置文件失败:" << e.what() << "，使用默认配置";
         initConfig(config);
@@ -108,46 +115,46 @@ void Config::loadConfig(config &config) {
  */
 void Config::saveConfig(const config &config) {
     try {
-        toml::value data;
+        toml::table data;
 
         // 保存玩家信息
-        data["player"].comments().push_back(" 玩家信息");
-        data["player"]["name"] = config.playerName.toStdString();
+        toml::table player;
+        player.insert("name", config.playerName.toStdString());
+        data.insert("player", player);
 
         // 保存游戏设置
-        data["settings"].comments().push_back(" 游戏设置");
-        data["settings"]["difficulty"] = config.difficulty.toStdString();
-        data["settings"]["game_time"] = config.gameTime;
-        data["settings"]["volume"] = config.volume;
-        data["settings"]["sound_state"] = config.soundState;
-        data["settings"]["block_count"] = config.blockCount;
-        data["settings"]["block_types"] = config.blockTypes;
-        data["settings"]["join_leaderboard"] = config.joinLeaderboard;
-        data["settings"]["theme"] = config.theme.toStdString();
-        data["settings"]["language"] = config.language.toStdString();
+        toml::table settings;
+        settings.insert("difficulty", config.difficulty.toStdString());
+        settings.insert("game_time", config.gameTime);
+        settings.insert("volume", config.volume);
+        settings.insert("sound_state", config.soundState);
+        settings.insert("block_count", config.blockCount);
+        settings.insert("block_types", config.blockTypes);
+        settings.insert("join_leaderboard", config.joinLeaderboard);
+        settings.insert("theme", config.theme.toStdString());
+        settings.insert("language", config.language.toStdString());
+        data.insert("settings", settings);
 
         // 保存排行榜
-        data["leaderboard"].comments().push_back(" 玩家排行榜");
-        std::vector<toml::value> leaderboard;
+        toml::table leaderboardTable;
+        toml::array entries;
         for (const auto &entry : std::as_const(config.leaderboard)) {
-            toml::value entryData;
-            entryData["name"] = entry.name.toStdString();
-            entryData["score"] = entry.score;
-            entryData["difficulty"] = entry.difficulty.toStdString();
-            leaderboard.push_back(entryData);
+            toml::table entryData;
+            entryData.insert("name", entry.name.toStdString());
+            entryData.insert("score", entry.score);
+            entryData.insert("difficulty", entry.difficulty.toStdString());
+            entries.push_back(entryData);
         }
-        data["leaderboard"]["entries"] = leaderboard;
+        leaderboardTable.insert("entries", entries);
+        data.insert("leaderboard", leaderboardTable);
 
         // 保存屏幕设置
-        data["screen"].comments().push_back(" 屏幕设置");
-        data["screen"]["width"] = config.screenWidth;
-        data["screen"]["height"] = config.screenHeight;
-        data["screen"]["fullscreen"] = config.fullscreen;
-        data["screen"]["borderless"] = config.borderless;
-
-        // 添加注释
-        data.comments().push_back(" 连连看游戏配置文件");
-        data.comments().push_back(" \u4f5c\u8005: \u6f58\u5f66\u73ae\u3001\u8c22\u667a\u884c");
+        toml::table screen;
+        screen.insert("width", config.screenWidth);
+        screen.insert("height", config.screenHeight);
+        screen.insert("fullscreen", config.fullscreen);
+        screen.insert("borderless", config.borderless);
+        data.insert("screen", screen);
 
         // 写入文件
         std::ofstream file("config.toml");
@@ -155,7 +162,7 @@ void Config::saveConfig(const config &config) {
             qWarning() << "无法保存配置文件";
             return;
         }
-        file << toml::format(data);
+        file << data;
         file.close();
         qDebug() << "配置文件保存成功";
 
@@ -173,8 +180,13 @@ void Config::saveConfig(const config &config) {
  */
 template <typename T>
 QString Config::getTomlString(const T &tomlValue, const std::string &key, const QString &defaultValue) {
-    if (tomlValue.contains(key)) {
-        return QString::fromStdString(toml::find<std::string>(tomlValue, key));
+    if (tomlValue.is_table()) {
+        const auto &table = *tomlValue.as_table();
+        if (table.contains(key)) {
+            if (auto val = table[key].template value<std::string>()) {
+                return QString::fromStdString(*val);
+            }
+        }
     }
     return defaultValue;
 }
@@ -187,8 +199,13 @@ QString Config::getTomlString(const T &tomlValue, const std::string &key, const 
  * @return 读取的整数值
  */
 template <typename T> int Config::getTomlInt(const T &tomlValue, const std::string &key, int defaultValue) {
-    if (tomlValue.contains(key)) {
-        return toml::find<int>(tomlValue, key);
+    if (tomlValue.is_table()) {
+        const auto &table = *tomlValue.as_table();
+        if (table.contains(key)) {
+            if (auto val = table[key].template value<int64_t>()) {
+                return static_cast<int>(*val);
+            }
+        }
     }
     return defaultValue;
 }
@@ -201,8 +218,13 @@ template <typename T> int Config::getTomlInt(const T &tomlValue, const std::stri
  * @return 读取的浮点值
  */
 template <typename T> double Config::getTomlDouble(const T &tomlValue, const std::string &key, double defaultValue) {
-    if (tomlValue.contains(key)) {
-        return toml::find<double>(tomlValue, key);
+    if (tomlValue.is_table()) {
+        const auto &table = *tomlValue.as_table();
+        if (table.contains(key)) {
+            if (auto val = table[key].template value<double>()) {
+                return *val;
+            }
+        }
     }
     return defaultValue;
 }
@@ -215,8 +237,13 @@ template <typename T> double Config::getTomlDouble(const T &tomlValue, const std
  * @return 读取的布尔值
  */
 template <typename T> bool Config::getTomlBool(const T &tomlValue, const std::string &key, bool defaultValue) {
-    if (tomlValue.contains(key)) {
-        return toml::find<bool>(tomlValue, key);
+    if (tomlValue.is_table()) {
+        const auto &table = *tomlValue.as_table();
+        if (table.contains(key)) {
+            if (auto val = table[key].template value<bool>()) {
+                return *val;
+            }
+        }
     }
     return defaultValue;
 }

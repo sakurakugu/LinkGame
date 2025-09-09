@@ -7,6 +7,7 @@
 
 namespace DefaultValues {
 
+constexpr std::string_view appName{"MyTodo"}; // 应用程序名称
 constexpr const char *player_name = "Player";
 constexpr const char *difficulty = "普通";
 constexpr int game_time = 180;            // 默认游戏时间为3分钟

@@ -6,17 +6,37 @@
  *
  * @author Sakurakugu
  * @date 2025-08-19 05:57:09(UTC+8) 周二
- * @version 2025-08-22 16:24:28(UTC+8) 周五
+ * @change 2025-08-31 00:49:25(UTC+8) 周日
+ * @version 0.4.0
  */
+
+ /**
+  * 使用方法
+  * 1. 包含头文件
+  *    #include "logger.h"
+  * 2. 初始化日志系统
+  *        qInstallMessageHandler(Logger::messageHandler);
+  * 3. 设置日志级别
+  *    日志级别从低到高依次为：Debug、Info、Warning、Critical、Fatal
+  *        Logger::GetInstance().setLogLevel(Logger::LogLevel::Info);
+  * 4. 记录日志
+  *       qDebug() << "这是一条调试日志";  // 因为设置级别为Info，调试日志不显示
+  *       qInfo() << "这是一条信息日志";
+  * 5. 日志文件
+  *    日志文件默认存放在Appdata/Local/应用名/logs目录下
+  *    日志文件名称为应用名.log
+  *    日志文件大小为10MB，超过10MB会自动轮转
+  *    日志文件轮转时会保留5个备份文件
+  */
 
 #pragma once
 
 #include <QDateTime>
-#include <QFile>
 #include <QFileInfo>
 #include <QObject>
 
 #include <expected>
+#include <fstream>
 #include <shared_mutex>
 
 // 强类型枚举比较
@@ -25,12 +45,6 @@ concept LogLevelType = std::is_enum_v<T> && requires(T level) {
     static_cast<std::underlying_type_t<T>>(level);
     requires std::same_as<T, typename std::remove_cv_t<T>>;
 };
-
-// 字符串类型概念
-template <typename T>
-concept StringLike = requires(T &&t) {
-    { std::string_view{t} } -> std::convertible_to<std::string_view>;
-} || std::same_as<std::remove_cvref_t<T>, QString> || std::same_as<std::remove_cvref_t<T>, std::string>;
 
 // 文件大小类型概念 - 支持有符号和无符号整数
 template <typename T>
@@ -42,7 +56,7 @@ enum class LogError : std::uint8_t {
     WritePermissionDenied = 2, // 没有写入权限
     DiskSpaceInsufficient = 3, // 磁盘空间不足
     InvalidLogLevel = 4,       // 日志级别无效
-    RotationFailed = 5         // 轮转日志失败
+    RotationFailed = 5,        // 轮转日志失败
 };
 
 class Logger : public QObject {
@@ -86,10 +100,9 @@ class Logger : public QObject {
 
     template <FileSizeType T>
     std::expected<void, LogError> setMaxLogFileSize(T maxSize) noexcept; // 最大日志文件大小（字节）
-    template <std::integral T>
-    std::expected<void, LogError> setMaxLogFiles(T maxFiles) noexcept; // 最大日志文件数量
+    template <std::integral T> std::expected<void, LogError> setMaxLogFiles(T maxFiles) noexcept; // 最大日志文件数量
 
-    QString getLogFilePath() const noexcept;            // 获取日志文件路径
+    std::string getLogFilePath() const noexcept;        // 获取日志文件路径
     std::expected<void, LogError> clearLogs() noexcept; // 清空日志文件
 
   public slots:
@@ -100,34 +113,24 @@ class Logger : public QObject {
     ~Logger() noexcept override;
 
     void writeLog(QtMsgType type, const QMessageLogContext &context, const QString &msg) noexcept; // 写入日志
-    std::expected<void, LogError> initLogFile() noexcept;                            // 初始化日志文件
-    std::expected<void, LogError> checkLogRotation() noexcept;                       // 检查日志轮转
+    std::expected<void, LogError> initLogFile() noexcept;                                          // 初始化日志文件
+    std::expected<void, LogError> checkLogRotation() noexcept;                                     // 检查日志轮转
 
     // 格式化日志消息
-    template <StringLike... Args>
-    QString formatLogMessage(QtMsgType type, const QMessageLogContext &context, const QString &msg,
-                                           Args &&...args) const noexcept;
-
-    // 基础版本的 formatLogMessage 声明
-    QString formatLogMessage(QtMsgType type, const QMessageLogContext &context,
-                                           const QString &msg) const noexcept;
-
+    std::string formatLogMessage(QtMsgType type, const QMessageLogContext &context, const QString &msg) const noexcept;
     // 格式化带颜色的控制台日志消息
-    QString formatColoredLogMessage(QtMsgType type, const QString &msg) const noexcept;
+    std::string formatColoredLogMessage(QtMsgType type, const std::string &msg) const noexcept;
 
-    static QString messageTypeToString(QtMsgType type) noexcept;
-    static QString getColorCode(QtMsgType type) noexcept;
-
-    std::unique_ptr<QFile> m_logFile;         // 日志文件
-    std::unique_ptr<QTextStream> m_logStream; // 日志流
+    std::unique_ptr<std::ofstream> m_logFile; // 日志文件流
     mutable std::shared_mutex m_shared_mutex; // 读写分离的共享互斥锁
     std::atomic<LogLevel> m_logLevel;         // 日志级别
     std::atomic<bool> m_logToFile;            // 是否将日志输出到文件
     std::atomic<bool> m_logToConsole;         // 是否将日志输出到控制台
     std::atomic<qint64> m_maxLogFileSize;     // 最大日志文件大小（字节）
     std::atomic<int> m_maxLogFiles;           // 最大日志文件数量
-    QString m_logDir;                         // 日志目录路径
-    QString m_logFileName;                    // 日志文件名
+    std::string m_logDir;                     // 日志目录路径
+    std::string m_logFileName;                // 日志文件名
+    std::string m_appName;                    // 应用程序名称
 };
 
 // 最大日志文件大小（字节）
@@ -152,28 +155,4 @@ template <std::integral T> std::expected<void, LogError> Logger::setMaxLogFiles(
     std::shared_lock lock(m_shared_mutex);
     m_maxLogFiles = static_cast<int>(maxFiles);
     return {};
-}
-
-// 格式化日志消息
-template <StringLike... Args>
-QString Logger::formatLogMessage(QtMsgType type, const QMessageLogContext &context, const QString &msg,
-                                               Args &&...args) const noexcept {
-    try {
-        auto timestamp = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz");
-        auto typeStr = messageTypeToString(type);
-        auto fileName = QFileInfo(context.file ? context.file : "").baseName();
-
-        if constexpr (sizeof...(args) > 0) {
-            auto formatted = std::format(msg.toStdString(), std::forward<Args>(args)...);
-            return QString::fromStdString(std::format("[{}] [{}] [{}:{}] {}", timestamp.toStdString(),
-                                                      typeStr.toStdString(), fileName.toStdString(), context.line,
-                                                      formatted));
-        } else {
-            return QString::fromStdString(std::format("[{}] [{}] [{}:{}] {}", timestamp.toStdString(),
-                                                      typeStr.toStdString(), fileName.toStdString(), context.line,
-                                                      msg.toStdString()));
-        }
-    } catch (...) {
-        return QString("[错误] 该日志消息无法格式化");
-    }
 }
