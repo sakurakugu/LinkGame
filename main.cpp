@@ -20,16 +20,9 @@
 int main(int argc, char *argv[]) {
 #if defined(Q_OS_WIN) && defined(QT_DEBUG)
     // Windows平台
-    UINT cp = GetACP();
-    if (cp == 65001) {
-        // 设置 Windows 控制台输入输出为 UTF-8
-        SetConsoleCP(CP_UTF8);
-        SetConsoleOutputCP(CP_UTF8);
-    } else if (cp == 936) {
-        // 设置 Windows 控制台输入输出为 GBK
-        SetConsoleCP(936);
-        SetConsoleOutputCP(936);
-    }
+    // UINT cp = GetACP();
+    SetConsoleCP(CP_UTF8);
+    SetConsoleOutputCP(CP_UTF8);
 #endif
 
     QGuiApplication app(argc, argv);
@@ -43,7 +36,7 @@ int main(int argc, char *argv[]) {
     Logger &logger = Logger::GetInstance();
     qInstallMessageHandler(Logger::messageHandler);
     // 应用日志设置
-    logger.setLogLevel(static_cast<Logger::LogLevel>(Logger::LogLevel::Debug));
+    logger.setLogLevel(LogLevel::Debug);
 
     qInfo() << "日志系统初始化完成";
 

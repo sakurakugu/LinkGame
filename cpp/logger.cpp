@@ -11,20 +11,11 @@
 #include "version.h"
 
 #include <QCoreApplication>
-#include <QDateTime>
-#include <QDir>
 #include <QFileInfo>
-
-#include <algorithm>
-#include <array>
-#include <chrono>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <mutex>
-#include <qstandardpaths.h>
-#include <shared_mutex>
-#include <string_view>
 
 Logger::Logger(QObject *parent) noexcept
     : QObject(parent),                    // 初始化父对象
@@ -37,19 +28,18 @@ Logger::Logger(QObject *parent) noexcept
       m_appName(DefaultValues::appName)   // 初始化应用程序名称
 {
     // 编译时检查应用名
-    static_assert(!DefaultValues::appName.empty(), "应用名不能为空");
-    static_assert(DefaultValues::appName.size() > 0, "应用名长度必须大于0");
+    static_assert(std::string_view(DefaultValues::appName).empty() == false, "应用名不能为空");
+    static_assert(std::string_view(DefaultValues::appName).size() > 0, "应用名长度必须大于0");
 
     // 设置日志目录
     try {
         // 设置日志目录，默认存放在Appdata/Local/应用名/logs
         // 测试时存放在可执行文件所在文件夹中的/logs
 #if defined(QT_DEBUG)
-        m_logDir = std::format("{}/{}/logs", QCoreApplication::applicationDirPath().toStdString(), m_appName);
+        m_logDir = std::format("{}/logs", QCoreApplication::applicationDirPath().toStdString());
 #else
-        m_logDir = std::format("{}/{}/logs",
-                               QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation).toStdString(),
-                               m_appName);
+        m_logDir = std::format("{}/logs",
+                               QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation).toStdString());
 #endif
         m_logFileName = m_appName + ".log";
 
@@ -287,13 +277,16 @@ void Logger::writeLog(QtMsgType type, const QMessageLogContext &context, const Q
             if (m_logFile && m_logFile->is_open()) {
                 *m_logFile << formattedMsg << '\n';
 
+#if defined(QT_DEBUG)
+                m_logFile->flush();
+#else
                 // 批量刷新：每10条日志或Critical以上级别才刷新
                 static thread_local int flushCounter = 0;
                 if (++flushCounter >= 10 || msgLevel >= LogLevel::Critical) {
                     m_logFile->flush();
                     flushCounter = 0;
                 }
-
+#endif
                 // 检查是否需要轮转日志文件
                 static_cast<void>(checkLogRotation());
             }
@@ -451,29 +444,15 @@ std::string Logger::formatLogMessage(QtMsgType type, [[maybe_unused]] const QMes
     // 时间戳生成
     const auto now = std::chrono::system_clock::now();
     const auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
-    try {
 #if defined(QT_DEBUG)
-        // 文件名提取
-        const auto fileName = context.file ? std::filesystem::path{context.file}.filename().string() : "未知文件";
-        return std::format("[{:%Y-%m-%d %H:%M:%S}.{:03d}] [{}] [{}:{}] {}",
-                           std::chrono::floor<std::chrono::seconds>(now), ms.count(), levelStr, fileName, context.line,
-                           msg.toStdString());
+    // 文件名提取
+    const auto fileName = context.file ? std::filesystem::path{context.file}.filename().string() : "未知文件";
+    return std::format("[{:%Y-%m-%d %H:%M:%S}.{:03d}] [{}] [{}:{}] {}", std::chrono::floor<std::chrono::seconds>(now),
+                       ms.count(), levelStr, fileName, context.line, msg.toStdString());
 #else
-        return std::format("[{:%Y-%m-%d %H:%M:%S}.{:03d}] [{}] {}", std::chrono::floor<std::chrono::seconds>(now),
-                           ms.count(), levelStr, msg.toStdString());
+    return std::format("[{:%Y-%m-%d %H:%M:%S}.{:03d}] [{}] {}", std::chrono::floor<std::chrono::seconds>(now),
+                       ms.count(), levelStr, msg.toStdString());
 #endif
-    } catch (const std::exception &) {
-        // 回退到简单格式
-#if defined(QT_DEBUG)
-        auto fileName = QFileInfo(context.file ? context.file : "").baseName();
-        return std::format("[{:%Y-%m-%d %H:%M:%S}.{:03d}] [{}] [{}:{}] {}",
-                           std::chrono::floor<std::chrono::seconds>(now), ms.count(), levelStr, fileName.toStdString(),
-                           QString::number(context.line).toStdString(), msg.toStdString());
-#else
-        return std::format("[{:%Y-%m-%d %H:%M:%S}.{:03d}] [{}] {}", std::chrono::floor<std::chrono::seconds>(now),
-                           ms.count(), levelStr, msg.toStdString());
-#endif
-    }
 }
 
 /**
